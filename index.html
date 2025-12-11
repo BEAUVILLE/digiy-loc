@@ -1,670 +1,465 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="utf-8">
-    <title>DIGIY LOC — Logements indépendants 0% commission</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="description" content="DIGIY LOC — Galerie de logements indépendants (studios, appartements, villas) avec paiement direct au propriétaire, 0% commission.">
+/* --------------------------------------------------
+   DIGIY HUB — STYLE PREMIUM AIGLE ROYAL
+   Version mobile optimisée • Bulles réduites
+   -------------------------------------------------- */
 
-    <style>
-        :root{
-            --bg:#020617;
-            --bg-soft:#020818;
-            --card:#030712;
-            --accent:#facc15;          /* Jaune Or DIGIY */
-            --accent-soft:#f97316;     /* Orange doux */
-            --accent-green:#22c55e;    /* Vert Vif (0% com) */
-            --ink:#f9fafb;
-            --muted:#cbd5f5;
-            --line:#1f2937;
-            --shadow-soft:0 20px 45px rgba(15,23,42,0.9);
-        }
-        *{
-            box-sizing:border-box;
-            margin:0;
-            padding:0;
-            font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;
-        }
-        body{
-            min-height:100vh;
-            background:
-                radial-gradient(circle at top,rgba(250,204,21,0.16),transparent 60%),
-                radial-gradient(circle at bottom,rgba(34,197,94,0.16),transparent 55%),
-                #020617;
-            color:var(--ink);
-            display:flex;
-            justify-content:center;
-            padding:10px;
-            font-size:16px; 
-        }
+:root{
+  --bg-dark:#020617;
+  --bg-soft:#0B1120;
+  --card:#111827;
+  --accent:#f97316;
+  --accent-strong:#ea580c;
+  --accent-soft:#fed7aa;
+  --secondary:#22d3ee;
+  --success:#22c55e;
+  --warning:#facc15;
+  --danger:#ef4444;
+  --ink:#f9fafb;
+  --ink-soft:#f3f4f6;
+  --muted:#e5e7eb;
+  --border:rgba(148,163,184,0.5);
+}
 
-        .app{
-            width:100%;
-            max-width:1100px;
-            min-height:100vh;
-            background:linear-gradient(135deg,#020617 0%,#020818 50%,#020617 100%);
-            border-radius:24px;
-            border:1px solid rgba(148,163,184,0.25);
-            box-shadow:var(--shadow-soft);
-            padding:16px 16px 22px;
-            display:flex;
-            flex-direction:column;
-            position:relative;
-            overflow:hidden;
-        }
-        .app::before{
-            content:"";
-            position:absolute;
-            inset:-40%;
-            background:
-                radial-gradient(circle at 0% 0%,rgba(250,204,21,0.14),transparent 55%),
-                radial-gradient(circle at 100% 100%,rgba(34,197,94,0.14),transparent 45%);
-            opacity:0.8;
-            pointer-events:none;
-        }
+/* GLOBAL */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Manrope',sans-serif;
+}
 
-        header{
-            position:relative;
-            z-index:2;
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            gap:10px;
-            margin-bottom:12px;
-        }
-        .brand{
-            display:flex;
-            align-items:center;
-            gap:10px;
-        }
-        .brand-logo{
-            width:42px;
-            height:42px;
-            border-radius:14px;
-            background:radial-gradient(circle at 30% 0%,#facc15,#f97316);
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            font-size:24px;
-            box-shadow:0 12px 30px rgba(234,179,8,0.65);
-        }
-        .brand-text-title{
-            font-size:20px;
-            font-weight:900;
-            letter-spacing:0.09em;
-            text-transform:uppercase;
-            color:var(--accent);
-        }
-        .brand-text-sub{
-            font-size:14px; 
-            color:var(--muted);
-            font-weight:600;
-        }
-        .back-link{
-            font-size:13px; 
-            color:var(--muted);
-            text-decoration:none;
-            background:rgba(15,23,42,0.9);
-            border-radius:999px;
-            border:1px solid rgba(148,163,184,0.6);
-            padding:8px 14px; 
-            display:inline-flex;
-            align-items:center;
-            gap:6px;
-            z-index:2;
-            position:relative;
-            font-weight:700;
-        }
-        .back-link span{
-            font-size:18px; 
-        }
-        .back-link:hover{
-            border-color:var(--accent);
-            color:var(--accent);
-        }
+body{
+  background:var(--bg-dark);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+}
 
-        main{
-            position:relative;
-            z-index:2;
-            flex:1;
-            display:flex;
-            flex-direction:column;
-            gap:14px;
-        }
+/* CONTAINER PRINCIPAL */
+.app{
+  max-width:1400px;
+  margin:auto;
+  padding:1.4rem;
+}
 
-        .hero{
-            background:radial-gradient(circle at top left,rgba(250,204,21,0.18),rgba(3,7,18,0.96));
-            border-radius:22px;
-            border:1px solid rgba(148,163,184,0.6);
-            padding:16px 16px 14px; 
-            box-shadow:0 18px 44px rgba(15,23,42,0.95);
-            display:flex;
-            flex-direction:column;
-            gap:8px;
-        }
-        .hero-title{
-            font-size:26px; 
-            font-weight:900;
-            color:var(--accent);
-        }
-        .hero-title span{
-             color:var(--accent-green);
-        }
-        
-        .hero-sub{
-            font-size:16px; 
-            color:#e5e7eb;
-            max-width:640px;
-            font-weight:500;
-            line-height:1.6; 
-        }
-        .hero-sub strong{
-            font-weight:800;
-            color:var(--accent-green);
-        }
-        .hero-tags{
-            display:flex;
-            flex-wrap:wrap;
-            gap:7px;
-            margin-top:4px;
-        }
-        .hero-tag{
-            font-size:13px;
-            padding:5px 11px;
-            border-radius:999px;
-            border:1px solid rgba(148,163,184,0.7);
-            background:rgba(15,23,42,0.95);
-            color:#e5e7eb;
-            font-weight:600;
-        }
-        .hero-tag strong{
-            color:var(--accent-soft);
-            font-weight:800;
-        }
+/* HEADER */
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:rgba(15,23,42,0.95);
+  border:1px solid var(--border);
+  padding:1rem 1.4rem;
+  border-radius:20px;
+}
 
-        /* CTA PRO LOC */
-        .cta-pro{
-            margin-top:10px;
-            display:flex;
-            justify-content:center;
-        }
-        .cta-pro-btn{
-            background:linear-gradient(135deg,#facc15,#f97316);
-            padding:12px 20px;
-            border-radius:999px;
-            color:#111827;
-            font-size:15px;
-            font-weight:900;
-            text-decoration:none;
-            border:1px solid rgba(250,204,21,0.7);
-            box-shadow:0 8px 20px rgba(250,204,21,0.45);
-            text-align:center;
-        }
-        .cta-pro-btn:hover{
-            transform:translateY(-2px);
-            box-shadow:0 12px 26px rgba(250,204,21,0.7);
-        }
+.brand{
+  display:flex;
+  align-items:center;
+  gap:1rem;
+  text-decoration:none;
+}
 
-        .grid{
-            margin-top:14px; 
-            display:grid;
-            grid-template-columns:repeat(3,minmax(0,1fr));
-            gap:14px; 
-        }
-        @media(max-width:900px){
-            .grid{
-                grid-template-columns:repeat(2,minmax(0,1fr));
-            }
-        }
-        @media(max-width:640px){
-            .app{
-                border-radius:0;
-                border:none;
-                box-shadow:none;
-            }
-            .grid{
-                grid-template-columns:1fr;
-                gap:20px; 
-            }
-        }
+.brand-logo{
+  width:50px;
+  height:50px;
+  border-radius:14px;
+  background:radial-gradient(circle at 30% 20%,#fef3c7,#f97316);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:2rem;
+  font-weight:900;
+  color:#111;
+}
 
-        .loc-card{
-            background:radial-gradient(circle at top,rgba(15,23,42,0.98),#020617);
-            border-radius:24px; 
-            border:1px solid rgba(148,163,184,0.7);
-            padding:12px 12px 14px; 
-            box-shadow:0 14px 34px rgba(15,23,42,0.95);
-            display:flex;
-            flex-direction:column;
-            gap:8px; 
-            position:relative;
-            overflow:hidden;
-        }
-        .loc-card::before{
-            content:"";
-            position:absolute;
-            inset:-40%;
-            background:radial-gradient(circle at top,rgba(250,204,21,0.08),transparent 55%);
-            opacity:0.8;
-            pointer-events:none;
-        }
-        .loc-head{
-            position:relative;
-            z-index:2;
-            display:flex;
-            justify-content:space-between;
-            align-items:flex-start;
-            gap:8px;
-        }
-        .loc-title{
-            font-size:20px;
-            font-weight:900;
-            color:var(--accent);
-        }
-        .loc-type{
-            font-size:14px;
-            color:#e5e7eb;
-            font-weight:600;
-        }
-        .loc-price{
-            font-size:18px;
-            font-weight:900;
-            color:var(--accent-green);
-            text-align:right;
-        }
-        .loc-price span{
-            font-size:12px;
-            color:var(--muted);
-            font-weight:600;
-        }
-        .loc-photo{
-            position:relative;
-            z-index:2;
-            margin-top:4px;
-            border-radius:16px; 
-            overflow:hidden;
-            height:190px; 
-            border:2px solid rgba(250,204,21,0.85); 
-            order:-1; 
-        }
-        .loc-photo img{
-            width:100%;
-            height:100%;
-            object-fit:cover; 
-            display:block;
-        }
-        .loc-desc{
-            position:relative;
-            z-index:2;
-            font-size:14px; 
-            color:#f3f4f6;
-            font-weight:500;
-            line-height:1.5;
-        }
-        .loc-meta{
-            position:relative;
-            z-index:2;
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            font-size:13px;
-            color:#e5e7eb;
-            margin-top:4px;
-        }
-        .loc-meta span{
-            opacity:0.9;
-        }
-        .loc-badge{
-            font-size:11px; 
-            padding:4px 9px;
-            border-radius:999px;
-            border:1px solid rgba(34,197,94,0.9);
-            color:var(--accent-green);
-            background:rgba(15,23,42,0.98);
-            font-weight:700;
-            white-space:nowrap;
-        }
+.brand-text-title{
+  font-family:'Outfit',sans-serif;
+  font-size:1.6rem;
+  font-weight:900;
+  background:linear-gradient(135deg,#f97316,#facc15,#22d3ee);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
 
-        .loc-actions{
-            margin-top:10px;
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            gap:10px;
-            font-size:11px;
-            flex-wrap:wrap;
-        }
-        .btn{
-            border:none;
-            border-radius:999px;
-            padding:10px 14px; 
-            font-size:14px; 
-            font-weight:900; 
-            cursor:pointer;
-            display:inline-flex;
-            align-items:center;
-            gap:6px;
-            text-decoration:none;
-            white-space:nowrap;
-            transition:all 0.25s;
-            flex-grow:1; 
-            justify-content:center; 
-        }
-        .btn-primary{
-            background:linear-gradient(135deg,#facc15,#f97316);
-            color:#111827;
-            box-shadow:0 7px 18px rgba(250,204,21,0.55);
-        }
-        .btn-primary:hover{
-            transform:translateY(-1px);
-            box-shadow:0 11px 26px rgba(250,204,21,0.7);
-        }
-        .btn-wa{
-            background:rgba(22,163,74,0.2);
-            color:#bbf7d0;
-            border:1px solid rgba(34,197,94,0.85);
-        }
-        .btn-wa:hover{
-            border-color:#22c55e;
-        }
+.brand-text-sub{
+  font-size:0.7rem;
+  color:var(--muted);
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+}
 
-        footer{
-            position:relative;
-            z-index:2;
-            margin-top:16px;
-            font-size:12px; 
-            color:var(--muted);
-            display:flex;
-            justify-content:space-between;
-            flex-wrap:wrap;
-            gap:6px;
-            font-weight:600;
-            line-height: 1.4;
-        }
-        footer span{
-            color:var(--accent);
-            font-weight:800;
-        }
-    </style>
-</head>
-<body>
-<div class="app">
-    <header>
-        <div class="brand">
-            <div class="brand-logo">🏡</div>
-            <div>
-                <div class="brand-text-title">DIGIY LOC</div>
-                <div class="brand-text-sub">Logements indépendants • 0% commission</div>
-            </div>
-        </div>
+/* SECTION MODULES */
+.modules-section{
+  margin-top:2rem;
+  background:rgba(15,23,42,0.88);
+  border:1px solid var(--border);
+  padding:1.6rem;
+  border-radius:24px;
+}
 
-        <a href="index.html" class="back-link">
-            <span>←</span> Retour DIGIY HUB
-        </a>
-    </header>
+.modules-grid{
+  margin-top:1rem;
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+  gap:1rem;
+}
 
-    <main>
-        <section class="hero">
-            <div class="hero-title">
-                Logements indépendants <span>DIGIY LOC</span>
-            </div>
-            <div class="hero-sub">
-                Studios, appartements, villas & maisons gérés par des propriétaires indépendants.
-                Paiement <strong>direct au propriétaire</strong>, DIGIY ne touche pas l’argent :
-                <strong>0% commission</strong>.
-            </div>
-            <div class="hero-tags">
-                <div class="hero-tag"><strong>0% commission</strong> — paiement direct</div>
-                <div class="hero-tag">Propriétaires indépendants</div>
-                <div class="hero-tag">WhatsApp & appel direct</div>
-                <div class="hero-tag">Tarifs transparents</div>
-            </div>
-        </section>
+.module{
+  background:rgba(15,23,42,0.95);
+  border:1px solid rgba(148,163,184,0.4);
+  padding:1.2rem;
+  border-radius:18px;
+  cursor:pointer;
+  transition:0.2s ease;
+}
 
-        <!-- CTA PRO : DEVENIR PROPRIÉTAIRE PARTENAIRE -->
-        <section class="cta-pro">
-            <a href="https://beauville.github.io/inscription-digiy/?module=loc"
-               class="cta-pro-btn" target="_blank" rel="noopener">
-                🏡 Mettre mon logement sur DIGIY LOC • Propriétaire partenaire
-            </a>
-        </section>
+.module:hover{
+  border-color:#f97316;
+  transform:translateY(-4px);
+}
 
-        <section class="grid">
+.module-icon{
+  font-size:1.8rem;
+  background:#0f172a;
+  width:48px;
+  height:48px;
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(148,163,184,0.7);
+}
 
-            <!-- LOGEMENT 1 -->
-            <article class="loc-card">
-                <div class="loc-head">
-                    <div>
-                        <div class="loc-title">Studio cosy Chez Baptiste</div>
-                        <div class="loc-type">Studio • Saly • 2 pers.</div>
-                    </div>
-                    <div class="loc-price">
-                        25 000 XOF <span>/ nuit</span>
-                    </div>
-                </div>
-                <div class="loc-photo">
-                    <img src="https://images.unsplash.com/photo-1505691723518-36a5ac3be353?auto=format&fit=crop&w=800&q=80"
-                         alt="Studio cosy Chez Baptiste à Saly">
-                </div>
-                <p class="loc-desc">
-                    Studio climatisé, à 5 minutes de la plage. Coin cuisine équipé, lit double,
-                    petite terrasse extérieure. Wifi inclus.
-                </p>
-                <div class="loc-meta">
-                    <span>Disponibilités à la semaine</span>
-                    <div class="loc-badge">Paiement direct propriétaire</div>
-                </div>
-                <div class="loc-actions">
-                    <a class="btn btn-primary"
-                       href="https://beauville.github.io/chez-baptiste-digiy-loc/"
-                       target="_blank" rel="noopener">
-                        📄 Voir la fiche complète
-                    </a>
-                    <button class="btn btn-wa" type="button"
-                            onclick="openWa('+221770001122','Bonjour, je suis intéressé par le Studio Chez Baptiste (DIGIY LOC).');">
-                        💬 WhatsApp
-                    </button>
-                </div>
-            </article>
+.module-name{
+  font-family:'Outfit';
+  font-size:1.1rem;
+  font-weight:900;
+}
 
-            <!-- LOGEMENT 2 -->
-            <article class="loc-card">
-                <div class="loc-head">
-                    <div>
-                        <div class="loc-title">Appartement vue mer</div>
-                        <div class="loc-type">Appartement • Mbour • 4 pers.</div>
-                    </div>
-                    <div class="loc-price">
-                        40 000 XOF <span>/ nuit</span>
-                    </div>
-                </div>
-                <div class="loc-photo">
-                    <img src="https://images.unsplash.com/photo-1520256862855-398228c41684?auto=format&fit=crop&w=800&q=80"
-                         alt="Appartement avec vue sur mer à Mbour">
-                </div>
-                <p class="loc-desc">
-                    Grand salon lumineux avec balcon vue mer, 2 chambres, cuisine équipée, proche commerces.
-                    Idéal pour séjour en famille.
-                </p>
-                <div class="loc-meta">
-                    <span>Minimum 2 nuits</span>
-                    <div class="loc-badge">0% Com DIGIY</div>
-                </div>
-                <div class="loc-actions">
-                    <a class="btn btn-primary"
-                       href="#"
-                       target="_blank" rel="noopener">
-                        📄 Voir la fiche complète
-                    </a>
-                    <button class="btn btn-wa" type="button"
-                            onclick="openWa('+221771112233','Bonjour, je suis intéressé par l\'Appartement vue mer (DIGIY LOC).');">
-                        💬 WhatsApp
-                    </button>
-                </div>
-            </article>
+.module-tagline{
+  font-size:0.75rem;
+  color:var(--muted);
+  letter-spacing:0.12em;
+}
 
-            <!-- LOGEMENT 3 -->
-            <article class="loc-card">
-                <div class="loc-head">
-                    <div>
-                        <div class="loc-title">Villa piscine privée</div>
-                        <div class="loc-type">Villa • Ngaparou • 6 pers.</div>
-                    </div>
-                    <div class="loc-price">
-                        95 000 XOF <span>/ nuit</span>
-                    </div>
-                </div>
-                <div class="loc-photo">
-                    <img src="https://images.unsplash.com/photo-1512914890250-353c97c9e7e2?auto=format&fit=crop&w=800&q=80"
-                         alt="Villa avec piscine privée à Ngaparou">
-                </div>
-                <p class="loc-desc">
-                    Villa moderne avec piscine privée, jardin arboré, 3 chambres, gardiennage inclus.
-                    Parfaite pour un séjour entre amis.
-                </p>
-                <div class="loc-meta">
-                    <span>Réduction dès 7 nuits</span>
-                    <div class="loc-badge">Propriétaire vérifié</div>
-                </div>
-                <div class="loc-actions">
-                    <a class="btn btn-primary"
-                       href="#"
-                       target="_blank" rel="noopener">
-                        📄 Voir la fiche complète
-                    </a>
-                    <button class="btn btn-wa" type="button"
-                            onclick="openWa('+221772223344','Bonjour, je suis intéressé par la Villa piscine privée (DIGIY LOC).');">
-                        💬 WhatsApp
-                    </button>
-                </div>
-            </article>
+.module-badge{
+  font-size:0.7rem;
+  padding:0.32rem 0.7rem;
+  border-radius:999px;
+  background:rgba(34,197,94,0.18);
+  border:1px solid var(--success);
+  color:var(--success);
+}
 
-            <!-- LOGEMENT 4 -->
-            <article class="loc-card">
-                <div class="loc-head">
-                    <div>
-                        <div class="loc-title">Chambre d’hôtes centre-ville</div>
-                        <div class="loc-type">Chambre • Dakar Plateau • 2 pers.</div>
-                    </div>
-                    <div class="loc-price">
-                        22 000 XOF <span>/ nuit</span>
-                    </div>
-                </div>
-                <div class="loc-photo">
-                    <img src="https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=800&q=80"
-                         alt="Chambre d'hôtes au centre-ville de Dakar">
-                </div>
-                <p class="loc-desc">
-                    Chambre confortable avec salle de bain privée, petit-déjeuner inclus.
-                    À deux pas des bureaux et administrations.
-                </p>
-                <div class="loc-meta">
-                    <span>Idéal déplacements pro</span>
-                    <div class="loc-badge">Paiement Wave accepté</div>
-                </div>
-                <div class="loc-actions">
-                    <a class="btn btn-primary"
-                       href="#"
-                       target="_blank" rel="noopener">
-                        📄 Voir la fiche complète
-                    </a>
-                    <button class="btn btn-wa" type="button"
-                            onclick="openWa('+221773335577','Bonjour, je suis intéressé par la Chambre d’hôtes centre-ville (DIGIY LOC).');">
-                        💬 WhatsApp
-                    </button>
-                </div>
-            </article>
+/* BOUTONS flottants (réduction mobile) */
+.tarif-bubble,
+.chat-bubble,
+.sos-bubble{
+  position:fixed;
+  z-index:100;
+  border-radius:999px;
+  padding:0.55rem 0.9rem; /* REDUIT */
+  font-size:0.75rem; /* REDUIT */
+  font-weight:900;
+  text-decoration:none;
+  display:flex;
+  align-items:center;
+  gap:0.45rem;
+}
 
-            <!-- LOGEMENT 5 -->
-            <article class="loc-card">
-                <div class="loc-head">
-                    <div>
-                        <div class="loc-title">Petit studio pratique</div>
-                        <div class="loc-type">Studio • Thiès • 1-2 pers.</div>
-                    </div>
-                    <div class="loc-price">
-                        15 000 XOF <span>/ nuit</span>
-                    </div>
-                </div>
-                <div class="loc-photo">
-                    <img src="https://images.unsplash.com/photo-1520256862855-398228c41684?auto=format&fit=crop&w=800&q=80"
-                         alt="Petit studio pratique à Thiès">
-                </div>
-                <p class="loc-desc">
-                    Studio simple et propre, parfait pour un court séjour.
-                    Proximité transport et marché.
-                </p>
-                <div class="loc-meta">
-                    <span>Wifi & ventilateur</span>
-                    <div class="loc-badge">Budget</div>
-                </div>
-                <div class="loc-actions">
-                    <a class="btn btn-primary"
-                       href="#"
-                       target="_blank" rel="noopener">
-                        📄 Voir la fiche complète
-                    </a>
-                    <button class="btn btn-wa" type="button"
-                            onclick="openWa('+221774446688','Bonjour, je suis intéressé par le Petit studio pratique (DIGIY LOC).');">
-                        💬 WhatsApp
-                    </button>
-                </div>
-            </article>
+/* TARIF */
+.tarif-bubble{
+  right:0.8rem;
+  bottom:5.2rem;
+  background:linear-gradient(135deg,#f97316,#ea580c);
+  color:#111;
+  box-shadow:0 8px 26px rgba(249,115,22,0.7);
+}
 
-            <!-- LOGEMENT 6 -->
-            <article class="loc-card">
-                <div class="loc-head">
-                    <div>
-                        <div class="loc-title">Maison familiale</div>
-                        <div class="loc-type">Maison • Rufisque • 8 pers.</div>
-                    </div>
-                    <div class="loc-price">
-                        55 000 XOF <span>/ nuit</span>
-                    </div>
-                </div>
-                <div class="loc-photo">
-                    <img src="https://images.unsplash.com/photo-1520256862855-398228c41684?auto=format&fit=crop&w=800&q=80"
-                         alt="Maison familiale spacieuse à Rufisque">
-                </div>
-                <p class="loc-desc">
-                    Grande maison familiale avec cour intérieure, 4 chambres, cuisine spacieuse.
-                    Idéale pour séjours en groupe ou en famille.
-                </p>
-                <div class="loc-meta">
-                    <span>Remise pour longs séjours</span>
-                    <div class="loc-badge">0% Com DIGIY</div>
-                </div>
-                <div class="loc-actions">
-                    <a class="btn btn-primary"
-                       href="#"
-                       target="_blank" rel="noopener">
-                        📄 Voir la fiche complète
-                    </a>
-                    <button class="btn btn-wa" type="button"
-                            onclick="openWa('+221775559900','Bonjour, je suis intéressé par la Maison familiale (DIGIY LOC).');">
-                        💬 WhatsApp
-                    </button>
-                </div>
-            </article>
+.tarif-badge-icon{
+  background:#111;
+  padding:0.45rem;
+  border-radius:999px;
+  font-size:0.65rem; /* plus petit */
+}
 
-        </section>
-    </main>
+/* DIGIY CHAT PRO */
+.chat-bubble{
+  left:50%;
+  bottom:1.2rem;
+  transform:translateX(-50%);
+  background:radial-gradient(circle at 20% 0,#fef3c7,#f97316);
+  color:#111;
+  box-shadow:0 10px 32px rgba(249,115,22,0.8);
+}
 
-    <footer>
-        <div>DIGIY LOC • <span>Super App DIGIYLYFE</span> — Sénégal → Afrique</div>
-        <div>Logements indépendants • Paiement direct au propriétaire • 0% commission.</div>
-    </footer>
-</div>
+.chat-badge-icon{
+  background:#111;
+  padding:0.45rem;
+  border-radius:999px;
+  font-size:0.85rem; /* réduit */
+}
 
-<script>
-    function openWa(phone, message){
-        const txt = encodeURIComponent(message || "");
-        const clean = phone.replace(/\s+/g,"");
-        window.open(
-            "https://wa.me/" + clean.replace("+","") + (txt ? ("?text=" + txt) : ""),
-            "_blank"
-        );
-    }
-</script>
-</body>
-</html>
+/* SOS */
+.sos-bubble{
+  left:0.8rem;
+  bottom:1.2rem;
+  background:linear-gradient(135deg,#ef4444,#b91c1c);
+  color:#ffe;
+  box-shadow:0 10px 32px rgba(239,68,68,0.8);
+}
+
+.sos-badge-icon{
+  background:#111;
+  padding:0.45rem;
+  border-radius:999px;
+  font-size:0.75rem;
+}
+
+/* MOBILE */
+@media(max-width:600px){
+  .modules-grid{
+    grid-template-columns:1fr;
+  }
+  .brand-text-title{font-size:1.3rem;}
+  .brand-logo{
+    width:42px;height:42px;font-size:1.4rem;
+  }
+}
+
+/* --------------------------------------------------
+   DIGIY HUB — STYLE VERT SÉNÉGAL PREMIUM
+   -------------------------------------------------- */
+
+:root{
+  --bg-dark:#022c22;       /* Vert profond */
+  --bg-soft:#064e3b;       /* Vert naturel */
+  --card:#0f172a;          /* Noir bleuté pour contraste */
+  --card-soft:#052e16;     /* Vert sombre */
+  --accent:#facc15;        /* OR DIGIY */
+  --accent-strong:#eab308; /* OR intense */
+  --accent-soft:rgba(250,204,21,0.15);
+  --success:#10b981;       /* Vert clair lumineux */
+  --muted:#d1fae5;         /* Vert pâle */
+  --ink:#f9fafb;           /* Blanc doux */
+  --ink-soft:#e5e7eb;
+  --border:rgba(255,255,255,0.16);
+}
+
+/* GLOBAL */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Manrope',sans-serif;
+}
+
+body{
+  background:
+    radial-gradient(circle at top,rgba(16,185,129,0.14),transparent 60%),
+    radial-gradient(circle at bottom,rgba(250,204,21,0.10),transparent 55%),
+    var(--bg-dark);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+}
+
+/* CONTAINER */
+.app{
+  max-width:1400px;
+  margin:auto;
+  padding:1.4rem;
+}
+
+/* HEADER */
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:linear-gradient(135deg,#022c22,#064e3b);
+  border:1px solid var(--border);
+  padding:1rem 1.4rem;
+  border-radius:22px;
+  box-shadow:0 12px 40px rgba(0,0,0,0.45);
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:1rem;
+  text-decoration:none;
+}
+
+.brand-logo{
+  width:54px;
+  height:54px;
+  border-radius:16px;
+  background:radial-gradient(circle at 30% 20%,var(--success),#064e3b);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:2rem;
+  font-weight:900;
+  color:#020617;
+  box-shadow:0 10px 32px rgba(16,185,129,0.55);
+}
+
+.brand-text-title{
+  font-family:'Outfit',sans-serif;
+  font-size:1.7rem;
+  font-weight:900;
+  background:linear-gradient(135deg,var(--success),var(--accent));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.brand-text-sub{
+  font-size:0.75rem;
+  color:var(--muted);
+  letter-spacing:0.12em;
+}
+
+/* MODULES */
+.modules-section{
+  background:rgba(4,60,42,0.85);
+  border:1px solid var(--border);
+  padding:1.6rem;
+  border-radius:24px;
+  box-shadow:0 12px 40px rgba(0,0,0,0.45);
+  margin-top:2rem;
+}
+
+.modules-title{
+  font-family:'Outfit';
+  font-size:1.8rem;
+  font-weight:900;
+  color:var(--accent);
+}
+
+.modules-subtitle{
+  color:var(--ink-soft);
+  font-size:1rem;
+  margin-bottom:1.4rem;
+}
+
+.modules-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+  gap:1.1rem;
+}
+
+.module{
+  background:radial-gradient(circle at top left,rgba(16,185,129,0.15),rgba(5,46,22,0.95));
+  border:1px solid rgba(255,255,255,0.12);
+  padding:1.3rem;
+  border-radius:20px;
+  cursor:pointer;
+  transition:0.2s ease;
+}
+
+.module:hover{
+  border-color:var(--accent);
+  transform:translateY(-5px);
+  box-shadow:0 14px 32px rgba(0,0,0,0.55);
+}
+
+.module-icon{
+  font-size:1.9rem;
+  background:#064e3b;
+  width:50px;
+  height:50px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,0.08);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.module-name{
+  font-family:'Outfit';
+  font-size:1.15rem;
+  font-weight:900;
+}
+
+.module-tagline{
+  font-size:0.78rem;
+  color:var(--muted);
+  letter-spacing:0.1em;
+}
+
+.module-badge{
+  font-size:0.7rem;
+  padding:0.32rem 0.8rem;
+  border-radius:999px;
+  background:rgba(250,204,21,0.15);
+  border:1px solid var(--accent);
+  color:var(--accent);“Envoie index.html en Vert Sénégal frérot}
+
+.module-body{
+  color:var(--ink-soft);
+  font-size:0.88rem;
+  margin-top:0.6rem;
+  line-height:1.5;
+}
+
+/* BULLES flotantes (réduites) */
+.tarif-bubble,
+.chat-bubble,
+.sos-bubble{
+  position:fixed;
+  z-index:100;
+  border-radius:999px;
+  padding:0.52rem 0.85rem;
+  font-size:0.75rem;
+  font-weight:900;
+  text-decoration:none;
+  display:flex;
+  align-items:center;
+  gap:0.45rem;
+}
+
+/* TARIFS */
+.tarif-bubble{
+  right:0.9rem;
+  bottom:5.1rem;
+  background:linear-gradient(135deg,#065f46,#22c55e);
+  color:#020617;
+  box-shadow:0 10px 28px rgba(16,185,129,0.6);
+}
+
+.tarif-badge-icon{
+  background:#022c22;
+  padding:0.45rem;
+  border-radius:999px;
+  color:var(--accent);
+}
+
+/* CHAT PRO */
+.chat-bubble{
+  left:50%;
+  bottom:1.2rem;
+  transform:translateX(-50%);
+  background:linear-gradient(135deg,#bbf7d0,#4ade80);
+  color:#064e3b;
+  box-shadow:0 14px 32px rgba(16,185,129,0.55);
+}
+
+/* SOS */
+.sos-bubble{
+  left:0.9rem;
+  bottom:1.2rem;
+  background:linear-gradient(135deg,#ef4444,#991b1b);
+  color:#ffe4e6;
+  box-shadow:0 14px 32px rgba(190,18,60,0.65);
+}
+
+/* MOBILE */
+@media(max-width:600px){
+  .modules-grid{
+    grid-template-columns:1fr;
+  }
+  .brand-logo{
+    width:44px;height:44px;font-size:1.4rem;
+  }
+  .brand-text-title{font-size:1.4rem;}
+}
