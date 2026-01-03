@@ -1,0 +1,28 @@
+name: Deploy LOC to VPS
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+            set -e
+            sudo mkdir -p /var/www/digiy-loc
+            sudo rsync -av --delete --exclude ".git" --exclude ".github" ${{ github.workspace }}/ /var/www/digiy-loc/
+            sudo chown -R www-data:www-data /var/www/digiy-loc
+            sudo nginx -t
+            sudo systemctl reload nginx
+            echo "{\"module\":\"loc\",\"status\":\"deployed\",\"time\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"commit\":\"${GITHUB_SHA}\"}" | sudo tee /var/www/digiy-loc/deploy.json >/dev/null
