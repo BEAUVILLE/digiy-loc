@@ -585,7 +585,8 @@
       kind: "Location • Direct propriétaire",
       whatsapp: "+221778765785",
       cover: "https://digiylyfe.com/wp-content/uploads/2025/06/042-BAPTISTE.png",
-      desc: "Logement partenaire NDIMBAL : nuits offertes en semaine pour prolonger le séjour."
+      desc: "Logement partenaire NDIMBAL : nuits offertes en semaine pour prolonger le séjour.",
+      public_url: "https://digiylyfe.com/partenaires-chez-baptiste/"
     };
 
     /* =========================
@@ -695,9 +696,18 @@
       );
     }
 
+    // ✅ PIN = réservé à PRO (on garde la fonction pour plus tard si besoin)
     function pinLink(slug){
       if (!slug) return "https://beauville.github.io/digiy-loc-pro/";
       return "https://beauville.github.io/digiy-loc-pro/go-pin.html?slug=" + encodeURIComponent(slug);
+    }
+
+    // ✅ FICHE PUBLIC (WordPress si dispo, sinon fallback)
+    function ficheLinkFor(p){
+      if (p && p.public_url) return String(p.public_url);
+      const slug = String(p?.slug || "");
+      // fallback: mets ici ta future fiche GitHub si tu en as une
+      return "https://beauville.github.io/digiy-loc/fiche.html?slug=" + encodeURIComponent(slug);
     }
 
     function payLinkFor(pin){
@@ -725,7 +735,6 @@
       ndOverlay.setAttribute("aria-hidden","true");
     }
 
-    // expose global (safe)
     window.openNdimbal = openNdimbal;
     window.closeNdimbal = closeNdimbal;
 
@@ -765,7 +774,7 @@
       await logReservationIntent(pin);
       openWa(wa, msg);
     }
-    window.reserveNow = reserveNow; // pour inline onclick
+    window.reserveNow = reserveNow;
 
     async function fetchOccupancyToday(){
       const { data, error } = await sb
@@ -832,8 +841,11 @@
         address_label: city,
         cover: cover,
         kind: kind,
-        desc: p.desc || ""
+        desc: p.desc || "",
+        public_url: p.public_url || ""
       };
+
+      const ficheUrl = ficheLinkFor(p);
 
       return `
         <article class="card">
@@ -865,7 +877,9 @@
           </div>
 
           <div class="actions">
-            <a class="btn btn-primary" href="${pinLink(slug)}" target="_blank" rel="noopener noreferrer">👀 Voir le PIN</a>
+            <!-- ✅ PUBLIC: FICHE (pas PIN) -->
+            <a class="btn btn-primary" href="${escapeAttr(ficheUrl)}" target="_blank" rel="noopener noreferrer">👁️ Voir la fiche</a>
+
             <button class="btn btn-wa" type="button"
               onclick='reserveNow(${JSON.stringify(safePinObj).replace(/</g,"\\u003c")})'>📲 Réserver (WhatsApp)</button>
           </div>
@@ -965,11 +979,9 @@
       if (e.key === "Enter") render();
     });
 
-    // Bonus: si tu changes le type, ça relance direct (fluide terrain)
     document.getElementById("kind").addEventListener("change", render);
 
     render();
   </script>
 </body>
 </html>
-
