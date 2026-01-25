@@ -468,7 +468,6 @@
     const TEAM_WA = "+221771342889";
     const NDIMBAL_NAME_UP = "CHEZ ASTOU SALY";
     const NDIMBAL_RULE = "2 nuits payées = 3e offerte (Lun-Jeu)";
-
     const FALLBACK_IMG = "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80";
 
     /* =========================
@@ -483,7 +482,6 @@
     const errEl = document.getElementById("errEl");
     const galleryEl = document.getElementById("gallery");
     const btnReserve = document.getElementById("btnReserve");
-    const btnBack2 = document.getElementById("btnBack2");
     const waEl = document.getElementById("waEl");
     const btnWa = document.getElementById("btnWa");
     const ndBox = document.getElementById("ndBox");
@@ -550,11 +548,11 @@
       return src ? src : FALLBACK_IMG;
     }
 
-    // Parse photos from multiple possible formats:
-    // - row.photos or row.gallery : array
-    // - JSON string: '["url1","url2"]'
-    // - CSV string: 'url1,url2'
-    // - single URL
+    // photos formats:
+    // - array
+    // - JSON string '["url1","url2"]'
+    // - CSV "url1,url2"
+    // - single url
     function parsePhotos(row){
       const raw =
         row?.photos ??
@@ -573,18 +571,15 @@
       const s = String(raw).trim();
       if (!s) return [];
 
-      // JSON array?
       if ((s.startsWith("[") && s.endsWith("]")) || (s.startsWith("{") && s.endsWith("}"))){
         try{
           const j = JSON.parse(s);
           if (Array.isArray(j)) return j.map(x => String(x || "").trim()).filter(Boolean);
-          // if object with "photos" or "gallery"
           if (j && Array.isArray(j.photos)) return j.photos.map(x=>String(x||"").trim()).filter(Boolean);
           if (j && Array.isArray(j.gallery)) return j.gallery.map(x=>String(x||"").trim()).filter(Boolean);
         }catch(e){}
       }
 
-      // CSV or single
       if (s.includes(",")){
         return s.split(",").map(x=>x.trim()).filter(Boolean);
       }
@@ -596,40 +591,20 @@
       subTitle.textContent = name ? ("Fiche — " + name) : "Fiche logement";
     }
 
-    function chip(html){
-      const span = document.createElement("span");
-      span.className = "chip blue";
-      span.innerHTML = html;
-      return span;
+    function showError(msg){
+      errEl.style.display = "block";
+      errEl.innerHTML = "❌ " + escapeHtml(msg || "Erreur inconnue");
     }
-
-    function renderGallery(photos, title){
-      const list = (photos || []).filter(Boolean);
-      galleryEl.innerHTML = "";
-
-      if (!list.length){
-        const d = document.createElement("div");
-        d.className = "warn";
-        d.style.margin = "10px 0 0";
-        d.textContent = "Pas encore de galerie pour ce logement. La cover est affichée.";
-        galleryEl.parentElement.insertBefore(d, galleryEl.nextSibling);
-        return;
-      }
-
-      list.forEach((url, idx)=>{
-        const item = document.createElement("div");
-        item.className = "gItem";
-        item.innerHTML = `
-          <img loading="lazy"
-               alt="${escapeAttr(title || "Photo")}"
-               src="${escapeAttr(url)}"
-               onerror="this.onerror=null;this.src='${escapeAttr(FALLBACK_IMG)}';">
-        `;
-        item.addEventListener("click", ()=> openLightbox(url, title, idx+1, list.length));
-        galleryEl.appendChild(item);
-      });
+    function showWarn(msg){
+      warnEl.style.display = "block";
+      warnEl.innerHTML = "⚠️ " + escapeHtml(msg || "");
     }
+    function hideError(){ errEl.style.display = "none"; errEl.innerHTML = ""; }
+    function hideWarn(){ warnEl.style.display = "none"; warnEl.innerHTML = ""; }
 
+    /* =========================
+       LIGHTBOX
+    ========================= */
     function openLightbox(url, title, n, total){
       lbTitle.textContent = (title || "Photo") + (total ? ` • ${n}/${total}` : "");
       lbImg.src = safeImg(url);
@@ -645,11 +620,31 @@
     lbOverlay.addEventListener("click", (e)=>{ if (e.target === lbOverlay) closeLightbox(); });
     document.addEventListener("keydown",(e)=>{ if (e.key === "Escape") closeLightbox(); });
 
+    function renderGallery(list, title){
+      const photos = Array.isArray(list) ? list.filter(Boolean) : [];
+      galleryEl.innerHTML = "";
+
+      const finalList = photos.length ? photos : [FALLBACK_IMG];
+
+      finalList.forEach((url, idx)=>{
+        const item = document.createElement("div");
+        item.className = "gItem";
+        const safe = safeImg(url);
+        item.innerHTML = `
+          <img loading="lazy"
+               alt="${escapeAttr(title || "Photo")}"
+               src="${escapeAttr(safe)}"
+               onerror="this.onerror=null;this.src='${escapeAttr(FALLBACK_IMG)}';">
+        `;
+        item.addEventListener("click", ()=> openLightbox(safe, title, idx+1, finalList.length));
+        galleryEl.appendChild(item);
+      });
+    }
+
     /* =========================
        FETCH PIN BY SLUG (PUBLIC)
     ========================= */
     async function fetchPinBySlug(slug){
-      // 1) try exact slug (fast)
       const { data, error } = await sb
         .from("go_pins")
         .select("*")
@@ -663,23 +658,18 @@
       return { ok:true, row:data || null, error:null };
     }
 
-    function showError(msg){
-      errEl.style.display = "block";
-      errEl.innerHTML = "❌ " + escapeHtml(msg || "Erreur inconnue");
-    }
-    function showWarn(msg){
-      warnEl.style.display = "block";
-      warnEl.innerHTML = "⚠️ " + escapeHtml(msg || "");
-    }
-
     function renderNotFound(slug){
-      titleEl.textContent = "Logement introuvable";
       setMetaTitle("Introuvable");
+      titleEl.textContent = "Logement introuvable";
       descEl.textContent = "Ce lien n’existe pas (ou le logement n’est plus public). Retourne à la galerie.";
       coverImg.src = FALLBACK_IMG;
+      coverImg.onerror = () => { coverImg.onerror=null; coverImg.src = FALLBACK_IMG; };
+
       subEl.innerHTML = "";
+      renderGallery([], "Photo");
       showWarn("Slug demandé : " + (slug || "—") + " • Vérifie le lien depuis la galerie.");
-      galleryEl.innerHTML = "";
+      hideError();
+
       waEl.textContent = TEAM_WA;
       btnReserve.onclick = ()=> openWa(TEAM_WA, "Bonjour DIGIY 👋 Je cherche un logement mais le lien ne marche pas. Slug: " + (slug||"—"));
       btnWa.onclick = ()=> openWa(TEAM_WA, "Bonjour DIGIY 👋 Je veux un logement. Zone + budget + dates :");
@@ -695,7 +685,6 @@
         return;
       }
 
-      // Fetch
       const res = await fetchPinBySlug(slug);
       if (!res.ok){
         renderNotFound(slug);
@@ -722,78 +711,76 @@
         "Contact direct propriétaire. Paiement direct (Wave/espèces selon le logement). 0% commission.";
 
       const photos = parsePhotos(row);
-      const allPhotos = [cover, ...photos].filter(Boolean);
+      const allPhotos = [cover, ...photos].map(safeImg).filter(Boolean);
 
       // Meta
       setMetaTitle(title);
 
-     // UI
-  titleEl.textContent = title || "Logement";
-  descEl.textContent  = desc  || "";
+      // UI text
+      titleEl.textContent = title;
+      descEl.textContent = desc;
 
-  // ✅ COVER SAFE (évite cover vide qui ne déclenche pas onerror)
-  const safeCover = (typeof cover === "string" ? cover.trim() : "");
-  coverImg.loading = "eager";
-  coverImg.src = safeCover || FALLBACK;
+      // Chips
+      subEl.innerHTML = "";
+      const c1 = document.createElement("span");
+      c1.className = "chip blue";
+      c1.textContent = kind;
+      const c2 = document.createElement("span");
+      c2.className = "chip";
+      c2.textContent = city;
+      const c3 = document.createElement("span");
+      c3.className = "chip green";
+      c3.textContent = "0% commission";
+      subEl.appendChild(c1);
+      subEl.appendChild(c2);
+      subEl.appendChild(c3);
 
-  coverImg.onerror = () => {
-    coverImg.onerror = null;
-    coverImg.src = FALLBACK;
-  };
+      // NDIMBAL
+      const nd = isNdimbal(row);
+      ndBox.style.display = nd ? "" : "none";
 
-  // ✅ image “chargée mais vide”
-  coverImg.addEventListener("load", () => {
-    if (!coverImg.naturalWidth || !coverImg.naturalHeight) {
-      coverImg.src = FALLBACK;
+      // WhatsApp UI
+      waEl.textContent = wa || TEAM_WA;
+
+      // ✅ COVER SAFE
+      const safeCover = (typeof cover === "string" ? cover.trim() : "");
+      coverImg.loading = "eager";
+      coverImg.src = safeCover || FALLBACK_IMG;
+
+      coverImg.onerror = () => {
+        coverImg.onerror = null;
+        coverImg.src = FALLBACK_IMG;
+      };
+
+      coverImg.addEventListener("load", () => {
+        if (!coverImg.naturalWidth || !coverImg.naturalHeight) {
+          coverImg.src = FALLBACK_IMG;
+        }
+      }, { once:true });
+
+      // Gallery + Lightbox
+      renderGallery(allPhotos, title);
+
+      // Buttons
+      btnReserve.onclick = () => {
+        const ndLine = nd ? `\n\n🌙 NDIMBAL : ${NDIMBAL_RULE}\nJe veux en profiter si dispo (Lun-Jeu).` : "";
+        openWa(wa || TEAM_WA, `Bonjour, je souhaite réserver / avoir des infos pour "${title}" via DIGIY LOC.${ndLine}`);
+      };
+
+      btnWa.onclick = () => {
+        openWa(wa || TEAM_WA, `Bonjour 👋 Je veux des infos pour "${title}" (dates + budget).`);
+      };
+
+      hideWarn();
+      hideError();
     }
-  }, { once: true });
 
-  // ====== GALERIE
-  // photos: tableau d’URLs (ex: ["https://...1.jpg","https://...2.jpg"])
-  const cleanPhotos = Array.isArray(photos)
-    ? photos.map(x => (typeof x === "string" ? x.trim() : "")).filter(Boolean)
-    : [];
-
-  // si pas de photos, on met au moins la cover
-  const galleryList = cleanPhotos.length ? cleanPhotos : [coverImg.src];
-
-  function mkThumb(url){
-    const img = document.createElement("img");
-    img.loading = "lazy";
-    img.alt = title || "Photo";
-    img.src = url || FALLBACK;
-    img.onerror = () => {
-      img.onerror = null;
-      img.src = FALLBACK;
-    };
-    img.addEventListener("click", () => {
-      coverImg.src = img.src;
+    // Boot
+    main().catch((e)=>{
+      console.error(e);
+      renderNotFound(getSlug());
+      showError("Erreur inattendue: " + (e?.message || e));
     });
-    return img;
-  }
-
-  if (galleryEl){
-    galleryEl.innerHTML = "";
-    galleryList.forEach(u => galleryEl.appendChild(mkThumb(u)));
-  }
-
-  // ====== ACTIONS (si tu as les boutons)
-  // Exemple: bouton WhatsApp + bouton retour
-  const btnBack = document.getElementById("btnBack");
-  if (btnBack){
-    btnBack.addEventListener("click", () => history.back());
-  }
-
-  const btnWa = document.getElementById("btnWa");
-  if (btnWa){
-    btnWa.addEventListener("click", () => {
-      const digits = String(whatsapp || "").replace(/\D/g, "");
-      const msg = encodeURIComponent(`Bonjour, je veux des infos pour "${title}" via DIGIY LOC.`);
-      const url = digits ? `https://wa.me/${digits}?text=${msg}` : `https://wa.me/221771342889?text=${msg}`;
-      window.open(url, "_blank", "noopener,noreferrer");
-    });
-  }
-</script>
-
+  </script>
 </body>
 </html>
