@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>DIGIY LOC — Fiche logement</title>
+  <meta name="theme-color" content="#020617" />
+  <meta name="description" content="DIGIY LOC — Fiche logement. Direct propriétaire, 0% commission." />
+
+  <style>
+    :root{
+      --bg:#020617;
+      --bg-soft:#020818;
+      --card:#030712;
+      --accent:#facc15;
+      --accent-soft:#f97316;
+      --accent-green:#22c55e;
+      --ink:#f9fafb;
+      --muted:#cbd5f5;
+      --line:rgba(148,163,184,0.22);
+      --shadow-soft:0 20px 45px rgba(15,23,42,0.9);
+      --glass:rgba(2,6,23,.68);
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif}
+    body{
+      min-height:100vh;
+      background:
+        radial-gradient(circle at top,rgba(250,204,21,0.16),transparent 60%),
+        radial-gradient(circle at bottom,rgba(34,197,94,0.16),transparent 55%),
+        var(--bg);
+      color:var(--ink);
+      display:flex;
+      justify-content:center;
+      padding:10px;
+      font-size:16px;
+    }
+
+    .app{
+      width:100%;
+      max-width:1100px;
+      min-height:100vh;
+      background:linear-gradient(135deg,#020617 0%,#020818 50%,#020617 100%);
+      border-radius:24px;
+      border:1px solid rgba(148,163,184,0.25);
+      box-shadow:var(--shadow-soft);
+      padding:16px 16px 22px;
+      display:flex;
+      flex-direction:column;
+      position:relative;
+      overflow:hidden;
+    }
+    .app::before{
+      content:"";
+      position:absolute;
+      inset:-40%;
+      background:
+        radial-gradient(circle at 0% 0%,rgba(250,204,21,0.14),transparent 55%),
+        radial-gradient(circle at 100% 100%,rgba(34,197,94,0.14),transparent 45%);
+      opacity:0.8;
+      pointer-events:none;
+    }
+
+    header{
+      position:relative;
+      z-index:2;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      margin-bottom:12px;
+    }
+    .brand{display:flex;align-items:center;gap:10px}
+    .brand-logo{
+      width:42px;height:42px;border-radius:14px;
+      background:radial-gradient(circle at 30% 0%,#facc15,#f97316);
+      display:flex;align-items:center;justify-content:center;
+      font-size:24px;
+      box-shadow:0 12px 30px rgba(234,179,8,0.65);
+    }
+    .brand-text-title{
+      font-size:20px;font-weight:900;letter-spacing:0.09em;
+      text-transform:uppercase;color:var(--accent-green);
+    }
+    .brand-text-sub{font-size:14px;color:var(--muted);font-weight:650}
+
+    .back-link{
+      font-size:13px;color:var(--muted);text-decoration:none;
+      background:rgba(15,23,42,0.9);
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.6);
+      padding:8px 14px;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      font-weight:800;
+      white-space:nowrap;
+    }
+    .back-link:hover{border-color:var(--accent);color:var(--accent)}
+
+    .shell{
+      position:relative; z-index:2;
+      display:grid;
+      grid-template-columns: 1.25fr .75fr;
+      gap:16px;
+      margin-top:10px;
+    }
+    @media(max-width:980px){ .shell{grid-template-columns:1fr} }
+
+    .panel{
+      background:radial-gradient(circle at top,rgba(15,23,42,0.98),#020617);
+      border-radius:24px;
+      border:1px solid rgba(30,64,175,0.7);
+      box-shadow:0 14px 34px rgba(15,23,42,0.95);
+      overflow:hidden;
+      position:relative;
+    }
+
+    .cover{
+      width:100%;
+      height:360px;
+      background:#0b1220;
+      border-bottom:1px solid rgba(148,163,184,0.18);
+      position:relative;
+    }
+    @media(max-width:640px){ .cover{height:280px} }
+    .cover img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+    .coverFade{
+      position:absolute; inset:0;
+      background:
+        linear-gradient(180deg, rgba(2,6,23,.08) 0%, rgba(2,6,23,.75) 88%, rgba(2,6,23,.95) 100%);
+      pointer-events:none;
+    }
+    .coverTop{
+      position:absolute; left:14px; right:14px; bottom:12px;
+      display:flex; flex-direction:column; gap:8px;
+    }
+    .title{
+      font-size:28px; font-weight:950; line-height:1.1;
+      color:var(--accent);
+      text-shadow:0 10px 20px rgba(0,0,0,.35);
+    }
+    .sub{
+      font-size:15px; color:#e5e7eb; font-weight:750; opacity:.95;
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+    }
+    .chip{
+      width:max-content;
+      padding:6px 10px;
+      font-size:12px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.35);
+      background:rgba(2,6,23,.55);
+      color:#e5e7eb;
+      font-weight:900;
+      white-space:nowrap;
+    }
+    .chip.green{border-color:rgba(34,197,94,.55); color:#bbf7d0; background:rgba(34,197,94,.10)}
+    .chip.gold{border-color:rgba(250,204,21,.55); color:#fde68a; background:rgba(250,204,21,.10)}
+    .chip.blue{border-color:rgba(30,64,175,.60); color:#c7d2fe; background:rgba(30,64,175,.12)}
+
+    .body{
+      padding:14px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .desc{
+      font-size:15px;
+      line-height:1.7;
+      color:#f3f4f6;
+      font-weight:650;
+    }
+
+    .galleryWrap{
+      padding:12px 14px 16px;
+      border-top:1px solid rgba(148,163,184,0.15);
+      background:rgba(2,6,23,.18);
+    }
+    .galleryTitle{
+      font-size:13px;
+      font-weight:950;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:#bbf7d0;
+      margin-bottom:10px;
+    }
+    .gallery{
+      display:flex;
+      gap:10px;
+      overflow:auto;
+      padding-bottom:6px;
+      scroll-snap-type:x mandatory;
+      -webkit-overflow-scrolling:touch;
+    }
+    .gItem{
+      flex:0 0 auto;
+      width:220px;
+      height:150px;
+      border-radius:16px;
+      overflow:hidden;
+      border:1px solid rgba(30,64,175,0.6);
+      background:#0b1220;
+      scroll-snap-align:start;
+      position:relative;
+      cursor:pointer;
+    }
+    .gItem img{width:100%;height:100%;object-fit:cover;display:block}
+    .gHint{
+      font-size:12px;color:var(--muted);font-weight:800;margin-top:8px;opacity:.95
+    }
+
+    .side{
+      padding:14px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .box{
+      border:1px solid rgba(148,163,184,.18);
+      background:rgba(2,6,23,.55);
+      border-radius:18px;
+      padding:12px;
+    }
+    .kicker{
+      font-size:12px;font-weight:950;color:#bbf7d0;
+      letter-spacing:.08em;text-transform:uppercase;opacity:.95
+    }
+    .big{
+      margin-top:6px;font-size:18px;font-weight:950;line-height:1.2;color:#facc15
+    }
+    .txt{
+      margin-top:8px;font-size:14px;color:#e5e7eb;line-height:1.6;font-weight:650
+    }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .btn{
+      border:none;border-radius:999px;padding:10px 14px;
+      font-size:14px;font-weight:950;cursor:pointer;
+      display:flex;justify-content:center;align-items:center;
+      text-decoration:none;transition:transform .18s ease;
+      flex:1;min-height:44px;white-space:nowrap;
+      touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;
+    }
+    .btn:active{transform:scale(.99)}
+    .btn-primary{
+      background:linear-gradient(135deg,#facc15,#f97316);
+      color:#111;
+      box-shadow:0 7px 18px rgba(250,204,21,0.55);
+    }
+    .btn-wa{
+      background:rgba(22,163,74,0.2);
+      color:#bbf7d0;
+      border:1px solid rgba(34,197,94,0.85);
+    }
+    .btn-ghost{
+      background:rgba(15,23,42,0.75);
+      color:#e5e7eb;
+      border:1px solid rgba(148,163,184,0.28);
+      box-shadow:none;
+    }
+
+    .warn{
+      border:1px solid rgba(250,204,21,.35);
+      background:rgba(250,204,21,.08);
+      color:#fde68a;
+      border-radius:18px;
+      padding:12px;
+      font-weight:850;
+      line-height:1.55;
+    }
+    .err{
+      border:1px solid rgba(248,113,113,.35);
+      background:rgba(248,113,113,.08);
+      color:#fecaca;
+      border-radius:18px;
+      padding:12px;
+      font-weight:900;
+      line-height:1.55;
+    }
+
+    /* Lightbox */
+    .overlay{
+      position:fixed; inset:0;
+      background:rgba(0,0,0,.72);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:14px;
+      z-index:9999;
+    }
+    .overlay.show{display:flex}
+    .lightbox{
+      width:100%;
+      max-width:980px;
+      border-radius:22px;
+      border:1px solid rgba(148,163,184,.25);
+      background:rgba(2,6,23,.92);
+      box-shadow:0 30px 80px rgba(0,0,0,.55);
+      overflow:hidden;
+      position:relative;
+    }
+    .lbTop{
+      display:flex; justify-content:space-between; align-items:center;
+      gap:10px;
+      padding:12px 14px;
+      border-bottom:1px solid rgba(148,163,184,.18);
+    }
+    .lbTitle{font-weight:950;color:#e5e7eb;font-size:14px}
+    .lbClose{
+      background:rgba(15,23,42,.75);
+      border:1px solid rgba(148,163,184,.28);
+      color:#e5e7eb;
+      border-radius:999px;
+      padding:8px 12px;
+      font-weight:950;
+      cursor:pointer;
+      white-space:nowrap;
+    }
+    .lbImg{
+      width:100%;
+      max-height:74vh;
+      background:#0b1220;
+    }
+    .lbImg img{
+      width:100%;
+      height:100%;
+      max-height:74vh;
+      object-fit:contain;
+      display:block;
+    }
+
+    footer{
+      margin-top:18px;
+      font-size:12px;
+      color:var(--muted);
+      font-weight:750;
+      display:flex;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      gap:6px;
+      position:relative;
+      z-index:2;
+    }
+    footer span{color:var(--accent);font-weight:950}
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <div class="brand-logo">🏠</div>
+        <div>
+          <div class="brand-text-title">DIGIY LOC</div>
+          <div class="brand-text-sub" id="subTitle">Fiche logement</div>
+        </div>
+      </div>
+
+      <a class="back-link" id="backLink" href="./index.html">
+        <span>←</span> Retour galerie
+      </a>
+    </header>
+
+    <main class="shell">
+      <!-- MAIN -->
+      <section class="panel">
+        <div class="cover">
+          <img id="coverImg" alt="Photo du logement" src="" />
+          <div class="coverFade"></div>
+
+          <div class="coverTop">
+            <div class="title" id="titleEl">Chargement…</div>
+            <div class="sub" id="subEl"></div>
+          </div>
+        </div>
+
+        <div class="body">
+          <div class="desc" id="descEl">Patiente un instant…</div>
+          <div id="warnEl" class="warn" style="display:none"></div>
+          <div id="errEl" class="err" style="display:none"></div>
+
+          <div class="actions">
+            <button class="btn btn-wa" id="btnReserve" type="button">📲 Réserver (WhatsApp)</button>
+            <a class="btn btn-primary" id="btnBack2" href="./index.html">👁️ Retour galerie</a>
+          </div>
+        </div>
+
+        <div class="galleryWrap">
+          <div class="galleryTitle">Photos</div>
+          <div class="gallery" id="gallery"></div>
+          <div class="gHint">Astuce : clique une photo pour l’ouvrir en grand.</div>
+        </div>
+      </section>
+
+      <!-- SIDE -->
+      <aside class="panel">
+        <div class="side">
+          <div class="box">
+            <div class="kicker">Règle DIGIY</div>
+            <div class="big">0% commission</div>
+            <div class="txt">Paiement direct au propriétaire (Wave/espèces selon le logement). DIGIY ne touche pas l’argent.</div>
+          </div>
+
+          <div class="box" id="ndBox" style="display:none">
+            <div class="kicker">NDIMBAL</div>
+            <div class="big">2 nuits payées = 3ᵉ offerte</div>
+            <div class="txt">Valable du lundi au jeudi (selon disponibilité). Tu restes +1 nuit → le quartier gagne +1 jour.</div>
+          </div>
+
+          <div class="box">
+            <div class="kicker">Contact</div>
+            <div class="big" id="waEl">—</div>
+            <div class="txt">WhatsApp direct • Réponse rapide</div>
+            <div class="actions" style="margin-top:10px">
+              <button class="btn btn-wa" id="btnWa" type="button">📲 Écrire sur WhatsApp</button>
+              <a class="btn btn-ghost" href="https://wa.me/221771342889" target="_blank" rel="noopener noreferrer">👥 Équipe DIGIY</a>
+            </div>
+          </div>
+
+          <div class="box">
+            <div class="kicker">Sécurité</div>
+            <div class="txt">Cette page est publique (client). Le cockpit propriétaire est protégé par PIN côté PRO.</div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      <div>DIGIY LOC • <span>Super App DIGIYLYFE</span> — Sénégal → Afrique</div>
+      <div>Direct propriétaire • Paiement direct • Galerie évolutive</div>
+    </footer>
+  </div>
+
+  <!-- LIGHTBOX -->
+  <div class="overlay" id="lbOverlay" aria-hidden="true">
+    <div class="lightbox" role="dialog" aria-modal="true" aria-label="Photo">
+      <div class="lbTop">
+        <div class="lbTitle" id="lbTitle">Photo</div>
+        <button class="lbClose" type="button" id="lbClose">✕ Fermer</button>
+      </div>
+      <div class="lbImg"><img id="lbImg" alt="Photo" src=""></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    /* =========================
+       SUPABASE (DIGIY)
+    ========================= */
+    const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
+    const SUPABASE_ANON_KEY =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    /* =========================
+       CONSTANTES TERRAIN
+    ========================= */
+    const TEAM_WA = "+221771342889";
+    const NDIMBAL_NAME_UP = "CHEZ ASTOU SALY";
+    const NDIMBAL_RULE = "2 nuits payées = 3e offerte (Lun-Jeu)";
+
+    const FALLBACK_IMG = "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80";
+
+    /* =========================
+       DOM
+    ========================= */
+    const coverImg = document.getElementById("coverImg");
+    const titleEl = document.getElementById("titleEl");
+    const subEl = document.getElementById("subEl");
+    const subTitle = document.getElementById("subTitle");
+    const descEl = document.getElementById("descEl");
+    const warnEl = document.getElementById("warnEl");
+    const errEl = document.getElementById("errEl");
+    const galleryEl = document.getElementById("gallery");
+    const btnReserve = document.getElementById("btnReserve");
+    const btnBack2 = document.getElementById("btnBack2");
+    const waEl = document.getElementById("waEl");
+    const btnWa = document.getElementById("btnWa");
+    const ndBox = document.getElementById("ndBox");
+
+    const lbOverlay = document.getElementById("lbOverlay");
+    const lbClose = document.getElementById("lbClose");
+    const lbImg = document.getElementById("lbImg");
+    const lbTitle = document.getElementById("lbTitle");
+
+    /* =========================
+       HELPERS
+    ========================= */
+    function norm(s){ return String(s || "").trim().toLowerCase(); }
+    function up(s){ return String(s || "").toUpperCase().trim(); }
+
+    function escapeHtml(str){
+      return String(str ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+    function escapeAttr(str){ return escapeHtml(str).replaceAll("`","&#096;"); }
+
+    function getSlug(){
+      const u = new URL(location.href);
+      return String(u.searchParams.get("slug") || "").trim();
+    }
+
+    function pickWhatsApp(row){
+      const slug = String(row?.slug || "").toLowerCase();
+      const title = up(row?.title || "");
+      if (slug === "chez-astou-saly" || title.includes("CHEZ ASTOU SALY")) return "+221778765785";
+      const wa = row?.whatsapp || row?.phone || "";
+      const digits = String(wa).replace(/\D/g,"");
+      if (digits.length >= 9) return wa;
+      return TEAM_WA;
+    }
+
+    function openWa(phone, message){
+      const txt = encodeURIComponent(message || "");
+      const digits = String(phone || "").replace(/\D/g, "");
+      if (!digits) return;
+      const url = "https://wa.me/" + digits + (txt ? "?text=" + txt : "");
+      window.open(url, "_blank", "noopener,noreferrer");
+    }
+
+    function isNdimbal(row){
+      return up(row?.title || "") === NDIMBAL_NAME_UP;
+    }
+
+    function computeKind(row){
+      const t = norm(row?.title || "");
+      if (t.includes("villa")) return "Villa • Direct propriétaire";
+      if (t.includes("studio")) return "Studio • Direct propriétaire";
+      if (t.includes("appart")) return "Appartement • Direct propriétaire";
+      if (t.includes("chambre")) return "Chambre • Direct propriétaire";
+      return "Location • Direct propriétaire";
+    }
+
+    function safeImg(img){
+      const src = String(img || "").trim();
+      return src ? src : FALLBACK_IMG;
+    }
+
+    // Parse photos from multiple possible formats:
+    // - row.photos or row.gallery : array
+    // - JSON string: '["url1","url2"]'
+    // - CSV string: 'url1,url2'
+    // - single URL
+    function parsePhotos(row){
+      const raw =
+        row?.photos ??
+        row?.gallery ??
+        row?.images ??
+        row?.imgs ??
+        row?.photo_urls ??
+        null;
+
+      if (!raw) return [];
+
+      if (Array.isArray(raw)){
+        return raw.map(x => String(x || "").trim()).filter(Boolean);
+      }
+
+      const s = String(raw).trim();
+      if (!s) return [];
+
+      // JSON array?
+      if ((s.startsWith("[") && s.endsWith("]")) || (s.startsWith("{") && s.endsWith("}"))){
+        try{
+          const j = JSON.parse(s);
+          if (Array.isArray(j)) return j.map(x => String(x || "").trim()).filter(Boolean);
+          // if object with "photos" or "gallery"
+          if (j && Array.isArray(j.photos)) return j.photos.map(x=>String(x||"").trim()).filter(Boolean);
+          if (j && Array.isArray(j.gallery)) return j.gallery.map(x=>String(x||"").trim()).filter(Boolean);
+        }catch(e){}
+      }
+
+      // CSV or single
+      if (s.includes(",")){
+        return s.split(",").map(x=>x.trim()).filter(Boolean);
+      }
+      return [s];
+    }
+
+    function setMetaTitle(name){
+      document.title = "DIGIY LOC — " + (name || "Fiche logement");
+      subTitle.textContent = name ? ("Fiche — " + name) : "Fiche logement";
+    }
+
+    function chip(html){
+      const span = document.createElement("span");
+      span.className = "chip blue";
+      span.innerHTML = html;
+      return span;
+    }
+
+    function renderGallery(photos, title){
+      const list = (photos || []).filter(Boolean);
+      galleryEl.innerHTML = "";
+
+      if (!list.length){
+        const d = document.createElement("div");
+        d.className = "warn";
+        d.style.margin = "10px 0 0";
+        d.textContent = "Pas encore de galerie pour ce logement. La cover est affichée.";
+        galleryEl.parentElement.insertBefore(d, galleryEl.nextSibling);
+        return;
+      }
+
+      list.forEach((url, idx)=>{
+        const item = document.createElement("div");
+        item.className = "gItem";
+        item.innerHTML = `
+          <img loading="lazy"
+               alt="${escapeAttr(title || "Photo")}"
+               src="${escapeAttr(url)}"
+               onerror="this.onerror=null;this.src='${escapeAttr(FALLBACK_IMG)}';">
+        `;
+        item.addEventListener("click", ()=> openLightbox(url, title, idx+1, list.length));
+        galleryEl.appendChild(item);
+      });
+    }
+
+    function openLightbox(url, title, n, total){
+      lbTitle.textContent = (title || "Photo") + (total ? ` • ${n}/${total}` : "");
+      lbImg.src = safeImg(url);
+      lbOverlay.classList.add("show");
+      lbOverlay.setAttribute("aria-hidden","false");
+    }
+    function closeLightbox(){
+      lbOverlay.classList.remove("show");
+      lbOverlay.setAttribute("aria-hidden","true");
+      lbImg.src = "";
+    }
+    lbClose.addEventListener("click", closeLightbox);
+    lbOverlay.addEventListener("click", (e)=>{ if (e.target === lbOverlay) closeLightbox(); });
+    document.addEventListener("keydown",(e)=>{ if (e.key === "Escape") closeLightbox(); });
+
+    /* =========================
+       FETCH PIN BY SLUG (PUBLIC)
+    ========================= */
+    async function fetchPinBySlug(slug){
+      // 1) try exact slug (fast)
+      const { data, error } = await sb
+        .from("go_pins")
+        .select("*")
+        .eq("category","loc")
+        .eq("is_public", true)
+        .eq("is_active", true)
+        .eq("slug", slug)
+        .maybeSingle();
+
+      if (error) return { ok:false, row:null, error: error.message };
+      return { ok:true, row:data || null, error:null };
+    }
+
+    function showError(msg){
+      errEl.style.display = "block";
+      errEl.innerHTML = "❌ " + escapeHtml(msg || "Erreur inconnue");
+    }
+    function showWarn(msg){
+      warnEl.style.display = "block";
+      warnEl.innerHTML = "⚠️ " + escapeHtml(msg || "");
+    }
+
+    function renderNotFound(slug){
+      titleEl.textContent = "Logement introuvable";
+      setMetaTitle("Introuvable");
+      descEl.textContent = "Ce lien n’existe pas (ou le logement n’est plus public). Retourne à la galerie.";
+      coverImg.src = FALLBACK_IMG;
+      subEl.innerHTML = "";
+      showWarn("Slug demandé : " + (slug || "—") + " • Vérifie le lien depuis la galerie.");
+      galleryEl.innerHTML = "";
+      waEl.textContent = TEAM_WA;
+      btnReserve.onclick = ()=> openWa(TEAM_WA, "Bonjour DIGIY 👋 Je cherche un logement mais le lien ne marche pas. Slug: " + (slug||"—"));
+      btnWa.onclick = ()=> openWa(TEAM_WA, "Bonjour DIGIY 👋 Je veux un logement. Zone + budget + dates :");
+      ndBox.style.display = "none";
+    }
+
+    async function main(){
+      const slug = getSlug();
+
+      if (!slug){
+        renderNotFound("");
+        showWarn("Aucun slug dans l’URL. Exemple : fiche.html?slug=chez-astou-saly");
+        return;
+      }
+
+      // Fetch
+      const res = await fetchPinBySlug(slug);
+      if (!res.ok){
+        renderNotFound(slug);
+        showError(res.error || "Erreur Supabase");
+        return;
+      }
+      if (!res.row){
+        renderNotFound(slug);
+        return;
+      }
+
+      const row = res.row;
+
+      // Data normalize
+      const title = row.title || "Logement";
+      const city = row.address_label || row.city || "Sénégal";
+      const kind = row.kind || computeKind(row);
+      const wa = pickWhatsApp(row);
+      const cover = safeImg(row.cover);
+
+      const desc =
+        row.desc ||
+        row.description ||
+        "Contact direct propriétaire. Paiement direct (Wave/espèces selon le logement). 0% commission.";
+
+      const photos = parsePhotos(row);
+      const allPhotos = [cover, ...photos].filter(Boolean);
+
+      // Meta
+      setMetaTitle(title);
+
+     // UI
+  titleEl.textContent = title || "Logement";
+  descEl.textContent  = desc  || "";
+
+  // ✅ COVER SAFE (évite cover vide qui ne déclenche pas onerror)
+  const safeCover = (typeof cover === "string" ? cover.trim() : "");
+  coverImg.loading = "eager";
+  coverImg.src = safeCover || FALLBACK;
+
+  coverImg.onerror = () => {
+    coverImg.onerror = null;
+    coverImg.src = FALLBACK;
+  };
+
+  // ✅ image “chargée mais vide”
+  coverImg.addEventListener("load", () => {
+    if (!coverImg.naturalWidth || !coverImg.naturalHeight) {
+      coverImg.src = FALLBACK;
+    }
+  }, { once: true });
+
+  // ====== GALERIE
+  // photos: tableau d’URLs (ex: ["https://...1.jpg","https://...2.jpg"])
+  const cleanPhotos = Array.isArray(photos)
+    ? photos.map(x => (typeof x === "string" ? x.trim() : "")).filter(Boolean)
+    : [];
+
+  // si pas de photos, on met au moins la cover
+  const galleryList = cleanPhotos.length ? cleanPhotos : [coverImg.src];
+
+  function mkThumb(url){
+    const img = document.createElement("img");
+    img.loading = "lazy";
+    img.alt = title || "Photo";
+    img.src = url || FALLBACK;
+    img.onerror = () => {
+      img.onerror = null;
+      img.src = FALLBACK;
+    };
+    img.addEventListener("click", () => {
+      coverImg.src = img.src;
+    });
+    return img;
+  }
+
+  if (galleryEl){
+    galleryEl.innerHTML = "";
+    galleryList.forEach(u => galleryEl.appendChild(mkThumb(u)));
+  }
+
+  // ====== ACTIONS (si tu as les boutons)
+  // Exemple: bouton WhatsApp + bouton retour
+  const btnBack = document.getElementById("btnBack");
+  if (btnBack){
+    btnBack.addEventListener("click", () => history.back());
+  }
+
+  const btnWa = document.getElementById("btnWa");
+  if (btnWa){
+    btnWa.addEventListener("click", () => {
+      const digits = String(whatsapp || "").replace(/\D/g, "");
+      const msg = encodeURIComponent(`Bonjour, je veux des infos pour "${title}" via DIGIY LOC.`);
+      const url = digits ? `https://wa.me/${digits}?text=${msg}` : `https://wa.me/221771342889?text=${msg}`;
+      window.open(url, "_blank", "noopener,noreferrer");
+    });
+  }
+</script>
+
+</body>
+</html>
