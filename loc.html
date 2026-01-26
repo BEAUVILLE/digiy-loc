@@ -55,7 +55,6 @@ h1{margin:10px 0 4px;font-size:1.6rem}
   background:var(--gold);
   color:#111827;
 }
-@media(max-width:720px){}
 
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .chip{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:4px 8px;color:var(--muted)}
@@ -72,7 +71,8 @@ input,select{
 .btn.primary{background:var(--green);color:#022c22}
 .btn.ghost{background:#020617;color:#fff;border:1px solid var(--line)}
 .note{
-  margin-top:10px;padding:10px;border-radius:12px;border:1px solid var(--line)
+  margin-top:10px;padding:10px;border-radius:12px;border:1px solid var(--line);
+  white-space:pre-line;
 }
 .note.ok{border-color:#22c55e;color:#bbf7d0}
 .note.bad{border-color:#ef4444;color:#fecaca}
@@ -95,6 +95,17 @@ input,select{
   display:flex;align-items:center;gap:10px;margin-top:8px
 }
 .switch input{width:auto}
+
+.inlineHint{
+  margin-top:10px;
+  padding:10px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  color:var(--muted);
+  font-weight:800;
+}
+.inlineHint.bad{border-color:rgba(239,68,68,.5); color:#fecaca}
+.inlineHint.ok{border-color:rgba(34,197,94,.5); color:#bbf7d0}
 </style>
 </head>
 
@@ -147,6 +158,8 @@ input,select{
 
     <label>Date de départ</label>
     <input type="date" id="dateOut">
+
+    <div id="datesHint" class="inlineHint">Choisis tes dates pour calculer l’acompte.</div>
 
     <label>Votre nom</label>
     <input id="clientName" placeholder="Votre nom">
@@ -207,25 +220,32 @@ const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 const SB=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
 /* =========================
-   HELPERS
+   QUERY PARAMS (slug-first)
 ========================= */
 const qs = new URLSearchParams(location.search);
-const listingId = qs.get("id");
+const listingSlug = (qs.get("slug") || "").trim();
+const listingId = (qs.get("id") || "").trim(); // fallback only
 
+/* =========================
+   HELPERS
+========================= */
 function note(msg,type){
   const n=document.getElementById("status");
   n.className="note "+(type||"");
   n.textContent=msg;
 }
+
 function money(x){ return (x||0).toLocaleString("fr-FR")+" FCFA"; }
-function nights(){
-  if(!dateIn.value||!dateOut.value) return 0;
-  const d=(new Date(dateOut.value)-new Date(dateIn.value))/86400000;
-  return d>0?Math.round(d):0;
-}
+
 function safeNum(v, fallback=0){
   const n = Number(v);
   return Number.isFinite(n) ? n : fallback;
+}
+
+function nights(){
+  if(!dateIn.value || !dateOut.value) return 0;
+  const d=(new Date(dateOut.value)-new Date(dateIn.value))/86400000;
+  return d>0 ? Math.round(d) : 0;
 }
 
 /* ✅ Normalise phone Senegal (+221...) : simple, sans prise de tête */
@@ -234,12 +254,15 @@ function normPhone(raw){
   if(!s) return "";
   let x = s.replace(/[^\d+]/g,"");
   if(x.startsWith("00")) x = "+" + x.slice(2);
-  // si l’utilisateur tape 77xxxxxxx (9 chiffres), on le met en +221
+
   const digits = x.replace(/[^\d]/g,"");
+
+  // si l’utilisateur tape 77xxxxxxx (9 chiffres), on le met en +221
   if(!x.startsWith("+") && digits.length === 9) return "+221" + digits;
+
   if(x.startsWith("+")) return x;
-  // fallback: on garde digits
-  return "+" + digits;
+
+  return digits ? ("+" + digits) : "";
 }
 
 /* ✅ convertit un lien Drive "file/d/ID/view" en lien "view" (à ouvrir) */
@@ -253,20 +276,51 @@ function driveOpenLink(url){
 }
 
 /* =========================
-   LOAD LOGEMENT
+   UI - Dates hints
+========================= */
+function setDatesHint(){
+  const h = document.getElementById("datesHint");
+  const n = nights();
+
+  if(!dateIn.value || !dateOut.value){
+    h.className = "inlineHint";
+    h.textContent = "Choisis tes dates pour calculer l’acompte.";
+    return;
+  }
+  if(n <= 0){
+    h.className = "inlineHint bad";
+    h.textContent = "Dates invalides : la date de départ doit être après la date d’arrivée.";
+    return;
+  }
+  h.className = "inlineHint ok";
+  h.textContent = `Séjour : ${n} nuit(s).`;
+}
+
+/* =========================
+   LOAD LOGEMENT (slug-first)
 ========================= */
 let logement=null;
 
 async function load(){
-  const { data, error } = await SB
-    .from("digiy_logements")
-    .select("*")
-    .eq("id", listingId)
-    .single();
+  if(!listingSlug && !listingId){
+    note("Fiche invalide : paramètre manquant (slug).","bad");
+    return;
+  }
+
+  let q = SB.from("digiy_logements").select("*");
+
+  // ✅ slug-first (public)
+  if(listingSlug){
+    q = q.eq("slug", listingSlug).single();
+  }else{
+    q = q.eq("id", listingId).single();
+  }
+
+  const { data, error } = await q;
 
   if(error || !data){
     console.error(error);
-    note("Logement introuvable","bad");
+    note("Logement introuvable (slug/id).","bad");
     return;
   }
 
@@ -297,6 +351,8 @@ async function load(){
     videoBox.style.display="none";
   }
 
+  // UI
+  setDatesHint();
   updateDeposit();
 
   // si phone déjà dans URL ou prérempli, on peut tenter de charger prefs
@@ -305,12 +361,22 @@ async function load(){
 
 function updateDeposit(){
   if(!logement) return;
+
+  const n = nights();
+  setDatesHint();
+
   const dp = safeNum(logement.deposit_percent, 0);
-  const amt = Math.round(nights() * logement.prix_nuit * (dp/100));
+
+  if(n <= 0 || !dp || !logement.prix_nuit){
+    depositAmount.textContent = "—";
+    return;
+  }
+
+  const amt = Math.round(n * logement.prix_nuit * (dp/100));
   depositAmount.textContent = amt ? money(amt) : "—";
 }
 
-[dateIn,dateOut].forEach(el=>el.addEventListener("change",updateDeposit));
+[dateIn,dateOut].forEach(el=>el.addEventListener("change", updateDeposit));
 
 /* =========================
    PREFS LANGUE + OPT-IN
@@ -326,8 +392,7 @@ async function savePrefs(){
     return { ok:false };
   }
 
-  // ⚠️ Table à ajuster si colonnes différentes :
-  // Ici: digiy_loc_contact_prefs(phone, lang, whatsapp_optin, updated_at)
+  // Table: digiy_loc_contact_prefs(phone UNIQUE, lang, whatsapp_optin, updated_at)
   const row = {
     phone,
     lang,
@@ -335,7 +400,6 @@ async function savePrefs(){
     updated_at: new Date().toISOString()
   };
 
-  // Upsert basé sur phone (si tu as un unique index sur phone c'est parfait)
   const { error } = await SB
     .from("digiy_loc_contact_prefs")
     .upsert([row], { onConflict: "phone" });
@@ -387,6 +451,12 @@ btnConfirm.onclick = async ()=>{
       return;
     }
 
+    const n = nights();
+    if(n <= 0){
+      note("Dates invalides : départ après arrivée.","bad");
+      return;
+    }
+
     // ✅ on enregistre prefs avant tout (lang + opt-in)
     const prefs = await savePrefs();
     if(!prefs.ok){
@@ -400,10 +470,10 @@ btnConfirm.onclick = async ()=>{
     }
 
     const dp = safeNum(logement.deposit_percent, 0);
-    const amt = Math.round(nights() * logement.prix_nuit * (dp/100));
+    const amt = Math.round(n * logement.prix_nuit * (dp/100));
 
     if(!amt){
-      note("Dates invalides","bad");
+      note("Acompte non calculable (vérifie prix / % / dates).","bad");
       return;
     }
 
@@ -412,8 +482,8 @@ btnConfirm.onclick = async ()=>{
       owner_id: logement.owner_id,
       client_name: (clientName.value || "Client").trim(),
       client_phone: prefs.phone,
-      client_lang: prefs.lang,            // ✅ utile côté back-office / future MCP
-      whatsapp_optin: prefs.optin,        // ✅ utile
+      client_lang: prefs.lang,
+      whatsapp_optin: prefs.optin,
       date_in: dateIn.value,
       date_out: dateOut.value,
       amount_expected: amt,
@@ -433,7 +503,7 @@ btnConfirm.onclick = async ()=>{
       return;
     }
 
-    note("Acompte déclaré ✅ Le propriétaire va confirmer.\nSi vous avez activé WhatsApp, vous recevrez les rappels.","ok");
+    note("Acompte déclaré ✅ Le propriétaire va confirmer.\nSi WhatsApp est activé, vous recevrez les rappels.","ok");
   }catch(e){
     console.error(e);
     note("Erreur technique (console)","bad");
