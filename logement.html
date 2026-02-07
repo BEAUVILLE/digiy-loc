@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>DIGIY LOC — Détail logement</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+/* ... ton style de listing.html (copie les variables CSS) ... */
+</style>
+</head>
+<body>
+<div id="app">Chargement...</div>
+
+<script>
+const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+(async function(){
+  const params = new URLSearchParams(location.search);
+  const id = params.get('id');
+  
+  if(!id){
+    document.getElementById('app').innerHTML = '❌ ID manquant';
+    return;
+  }
+
+  const { data, error } = await sb
+    .from('digiy_loc_rooms')
+    .select('*')
+    .eq('id', id)
+    .eq('status', 'actif')
+    .eq('is_public', true)
+    .single();
+
+  if(error || !data){
+    document.getElementById('app').innerHTML = '❌ Logement introuvable';
+    return;
+  }
+
+  // Affiche la fiche (adapte ton template HTML ici)
+  document.getElementById('app').innerHTML = `
+    <h1>${data.nom}</h1>
+    <img src="${data.photo_url}" alt="${data.nom}" style="max-width:100%">
+    <p>${data.description}</p>
+    <p><strong>Ville:</strong> ${data.adresse}</p>
+    <p><strong>Capacité:</strong> ${data.personnes_max} personnes</p>
+    <p><strong>Prix/nuit:</strong> ${data.prix_nuit} FCFA</p>
+    <a href="https://wa.me/${data.phone}">📲 Réserver via WhatsApp</a>
+  `;
+})();
+</script>
+</body>
+</html>
