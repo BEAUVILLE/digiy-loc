@@ -224,6 +224,30 @@
       position:relative;
       overflow:hidden;
     }
+
+    /* ✅ PINNED CARD (BAPTISTE) */
+    .card.pinned{
+      border-color:rgba(250,204,21,0.9);
+      box-shadow:0 16px 44px rgba(250,204,21,0.18);
+    }
+    .pinnedTop{
+      display:flex;align-items:center;justify-content:space-between;gap:8px;
+      padding:8px 10px;border-radius:14px;
+      background:rgba(250,204,21,0.10);
+      border:1px solid rgba(250,204,21,0.35);
+      margin-bottom:2px;
+    }
+    .pinnedTop .left{display:flex;align-items:center;gap:8px;font-weight:950}
+    .pinnedTop .pill{
+      font-size:12px;
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid rgba(250,204,21,0.55);
+      background:rgba(250,204,21,0.12);
+      color:#fde68a;
+      white-space:nowrap;
+    }
+
     .photo{
       height:220px;
       border-radius:16px;
@@ -231,6 +255,7 @@
       border:2px solid rgba(30,64,175,0.85);
       background:#0b1220;
     }
+    .card.pinned .photo{border-color:rgba(250,204,21,0.65)}
     .photo img{width:100%;height:100%;object-fit:cover;display:block}
 
     .name{font-size:22px;font-weight:950;color:var(--accent);line-height:1.1}
@@ -529,7 +554,6 @@
           <div class="kicker">COMMENT REPÉRER ?</div>
           <div class="txt">
             Dans la galerie, un logement NDIMBAL porte un badge <span class="hi">🌙 NDIMBAL</span>.
-            Exemple : <span class="hi">CHEZ ASTOU SALY</span>.
           </div>
           <div class="bul">
             <div>1) Tu choisis tes dates.</div>
@@ -546,7 +570,9 @@
     </div>
   </div>
 
+  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <script>
     /* =========================
        SUPABASE
@@ -554,7 +580,6 @@
     const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
     const SUPABASE_ANON_KEY =
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
-
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const grid = document.getElementById("grid");
 
@@ -564,33 +589,30 @@
     const TEAM_WA = "+221771342889";
 
     /* =========================
-       NDIMBAL (RÈGLE + LOGEMENT OFFICIEL)
+       NDIMBAL (RÈGLE)
     ========================= */
-    const NDIMBAL_NAME_UP = "CHEZ ASTOU SALY";
     const NDIMBAL_RULE = "2 nuits payées = 3e offerte (Lun-Jeu)";
 
     function norm(s){ return String(s || "").trim().toLowerCase(); }
 
-    function isNdimbal(row){
-      return String(row?.title || "").toUpperCase().trim() === NDIMBAL_NAME_UP;
-    }
-
     /* =========================
-       ASTOU — FORCÉ DANS LA GALERIE
+       ✅ BAPTISTE — ÉPINGLÉ + FICHE HOSTINGER
+       (c’est lui qu’on veut voir en vitrine)
     ========================= */
-    const ASTOU_PIN = {
-      title: "CHEZ ASTOU SALY",
-      slug: "chez-astou-saly",
+    const BAPTISTE_PIN = {
+      title: "CHEZ BAPTISTE",
+      slug: "chez-baptiste",
       address_label: "Saly",
-      kind: "Location • Direct propriétaire",
-      whatsapp: "+221778765785",
-      cover: "https://digiylyfe.com/wp-content/uploads/2025/06/042-BAPTISTE.png",
-      desc: "Logement partenaire NDIMBAL : nuits offertes en semaine pour prolonger le séjour.",
-      public_url: "https://digiylyfe.com/partenaires-chez-baptiste/"
+      kind: "Appartement • Direct propriétaire",
+      whatsapp: "+221778765785",  // ← change si tu veux
+      phone: "+221778765785",
+      cover: "https://orange-pig-270004.hostingersite.com/wp-content/uploads/2025/06/042-BAPTISTE.png",
+      desc: "Appartement partenaire à Saly. Réservation directe propriétaire via WhatsApp. Paiement direct. 0% commission DIGIY.",
+      public_url: "https://orange-pig-270004.hostingersite.com/partenaires-chez-baptiste/"
     };
 
     /* =========================
-       PLACEBOTS
+       PLACEBOTS (si base vide)
     ========================= */
     const PLACEBOTS = [
       { title:"Zone Dakar — ouverture progressive", slug:"zone-dakar-en-ouverture", address_label:"Dakar", kind:"Appartement • Studio", whatsapp:TEAM_WA,
@@ -608,19 +630,11 @@
       { title:"Thiès — ouverture en cours", slug:"zone-thies-a-venir", address_label:"Thiès", kind:"Studio • Appartement", whatsapp:TEAM_WA,
         cover:"https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1400&q=80",
         desc:"Thiès arrive. Envoie ta zone, on te répond vite."
-      },
-      { title:"Toubab Dialaw — week-end & chill", slug:"zone-toubab-dialaw-weekend", address_label:"Toubab Dialaw", kind:"Villa • Studio", whatsapp:TEAM_WA,
-        cover:"https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1400&q=80",
-        desc:"Week-end au calme ? On te trouve une option selon ton budget."
-      },
-      { title:"Saly — nouveaux logements en cours", slug:"zone-saly-en-ouverture", address_label:"Saly", kind:"Villa • Appartement • Studio", whatsapp:TEAM_WA,
-        cover:"https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1400&q=80",
-        desc:"Les nouveaux logements arrivent. Écris-nous pour être notifié dès qu’un logement est publié."
       }
     ];
 
     /* =========================
-       DISPONIBILITÉ — VIEW
+       DISPONIBILITÉ — VIEW (best-effort)
     ========================= */
     const OCCUPANCY_VIEW = "v_loc_pin_occupancy_today";
 
@@ -668,57 +682,28 @@
     }
 
     function pickWhatsApp(row){
-      const slug = String(row.slug || "").toLowerCase();
-      const title = String(row.title || "").toUpperCase();
-
-      if (slug === "chez-astou-saly" || title.includes("CHEZ ASTOU SALY")){
-        return "+221778765785";
-      }
-
       const wa = row.whatsapp || row.phone || "";
       const digits = String(wa).replace(/\D/g, "");
       if (digits.length >= 9) return wa;
-
       return TEAM_WA;
     }
 
     function pickCover(row){
-      const slug = String(row.slug || "").toLowerCase();
-      const title = String(row.title || "").toUpperCase();
-
-      if (slug === "chez-astou-saly" || title.includes("CHEZ ASTOU SALY")){
-        return "https://digiylyfe.com/wp-content/uploads/2025/06/042-BAPTISTE.png";
-      }
-
       return (
         row.cover ||
         "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80"
       );
     }
 
-    // ✅ PIN = réservé à PRO (on garde la fonction pour plus tard si besoin)
-    function pinLink(slug){
-      if (!slug) return "https://beauville.github.io/digiy-loc-pro/";
-      return "https://beauville.github.io/digiy-loc-pro/go-pin.html?slug=" + encodeURIComponent(slug);
-    }
-
-    // ✅ FICHE PUBLIC (WordPress si dispo, sinon fallback)
+    // ✅ FICHE PUBLIC
     function ficheLinkFor(p){
       if (p && p.public_url) return String(p.public_url);
       const slug = String(p?.slug || "");
-      // fallback: mets ici ta future fiche GitHub si tu en as une
       return "https://beauville.github.io/digiy-loc/fiche.html?slug=" + encodeURIComponent(slug);
     }
 
-    function payLinkFor(pin){
-      const slug = String(pin.slug || "").toLowerCase();
-      if (slug === "chez-astou-saly") return "https://pay.digiylyfe.com/?pro=CHEZASTOU";
-      return "";
-    }
-
     /* =========================
-       NDIMBAL OVERLAY CONTROL
-       (exposé global pour les boutons inline)
+       NDIMBAL OVERLAY
     ========================= */
     const ndOverlay = document.getElementById("ndOverlay");
     const ndClose = document.getElementById("ndClose");
@@ -766,129 +751,86 @@
     async function reserveNow(pin){
       const wa = pickWhatsApp(pin);
       const title = pin.title || "ce logement";
-      const nd = isNdimbal(pin);
-      const ndLine = nd
-        ? `\n\n🌙 NDIMBAL : ${NDIMBAL_RULE}\nJe veux en profiter si dispo (Lun-Jeu).`
-        : "";
-      const msg = `Bonjour, je souhaite réserver / avoir des infos pour "${title}" via DIGIY LOC.${ndLine}`;
+      const msg = `Bonjour, je souhaite réserver / avoir des infos pour "${title}" via DIGIY LOC.`;
       await logReservationIntent(pin);
       openWa(wa, msg);
     }
     window.reserveNow = reserveNow;
 
     async function fetchOccupancyToday(){
-      const { data, error } = await sb
-        .from(OCCUPANCY_VIEW)
-        .select("pin_slug,is_occupied_today");
+      try{
+        const { data, error } = await sb
+          .from(OCCUPANCY_VIEW)
+          .select("pin_slug,is_occupied_today");
 
-      if (error) {
-        console.warn("[DIGIY LOC] occupancy view error:", error.message);
+        if (error) return new Map();
+        const m = new Map();
+        (data || []).forEach(r=>{
+          if (r && r.pin_slug) m.set(String(r.pin_slug), !!r.is_occupied_today);
+        });
+        return m;
+      }catch(_){
         return new Map();
       }
-
-      const m = new Map();
-      (data || []).forEach(r=>{
-        if (r && r.pin_slug) m.set(String(r.pin_slug), !!r.is_occupied_today);
-      });
-      return m;
     }
 
-    function cardTemplate(p, occMap){
-      const title = p.title || "Logement";
-      const slug  = p.slug || "";
-      const city  = p.address_label || "—";
-      const kind  = p.kind || computeKind(p);
-      const wa    = pickWhatsApp(p);
-      const cover = pickCover(p);
+    /* =========================
+       ✅ FETCH digiy_loc_rooms (PUBLIC)
+    ========================= */
+    async function fetchLocPins(){
+      const { data, error } = await sb
+        .from("digiy_loc_rooms")
+        .select("*")
+        .eq("status", "actif")
+        .eq("is_public", true)
+        .order("created_at", { ascending: false });
 
-      const isOccupied = occMap ? (occMap.get(slug) === true) : false;
-      const nd = isNdimbal(p);
+      if (error) {
+        console.warn("[DIGIY LOC] Supabase error:", error.message);
+        return { ok:false, rows:[], error: error.message };
+      }
 
-      const badges = [];
-      badges.push(`<div class="badge">0% com DIGIY</div>`);
-      badges.push(isOccupied
-        ? `<div class="badge busy">⛔ OCCUPÉ aujourd’hui</div>`
-        : `<div class="badge free">✅ DISPONIBLE</div>`
-      );
-      if (nd) badges.push(`<div class="badge gold">🌙 NDIMBAL • Nuits offertes</div>`);
+      const normalized = (data || []).map(row => {
+        const nom = String(row.nom || "");
+        const t = nom.toLowerCase();
+        let kind = "Location • Direct propriétaire";
+        if(t.includes("villa")) kind = "Villa • Direct propriétaire";
+        else if(t.includes("studio")) kind = "Studio • Direct propriétaire";
+        else if(t.includes("appart")) kind = "Appartement • Direct propriétaire";
+        else if(t.includes("chambre")) kind = "Chambre • Direct propriétaire";
 
-      const ndBox = nd ? `
-        <div class="ndimbalBox">
-          <div class="ndTitle">🌙 Offre NDIMBAL (CHEZ ASTOU)</div>
-          <div class="ndLine"><b>${escapeHtml(NDIMBAL_RULE)}</b></div>
-          <div class="ndSmall">Tu restes +1 nuit → tu consommes +1 jour dans le quartier (retombées énormes).</div>
-        </div>
-      ` : `
-        <div class="ndimbalBox">
-          <div class="ndTitle">🌙 NDIMBAL (infos)</div>
-          <div class="ndLine">Nuits offertes en semaine → économie du quartier.</div>
-          <div class="ndSmall">Clique “🌙 Comprendre NDIMBAL”.</div>
-        </div>
-      `;
+        return {
+          title: row.nom || "Logement",
+          slug: row.slug || "",
+          address_label: row.adresse || "—",
+          kind: kind,
+          whatsapp: row.phone || TEAM_WA,
+          phone: row.phone || TEAM_WA,
+          cover: row.photo_url || "",
+          desc: row.description || "Contact direct propriétaire. Paiement direct (Wave/espèces). 0% commission.",
+          public_url: row.public_url || "" // si tu ajoutes plus tard une colonne public_url
+        };
+      });
 
-      const payLink = payLinkFor(p);
-      const payBtn = payLink ? `
-        <a class="btn btn-pay" href="${payLink}" target="_blank" rel="noopener noreferrer">💰 Payer (Wave) — DIGIY PAY</a>
-      ` : `
-        <button class="btn btn-nd" type="button" onclick="openNdimbal()">🌙 NDIMBAL — Comprendre</button>
-      `;
+      return { ok:true, rows: normalized, error:null };
+    }
 
-      const safePinObj = {
-        slug: slug,
-        title: title,
-        whatsapp: p.whatsapp || "",
-        phone: p.phone || "",
-        address_label: city,
-        cover: cover,
-        kind: kind,
-        desc: p.desc || "",
-        public_url: p.public_url || ""
-      };
+    /* =========================
+       ✅ FORCE BAPTISTE EN PREMIER
+    ========================= */
+    function placeBaptisteFirst(list){
+      const out = [];
+      out.push(BAPTISTE_PIN);
 
-      const ficheUrl = ficheLinkFor(p);
-
-      return `
-        <article class="card">
-          <div class="photo">
-            <img
-              loading="lazy"
-              alt="${escapeHtml(title)}"
-              src="${escapeAttr(cover)}"
-              onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80';"
-            >
-          </div>
-
-          <div class="name">${escapeHtml(title)}</div>
-          <div class="type">${escapeHtml(kind)} • ${escapeHtml(city)}</div>
-
-          <div class="badges">${badges.join("")}</div>
-
-          ${ndBox}
-
-          <p class="desc">
-            ${escapeHtml(p.desc || "Contact direct propriétaire. Paiement direct (Wave/espèces selon le logement). 0% commission.")}
-          </p>
-
-          <div class="meta">WhatsApp direct • Réponse rapide</div>
-
-          <div class="contact">
-            <div class="contact-title">Contact (WhatsApp)</div>
-            <div class="contact-value">${escapeHtml(wa)}</div>
-          </div>
-
-          <div class="actions">
-            <!-- ✅ PUBLIC: FICHE (pas PIN) -->
-            <a class="btn btn-primary" href="${escapeAttr(ficheUrl)}" target="_blank" rel="noopener noreferrer">👁️ Voir la fiche</a>
-
-            <button class="btn btn-wa" type="button"
-              onclick='reserveNow(${JSON.stringify(safePinObj).replace(/</g,"\\u003c")})'>📲 Réserver (WhatsApp)</button>
-          </div>
-
-          <div class="actions">
-            ${payBtn}
-          </div>
-        </article>
-      `;
+      // retire les doublons (slug ou title)
+      const seen = new Set([norm(BAPTISTE_PIN.slug), norm(BAPTISTE_PIN.title)]);
+      for(const p of (list || [])){
+        const s = norm(p.slug);
+        const t = norm(p.title);
+        if(seen.has(s) || seen.has(t)) continue;
+        out.push(p);
+      }
+      return out;
     }
 
     function applyFilters(list){
@@ -906,52 +848,84 @@
       });
     }
 
-    /* =========================
-   ✅ FETCH digiy_loc_rooms (AUTOMATION)
-========================= */
-async function fetchLocPins(){
-  const { data, error } = await sb
-    .from("digiy_loc_rooms")
-    .select("*")
-    .eq("status", "actif")
-    .eq("is_public", true)
-    .order("created_at", { ascending: false });
+    function cardTemplate(p, occMap){
+      const title = p.title || "Logement";
+      const slug  = p.slug || "";
+      const city  = p.address_label || "—";
+      const kind  = p.kind || computeKind(p);
+      const wa    = pickWhatsApp(p);
+      const cover = pickCover(p);
 
-  if (error) {
-    console.warn("[DIGIY LOC] Supabase error:", error.message);
-    return { ok:false, rows:[], error: error.message };
-  }
-  
-  // ✅ MAPPING: digiy_loc_rooms → format vitrine
-  const normalized = (data || []).map(row => {
-    // Détection automatique du type
-    const nom = String(row.nom || "").toLowerCase();
-    let kind = "Location • Direct propriétaire";
-    if(nom.includes("villa")) kind = "Villa • Direct propriétaire";
-    else if(nom.includes("studio")) kind = "Studio • Direct propriétaire";
-    else if(nom.includes("appart")) kind = "Appartement • Direct propriétaire";
-    else if(nom.includes("chambre")) kind = "Chambre • Direct propriétaire";
-    
-    return {
-      title: row.nom || "Logement",
-      slug: row.slug || "",
-      address_label: row.adresse || "—",
-      kind: kind,
-      whatsapp: row.phone || TEAM_WA,
-      phone: row.phone || TEAM_WA,
-      cover: row.photo_url || "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85",
-      desc: row.description || "Contact direct propriétaire. Paiement direct (Wave/espèces). 0% commission.",
-      public_url: "" // WordPress ou fiche.html?slug=xxx
-    };
-  });
-  
-  return { ok:true, rows: normalized, error:null };
-}
+      const isPinned = norm(p.title) === norm("CHEZ BAPTISTE") || norm(p.slug) === norm("chez-baptiste");
+      const isOccupied = occMap ? (occMap.get(slug) === true) : false;
 
-    function ensureAstou(list){
-      const hasAstou = (list || []).some(x => norm(x.title) === norm("CHEZ ASTOU SALY"));
-      if (hasAstou) return list;
-      return [ASTOU_PIN, ...(list || [])];
+      const badges = [];
+      badges.push(`<div class="badge">0% com DIGIY</div>`);
+      badges.push(isOccupied
+        ? `<div class="badge busy">⛔ OCCUPÉ aujourd’hui</div>`
+        : `<div class="badge free">✅ DISPONIBLE</div>`
+      );
+      if (isPinned) badges.push(`<div class="badge gold">⭐ Partenaire vedette</div>`);
+
+      const safePinObj = {
+        slug: slug,
+        title: title,
+        whatsapp: p.whatsapp || "",
+        phone: p.phone || "",
+        address_label: city,
+        cover: cover,
+        kind: kind,
+        desc: p.desc || "",
+        public_url: p.public_url || ""
+      };
+
+      const ficheUrl = ficheLinkFor(p);
+
+      return `
+        <article class="card ${isPinned ? "pinned" : ""}">
+          ${isPinned ? `
+            <div class="pinnedTop">
+              <div class="left">🏆 <span>CHEZ BAPTISTE</span></div>
+              <div class="pill">Fiche officielle</div>
+            </div>
+          ` : ``}
+
+          <div class="photo">
+            <img
+              loading="lazy"
+              alt="${escapeHtml(title)}"
+              src="${escapeAttr(cover)}"
+              onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80';"
+            >
+          </div>
+
+          <div class="name">${escapeHtml(title)}</div>
+          <div class="type">${escapeHtml(kind)} • ${escapeHtml(city)}</div>
+
+          <div class="badges">${badges.join("")}</div>
+
+          <p class="desc">
+            ${escapeHtml(p.desc || "Contact direct propriétaire. Paiement direct (Wave/espèces). 0% commission.")}
+          </p>
+
+          <div class="meta">WhatsApp direct • Réponse rapide</div>
+
+          <div class="contact">
+            <div class="contact-title">Contact (WhatsApp)</div>
+            <div class="contact-value">${escapeHtml(wa)}</div>
+          </div>
+
+          <div class="actions">
+            <a class="btn btn-primary" href="${escapeAttr(ficheUrl)}" target="_blank" rel="noopener noreferrer">👁️ Voir la fiche</a>
+            <button class="btn btn-wa" type="button"
+              onclick='reserveNow(${JSON.stringify(safePinObj).replace(/</g,"\\u003c")})'>📲 Réserver (WhatsApp)</button>
+          </div>
+
+          <div class="actions">
+            <button class="btn btn-nd" type="button" onclick="openNdimbal()">🌙 NDIMBAL — Comprendre</button>
+          </div>
+        </article>
+      `;
     }
 
     async function render(){
@@ -962,28 +936,20 @@ async function fetchLocPins(){
         fetchOccupancyToday()
       ]);
 
-      if (!pinsRes.ok){
-        grid.innerHTML = `
-          <div class="bigmsg">
-            ❌ Erreur Supabase : <b>${escapeHtml(pinsRes.error || "inconnue")}</b><br>
-            👉 Si tu vois “Invalid API key”, c’est une clé/URL qui ne matchent pas.
-          </div>
-        `;
-        return;
+      let pins = [];
+      if (pinsRes.ok) {
+        pins = (pinsRes.rows || []).map(p => ({ ...p, kind: computeKind(p) }));
       }
 
-      let pins = (pinsRes.rows || []).map(p => ({ ...p, kind: computeKind(p) }));
-      pins = ensureAstou(pins);
+      // ✅ Force CHEZ BAPTISTE en premier
+      pins = placeBaptisteFirst(pins);
 
+      // ✅ Remplissage si peu de logements
       const merged = mergeNoDup(pins, PLACEBOTS, 9);
       const filtered = applyFilters(merged);
 
       if (!filtered.length){
-        grid.innerHTML = `
-          <div class="bigmsg">
-            Aucun résultat avec ces filtres. Clique <b>Reset</b> puis relance.
-          </div>
-        `;
+        grid.innerHTML = `<div class="bigmsg">Aucun résultat. Clique <b>Reset</b>.</div>`;
         return;
       }
 
