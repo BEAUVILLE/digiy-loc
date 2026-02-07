@@ -907,24 +907,46 @@
     }
 
     /* =========================
-       FETCH go_pins (LOC)
-    ========================= */
-    async function fetchLocPins(){
-      const { data, error } = await sb
-        .from("go_pins")
-        .select("*")
-        .eq("category", "loc")
-        .eq("is_public", true)
-        .eq("is_active", true)
-        .order("featured_rank", { ascending: true })
-        .order("created_at", { ascending: false });
+   ✅ FETCH digiy_loc_rooms (AUTOMATION)
+========================= */
+async function fetchLocPins(){
+  const { data, error } = await sb
+    .from("digiy_loc_rooms")
+    .select("*")
+    .eq("status", "actif")
+    .eq("is_public", true)
+    .order("created_at", { ascending: false });
 
-      if (error) {
-        console.warn("[DIGIY LOC] Supabase error:", error.message);
-        return { ok:false, rows:[], error: error.message };
-      }
-      return { ok:true, rows: Array.isArray(data) ? data : [], error:null };
-    }
+  if (error) {
+    console.warn("[DIGIY LOC] Supabase error:", error.message);
+    return { ok:false, rows:[], error: error.message };
+  }
+  
+  // ✅ MAPPING: digiy_loc_rooms → format vitrine
+  const normalized = (data || []).map(row => {
+    // Détection automatique du type
+    const nom = String(row.nom || "").toLowerCase();
+    let kind = "Location • Direct propriétaire";
+    if(nom.includes("villa")) kind = "Villa • Direct propriétaire";
+    else if(nom.includes("studio")) kind = "Studio • Direct propriétaire";
+    else if(nom.includes("appart")) kind = "Appartement • Direct propriétaire";
+    else if(nom.includes("chambre")) kind = "Chambre • Direct propriétaire";
+    
+    return {
+      title: row.nom || "Logement",
+      slug: row.slug || "",
+      address_label: row.adresse || "—",
+      kind: kind,
+      whatsapp: row.phone || TEAM_WA,
+      phone: row.phone || TEAM_WA,
+      cover: row.photo_url || "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85",
+      desc: row.description || "Contact direct propriétaire. Paiement direct (Wave/espèces). 0% commission.",
+      public_url: "" // WordPress ou fiche.html?slug=xxx
+    };
+  });
+  
+  return { ok:true, rows: normalized, error:null };
+}
 
     function ensureAstou(list){
       const hasAstou = (list || []).some(x => norm(x.title) === norm("CHEZ ASTOU SALY"));
