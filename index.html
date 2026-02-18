@@ -368,32 +368,6 @@
     }
     .bigmsg b{color:var(--accent)}
 
-    <!-- CONTACT DIGIY LOC -->
-<section id="contact" class="digiy-contact">
-  <h3>Contacter sur WhatsApp</h3>
-  <p>Réponse rapide • Paiement direct • 0% commission</p>
-
-  <form id="locLeadForm" class="digiy-form">
-    <label>Votre prénom
-      <input name="name" type="text" placeholder="Ex: Awa" required>
-    </label>
-
-    <label>Dates (arrivée / départ)
-      <input name="dates" type="text" placeholder="Ex: 12/03 - 18/03" required>
-    </label>
-
-    <label>Nombre de personnes
-      <input name="people" type="number" min="1" placeholder="Ex: 2" required>
-    </label>
-
-    <label>Budget (facultatif)
-      <input name="budget" type="text" placeholder="Ex: 25 000 FCFA / nuit">
-    </label>
-
-    <button type="submit">Ouvrir WhatsApp</button>
-  </form>
-</section>
-
     footer{
       margin-top:20px;
       font-size:12px;
@@ -407,6 +381,35 @@
       z-index:2;
     }
     footer span{color:var(--accent);font-weight:950}
+
+    /* ✅ DIGIY CONTACT (LOC) */
+    .digiy-contact{
+      margin-top:16px;
+      padding:14px;
+      border:1px solid rgba(148,163,184,0.25);
+      border-radius:20px;
+      background:rgba(2,6,23,0.55);
+      position:relative;
+      z-index:2;
+    }
+    .digiy-contact h3{font-size:18px;font-weight:950;color:#bbf7d0}
+    .digiy-contact p{margin-top:6px;color:#e5e7eb;opacity:.95;font-weight:650}
+
+    .digiy-form{display:grid;gap:10px;margin-top:10px}
+    .digiy-form label{display:grid;gap:6px;font-size:14px;color:#e5e7eb;font-weight:800}
+    .digiy-form input{
+      padding:12px;border-radius:14px;
+      border:1px solid rgba(148,163,184,0.22);
+      background:rgba(2,6,23,0.85);
+      color:#fff;outline:none;font-weight:800;
+    }
+    .digiy-form button{
+      padding:12px 14px;border-radius:14px;border:none;
+      background:linear-gradient(135deg,#facc15,#f97316);
+      font-weight:950;cursor:pointer;color:#111;
+      box-shadow:0 10px 22px rgba(250,204,21,0.25);
+    }
+    .digiy-form small{opacity:.8}
 
     /* NDIMBAL OVERLAY */
     .overlay{
@@ -523,6 +526,33 @@
         </a>
       </section>
 
+      <!-- ✅ CONTACT DIGIY LOC (FORMULAIRE) -->
+      <section id="contact" class="digiy-contact">
+        <h3>Contacter sur WhatsApp</h3>
+        <p>Réponse rapide • Paiement direct • 0% commission</p>
+
+        <form id="locLeadForm" class="digiy-form">
+          <label>Votre prénom
+            <input name="name" type="text" placeholder="Ex: Awa" autocomplete="given-name" required>
+          </label>
+
+          <label>Dates (arrivée / départ)
+            <input name="dates" type="text" placeholder="Ex: 12/03 - 18/03" required>
+          </label>
+
+          <label>Nombre de personnes
+            <input name="people" type="number" min="1" placeholder="Ex: 2" required>
+          </label>
+
+          <label>Budget (facultatif)
+            <input name="budget" type="text" placeholder="Ex: 25 000 FCFA / nuit">
+          </label>
+
+          <button type="submit">Ouvrir WhatsApp</button>
+          <small>Message prêt — vous n’avez qu’à envoyer.</small>
+        </form>
+      </section>
+
       <section class="filters">
         <input id="q" placeholder="Zone (Saly, Dakar, Mbour...)" autocomplete="off">
         <select id="kind">
@@ -623,14 +653,13 @@
 
     /* =========================
        ✅ BAPTISTE — ÉPINGLÉ + FICHE HOSTINGER
-       (c’est lui qu’on veut voir en vitrine)
     ========================= */
     const BAPTISTE_PIN = {
       title: "CHEZ BAPTISTE",
       slug: "chez-baptiste",
       address_label: "Saly",
       kind: "Appartement • Direct propriétaire",
-      whatsapp: "+221778765785",  // ← change si tu veux
+      whatsapp: "+221778765785",
       phone: "+221778765785",
       cover: "https://orange-pig-270004.hostingersite.com/wp-content/uploads/2025/06/042-BAPTISTE.png",
       desc: "Appartement partenaire à Saly. Réservation directe propriétaire via WhatsApp. Paiement direct. 0% commission DIGIY.",
@@ -833,8 +862,8 @@
           whatsapp: row.phone || TEAM_WA,
           phone: row.phone || TEAM_WA,
           cover: row.photo_url || "",
-          desc: row.description || "Contact direct propriétaire. Paiement direct (Wave/espèces). 0% commission.",
-          public_url: row.public_url || "" // si tu ajoutes plus tard une colonne public_url
+          desc: row.description || "Contact direct propriétaire. Paiement direct (Wave/espèces). 0% commission DIGIY.",
+          public_url: row.public_url || ""
         };
       });
 
@@ -997,16 +1026,17 @@
 
     render();
   </script>
-<script>
-window.DIGIY_CONTACT_CONFIG = {
-  apiBase: "https://api.digiylyfe.com",
-  module: "LOC",
-  businessId: "saly-villa-001",
-phone: "221771234567"
-};
-</script>
 
-<script src="/assets/js/contact-whatsapp.js"></script>
-  
+  <!-- ✅ CONFIG + SCRIPT CONTACT (LOC) -->
+  <script>
+    window.DIGIY_CONTACT_CONFIG = {
+      apiBase: "https://api.digiylyfe.com",
+      module: "LOC",
+      businessId: "saly-villa-001",
+      phone: "221771234567"
+    };
+  </script>
+  <script src="/assets/js/contact-whatsapp.js"></script>
+
 </body>
 </html>
