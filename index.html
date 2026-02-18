@@ -290,20 +290,6 @@
       background:rgba(127,29,29,0.55);
     }
 
-    .ndimbalBox{
-      margin-top:6px;
-      border-radius:16px;
-      border:1px solid rgba(250,204,21,0.55);
-      background:rgba(250,204,21,0.08);
-      padding:10px 12px;
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-    }
-    .ndTitle{font-size:13px;font-weight:950;color:#fde68a}
-    .ndLine{font-size:14px;font-weight:850;color:#fff;line-height:1.45}
-    .ndSmall{font-size:12px;color:#e5e7eb;opacity:.95}
-
     .desc{font-size:15px;color:#f3f4f6;line-height:1.6;font-weight:550}
     .meta{font-size:14px;color:#e5e7eb;font-weight:750;opacity:0.95}
 
@@ -394,6 +380,25 @@
     }
     .digiy-contact h3{font-size:18px;font-weight:950;color:#bbf7d0}
     .digiy-contact p{margin-top:6px;color:#e5e7eb;opacity:.95;font-weight:650}
+
+    .pickline{
+      margin-top:10px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(148,163,184,0.22);
+      background:rgba(15,23,42,0.55);
+    }
+    .picktitle{font-weight:950;color:#fde68a}
+    .pickbtn{
+      padding:8px 12px;border-radius:999px;
+      border:1px solid rgba(148,163,184,0.22);
+      background:rgba(2,6,23,0.65);
+      color:#e5e7eb;font-weight:950;cursor:pointer;
+    }
 
     .digiy-form{display:grid;gap:10px;margin-top:10px}
     .digiy-form label{display:grid;gap:6px;font-size:14px;color:#e5e7eb;font-weight:800}
@@ -526,12 +531,20 @@
         </a>
       </section>
 
-      <!-- ✅ CONTACT DIGIY LOC (FORMULAIRE) -->
+      <!-- ✅ CONTACT GLOBAL (se branche sur le logement choisi) -->
       <section id="contact" class="digiy-contact">
         <h3>Contacter sur WhatsApp</h3>
-        <p>Réponse rapide • Paiement direct • 0% commission</p>
+        <p id="pickedHint">Choisis un logement dans la liste 👇</p>
+
+        <div class="pickline" id="pickLine" style="display:none">
+          <div class="picktitle" id="pickedTitle">—</div>
+          <button type="button" class="pickbtn" id="pickClear">Changer</button>
+        </div>
 
         <form id="locLeadForm" class="digiy-form">
+          <input type="hidden" name="picked_slug" id="pickedSlug">
+          <input type="hidden" name="picked_phone" id="pickedPhone">
+
           <label>Votre prénom
             <input name="name" type="text" placeholder="Ex: Awa" autocomplete="given-name" required>
           </label>
@@ -548,7 +561,7 @@
             <input name="budget" type="text" placeholder="Ex: 25 000 FCFA / nuit">
           </label>
 
-          <button type="submit">Ouvrir WhatsApp</button>
+          <button type="submit">Ouvrir WhatsApp (au bon propriétaire)</button>
           <small>Message prêt — vous n’avez qu’à envoyer.</small>
         </form>
       </section>
@@ -812,6 +825,39 @@
     }
     window.reserveNow = reserveNow;
 
+    /* =========================
+       ✅ PICK logement → branche le formulaire sur le bon pro
+    ========================= */
+    function pickLocForWhatsApp(pin){
+      const title = pin?.title || "Logement";
+      const slug  = pin?.slug  || "";
+      const phone = (pin?.whatsapp || pin?.phone || TEAM_WA || "").toString();
+
+      const pickedHint = document.getElementById("pickedHint");
+      const pickLine   = document.getElementById("pickLine");
+      const pickedTitle= document.getElementById("pickedTitle");
+      const pickedSlug = document.getElementById("pickedSlug");
+      const pickedPhone= document.getElementById("pickedPhone");
+
+      pickedHint.textContent = "Logement sélectionné ✅";
+      pickLine.style.display = "flex";
+      pickedTitle.textContent = title;
+
+      pickedSlug.value  = slug;
+      pickedPhone.value = phone;
+
+      document.getElementById("contact").scrollIntoView({ behavior:"smooth", block:"start" });
+    }
+    window.pickLocForWhatsApp = pickLocForWhatsApp;
+
+    document.getElementById("pickClear").addEventListener("click", ()=>{
+      document.getElementById("pickedHint").textContent = "Choisis un logement dans la liste 👇";
+      document.getElementById("pickLine").style.display = "none";
+      document.getElementById("pickedTitle").textContent = "—";
+      document.getElementById("pickedSlug").value = "";
+      document.getElementById("pickedPhone").value = "";
+    });
+
     async function fetchOccupancyToday(){
       try{
         const { data, error } = await sb
@@ -877,7 +923,6 @@
       const out = [];
       out.push(BAPTISTE_PIN);
 
-      // retire les doublons (slug ou title)
       const seen = new Set([norm(BAPTISTE_PIN.slug), norm(BAPTISTE_PIN.title)]);
       for(const p of (list || [])){
         const s = norm(p.slug);
@@ -972,8 +1017,10 @@
 
           <div class="actions">
             <a class="btn btn-primary" href="${escapeAttr(ficheUrl)}" target="_blank" rel="noopener noreferrer">👁️ Voir la fiche</a>
+            <button class="btn btn-pay" type="button"
+              onclick='pickLocForWhatsApp(${JSON.stringify(safePinObj).replace(/</g,"\\u003c")})'>✅ Choisir</button>
             <button class="btn btn-wa" type="button"
-              onclick='reserveNow(${JSON.stringify(safePinObj).replace(/</g,"\\u003c")})'>📲 Réserver (WhatsApp)</button>
+              onclick='reserveNow(${JSON.stringify(safePinObj).replace(/</g,"\\u003c")})'>📲 Réserver</button>
           </div>
 
           <div class="actions">
@@ -992,14 +1039,10 @@
       ]);
 
       let pins = [];
-      if (pinsRes.ok) {
-        pins = (pinsRes.rows || []).map(p => ({ ...p, kind: computeKind(p) }));
-      }
+      if (pinsRes.ok) pins = (pinsRes.rows || []).map(p => ({ ...p, kind: computeKind(p) }));
 
-      // ✅ Force CHEZ BAPTISTE en premier
       pins = placeBaptisteFirst(pins);
 
-      // ✅ Remplissage si peu de logements
       const merged = mergeNoDup(pins, PLACEBOTS, 9);
       const filtered = applyFilters(merged);
 
@@ -1021,7 +1064,6 @@
     document.getElementById("q").addEventListener("keydown",(e)=>{
       if (e.key === "Enter") render();
     });
-
     document.getElementById("kind").addEventListener("change", render);
 
     render();
@@ -1033,7 +1075,7 @@
       apiBase: "https://api.digiylyfe.com",
       module: "LOC",
       businessId: "saly-villa-001",
-      phone: "221771234567"
+      phone: "221771234567" // fallback si aucun logement choisi
     };
   </script>
   <script src="/assets/js/contact-whatsapp.js"></script>
