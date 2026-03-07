@@ -905,39 +905,50 @@
         return { ok:false, rows:[], error: error.message };
       }
 
-      const normalized = (data || []).map(row => {
-        return {
-          title: row.nom || "Logement",
+      const normalized = (data || [])
+        .map(row => ({
+          title: row.nom || "",
           slug: row.slug || "",
-          address_label: row.adresse || "—",
+          address_label: row.adresse || "",
           kind: computeKind(row),
           whatsapp: row.phone || TEAM_WA,
           phone: row.phone || TEAM_WA,
           cover: row.photo_url || "",
           photo_url: row.photo_url || "",
-          desc: row.description || "Contact direct propriétaire. Paiement direct (Wave/espèces). 0% commission DIGIY.",
+          desc: row.description || "",
           public_url: row.public_url || "",
           type_logement: row.type_logement || "",
           prix_nuit: row.prix_nuit ?? null,
           prix_semaine: row.prix_semaine ?? null,
           prix_mois: row.prix_mois ?? null,
           personnes_max: row.personnes_max ?? null
-        };
-      });
+        }))
+        .filter(row => {
+          return (
+            String(row.slug || "").trim() &&
+            String(row.title || "").trim() &&
+            String(row.address_label || "").trim() &&
+            String(row.cover || "").trim()
+          );
+        });
 
       return { ok:true, rows: normalized, error:null };
     }
 
     function placeBaptisteFirst(list){
       const out = [];
-      out.push(BAPTISTE_PIN);
+      const seen = new Set();
 
-      const seen = new Set([norm(BAPTISTE_PIN.slug)]);
-      for(const p of (list || [])){
+      out.push(BAPTISTE_PIN);
+      seen.add(norm(BAPTISTE_PIN.slug));
+
+      for (const p of (list || [])) {
         const s = norm(p.slug);
-        if(seen.has(s)) continue;
+        if (!s || seen.has(s)) continue;
         out.push(p);
+        seen.add(s);
       }
+
       return out;
     }
 
@@ -1047,13 +1058,20 @@
         fetchOccupancyToday()
       ]);
 
-      let pins = [];
-      if (pinsRes.ok) pins = (pinsRes.rows || []).map(p => ({ ...p, kind: computeKind(p) }));
+      let dbPins = [];
+      if (pinsRes.ok) {
+        dbPins = (pinsRes.rows || []).map(p => ({ ...p, kind: computeKind(p) }));
+      }
 
-      pins = placeBaptisteFirst(pins);
+      const hasRealDbPins = dbPins.length > 0;
 
-      const merged = mergeNoDup(pins, PLACEBOTS, 9);
-      const filtered = applyFilters(merged);
+      let pins = placeBaptisteFirst(dbPins);
+
+      const sourceList = hasRealDbPins
+        ? pins
+        : mergeNoDup(pins, PLACEBOTS, 6);
+
+      const filtered = applyFilters(sourceList);
 
       if (!filtered.length){
         grid.innerHTML = `<div class="bigmsg">Aucun résultat. Clique <b>Reset</b>.</div>`;
