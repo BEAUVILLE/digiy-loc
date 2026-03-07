@@ -324,13 +324,22 @@ input,select{
     const phone = normPhone(clientPhone.value || "");
     if(!phone) return;
 
-    const { data, error } = await SB
-      .from("digiy_loc_contact_prefs")
-      .select("lang, whatsapp_optin")
-      .eq("phone", phone)
-      .maybeSingle();
+    prefsHint.textContent = "Chargement…";
 
-    if(error || !data) return;
+    const { data, error } = await SB.rpc("loc_get_contact_prefs_public", {
+      p_phone: phone
+    });
+
+    if(error){
+      console.error(error);
+      prefsHint.textContent = "";
+      return;
+    }
+
+    if(!data?.ok || !data?.found){
+      prefsHint.textContent = "";
+      return;
+    }
 
     if(data.lang) clientLang.value = String(data.lang).toLowerCase();
     if(typeof data.whatsapp_optin === "boolean") waOptin.checked = data.whatsapp_optin;
@@ -348,16 +357,11 @@ input,select{
       return { ok:false };
     }
 
-    const row = {
-      phone,
-      lang,
-      whatsapp_optin: optin,
-      updated_at: new Date().toISOString()
-    };
-
-    const { error } = await SB
-      .from("digiy_loc_contact_prefs")
-      .upsert([row], { onConflict: "phone" });
+    const { data, error } = await SB.rpc("loc_save_contact_prefs_public", {
+      p_phone: phone,
+      p_lang: lang,
+      p_whatsapp_optin: optin
+    });
 
     if(error){
       console.error(error);
@@ -365,12 +369,22 @@ input,select{
       return { ok:false, error };
     }
 
+    if(!data?.ok){
+      prefsHint.textContent = "❌ " + (data?.message || "Échec enregistrement préférences.");
+      return { ok:false, data };
+    }
+
     clientPhone.value = phone;
     prefsHint.textContent = optin
       ? "✅ OK. Tu recevras les rappels WhatsApp dans ta langue."
       : "✅ OK. Rappels WhatsApp désactivés.";
 
-    return { ok:true, phone, lang, optin };
+    return {
+      ok:true,
+      phone,
+      lang: data.lang || lang,
+      optin: typeof data.whatsapp_optin === "boolean" ? data.whatsapp_optin : optin
+    };
   }
 
   async function loadLogement(){
@@ -383,13 +397,18 @@ input,select{
       .from("digiy_loc_rooms")
       .select("*")
       .eq("slug", slug)
-      .eq("status", "actif")
       .eq("is_public", true)
       .maybeSingle();
 
     if(error || !data){
       console.error(error);
       note("Logement introuvable ou non public.", "bad");
+      return;
+    }
+
+    const roomStatus = String(data.status || "").toLowerCase();
+    if(roomStatus !== "actif" && roomStatus !== "active"){
+      note("Logement non actif.", "bad");
       return;
     }
 
@@ -447,36 +466,22 @@ input,select{
         return;
       }
 
-      const prixNuitNum = safeNum(logement.prix_nuit, 0);
-      const depositPercent = safeNum(logement.deposit_percent, DEFAULT_DEPOSIT_PERCENT);
-      const total = Math.round(n * prixNuitNum);
-      const amountExpected = Math.round(total * (depositPercent / 100));
+      btnConfirm.disabled = true;
+      btnConfirm.textContent = "Enregistrement…";
 
-      if(!amountExpected){
-        note("Montant acompte invalide.", "bad");
-        return;
-      }
+      const { data, error } = await SB.rpc("loc_create_payment_intent_public", {
+        p_room_slug: slug,
+        p_client_name: (clientName.value || "Client").trim(),
+        p_client_phone: prefs.phone,
+        p_client_lang: prefs.lang,
+        p_whatsapp_optin: prefs.optin,
+        p_date_in: dateIn.value,
+        p_date_out: dateOut.value,
+        p_wave_tx_ref: waveRef.value.trim()
+      });
 
-      const payload = {
-        listing_id: logement.id,
-        owner_id: logement.owner_id,
-        client_name: (clientName.value || "Client").trim(),
-        client_phone: prefs.phone,
-        client_lang: prefs.lang,
-        whatsapp_optin: prefs.optin,
-        date_in: dateIn.value,
-        date_out: dateOut.value,
-        price_total: total,
-        amount_expected: amountExpected,
-        deposit_percent: depositPercent,
-        payment_method: "wave",
-        wave_phone: logement.phone || null,
-        wave_name: logement.nom || "Propriétaire",
-        wave_tx_ref: waveRef.value.trim(),
-        status: "pending"
-      };
-
-      const { error } = await SB.from("loc_payment_intents").insert([payload]);
+      btnConfirm.disabled = false;
+      btnConfirm.textContent = "✅ J’ai payé l’acompte";
 
       if(error){
         console.error(error);
@@ -484,12 +489,24 @@ input,select{
         return;
       }
 
+      if(!data?.ok){
+        note(data?.message || "Impossible d’enregistrer l’acompte.", "bad");
+        return;
+      }
+
       note(
-        "Acompte déclaré ✅\nLe propriétaire va confirmer.\nSi WhatsApp est activé, tu recevras les rappels.",
+        "Acompte déclaré ✅\n" +
+        "Montant attendu : " + money(data.amount_expected) + "\n" +
+        "Le propriétaire va confirmer.\n" +
+        "Si WhatsApp est activé, tu recevras les rappels.",
         "ok"
       );
+
+      waveRef.value = "";
     }catch(e){
       console.error(e);
+      btnConfirm.disabled = false;
+      btnConfirm.textContent = "✅ J’ai payé l’acompte";
       note("Erreur technique. Regarde la console.", "bad");
     }
   });
