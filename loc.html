@@ -1,516 +1,454 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="utf-8">
-<title>DIGIY LOC — Fiche logement</title>
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="Location directe propriétaire. Paiement Wave. 0% commission.">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>DIGIY LOC — Fiche logement</title>
+  <meta name="theme-color" content="#020617" />
+  <meta name="description" content="DIGIY LOC — Fiche logement. Direct propriétaire, 0% commission." />
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<style>
-:root{
-  --bg:#020617; --card:#0b1220; --line:#1f2937;
-  --ink:#f9fafb; --muted:#cbd5f5;
-  --gold:#facc15; --green:#22c55e; --danger:#ef4444;
-}
-*{box-sizing:border-box}
-body{
-  margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-  background:radial-gradient(900px 500px at 10% -10%, rgba(34,197,94,.15), transparent 60%), var(--bg);
-  color:var(--ink);
-}
-.wrap{max-width:980px;margin:0 auto;padding:14px}
-.card{
-  border:1px solid var(--line);
-  background:rgba(255,255,255,.03);
-  border-radius:18px;
-  padding:14px;
-  margin-bottom:14px;
-}
-h1{margin:10px 0 4px;font-size:1.6rem}
-.muted{color:var(--muted)}
-.hero-media{margin-bottom:10px}
-.hero-photo{
-  width:100%;max-height:70vh;object-fit:contain;
-  background:#020617;border-radius:16px;border:1px solid var(--line);
-}
-
-/* ✅ Vidéo : bouton (pas d’iframe Drive) */
-.video-box{
-  margin-top:10px;
-  padding:10px;
-  border-radius:14px;
-  border:1px solid var(--line);
-  background:rgba(250,204,21,.08);
-  display:none;
-}
-.video-btn{
-  display:inline-block;
-  margin-top:8px;
-  padding:10px 12px;
-  border-radius:12px;
-  font-weight:900;
-  text-decoration:none;
-  background:var(--gold);
-  color:#111827;
-}
-
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.chip{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:4px 8px;color:var(--muted)}
-
-label{display:block;margin-top:10px;font-weight:800}
-input,select{
-  width:100%;padding:10px;border-radius:12px;
-  border:1px solid var(--line);background:#020617;color:#fff;
-}
-.btn{
-  margin-top:12px;width:100%;padding:12px;border-radius:14px;border:0;
-  font-weight:900;cursor:pointer
-}
-.btn.primary{background:var(--green);color:#022c22}
-.btn.ghost{background:#020617;color:#fff;border:1px solid var(--line)}
-.note{
-  margin-top:10px;padding:10px;border-radius:12px;border:1px solid var(--line);
-  white-space:pre-line;
-}
-.note.ok{border-color:#22c55e;color:#bbf7d0}
-.note.bad{border-color:#ef4444;color:#fecaca}
-
-.wave-box{
-  margin-top:10px;padding:10px;border-radius:14px;border:1px solid var(--line);
-  background:rgba(34,197,94,.08)
-}
-.sep{height:1px;background:var(--line);margin:10px 0}
-.small{font-size:12px}
-
-/* ✅ opt-in box */
-.optin-box{
-  margin-top:10px;padding:10px;border-radius:14px;border:1px solid var(--line);
-  background:rgba(250,204,21,.06)
-}
-.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.row > *{flex:1}
-.switch{
-  display:flex;align-items:center;gap:10px;margin-top:8px
-}
-.switch input{width:auto}
-
-.inlineHint{
-  margin-top:10px;
-  padding:10px;
-  border-radius:12px;
-  border:1px solid var(--line);
-  color:var(--muted);
-  font-weight:800;
-}
-.inlineHint.bad{border-color:rgba(239,68,68,.5); color:#fecaca}
-.inlineHint.ok{border-color:rgba(34,197,94,.5); color:#bbf7d0}
-</style>
+  <style>
+    :root{
+      --bg:#020617;
+      --card:#0b1220;
+      --line:#1f2937;
+      --ink:#f9fafb;
+      --muted:#cbd5f5;
+      --gold:#facc15;
+      --green:#22c55e;
+      --danger:#ef4444;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      background:
+        radial-gradient(900px 500px at 10% -10%, rgba(34,197,94,.15), transparent 60%),
+        radial-gradient(900px 500px at 90% 0%, rgba(250,204,21,.10), transparent 60%),
+        var(--bg);
+      color:var(--ink);
+    }
+    .wrap{max-width:1040px;margin:0 auto;padding:14px}
+    .top{
+      display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+    .brand{
+      display:flex;align-items:center;gap:10px;
+      font-weight:1000;font-size:1.1rem;
+    }
+    .logo{
+      width:42px;height:42px;border-radius:14px;
+      display:grid;place-items:center;
+      background:linear-gradient(135deg,#facc15,#f97316);
+      color:#111827;font-weight:1000;
+      box-shadow:0 12px 30px rgba(250,204,21,.35);
+    }
+    .back{
+      display:inline-flex;align-items:center;gap:8px;
+      text-decoration:none;color:var(--muted);
+      border:1px solid var(--line);border-radius:999px;
+      padding:10px 14px;background:rgba(255,255,255,.03);font-weight:900;
+    }
+    .back:hover{color:#fff;border-color:#334155}
+    .grid{
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:14px;
+    }
+    @media(max-width:920px){.grid{grid-template-columns:1fr}}
+    .card{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      border-radius:20px;
+      overflow:hidden;
+      box-shadow:0 18px 40px rgba(0,0,0,.25);
+    }
+    .hero{
+      position:relative;
+      background:#020617;
+    }
+    .hero-photo{
+      width:100%;
+      max-height:70vh;
+      min-height:260px;
+      object-fit:cover;
+      display:block;
+      background:#020617;
+    }
+    .hero-overlay{
+      position:absolute;left:0;right:0;bottom:0;
+      padding:16px;
+      background:linear-gradient(180deg, rgba(2,6,23,0) 0%, rgba(2,6,23,.85) 65%, rgba(2,6,23,.96) 100%);
+    }
+    h1{margin:0 0 6px;font-size:1.8rem;line-height:1.1;color:var(--gold)}
+    .sub{color:#e5e7eb;font-weight:800}
+    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .chip{
+      font-size:12px;border:1px solid var(--line);border-radius:999px;
+      padding:5px 10px;color:var(--muted);font-weight:900;background:rgba(255,255,255,.03)
+    }
+    .body{padding:14px}
+    .section{
+      margin-top:12px;padding:12px;border-radius:16px;
+      border:1px solid rgba(148,163,184,.14);background:rgba(255,255,255,.02);
+    }
+    .section:first-child{margin-top:0}
+    .kicker{
+      font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+      color:#bbf7d0;font-weight:1000;margin-bottom:8px;
+    }
+    .desc{
+      color:#f3f4f6;line-height:1.7;font-weight:600;white-space:pre-wrap
+    }
+    .info-grid{
+      display:grid;grid-template-columns:1fr 1fr;gap:10px;
+    }
+    @media(max-width:560px){.info-grid{grid-template-columns:1fr}}
+    .info{
+      border:1px solid rgba(148,163,184,.14);
+      background:rgba(15,23,42,.35);
+      border-radius:14px;padding:10px 12px;
+    }
+    .info .k{font-size:12px;color:var(--muted);font-weight:900;text-transform:uppercase}
+    .info .v{margin-top:6px;font-size:18px;font-weight:1000;color:#fff}
+    .actions{
+      display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;
+    }
+    .btn{
+      flex:1;min-height:46px;
+      border:none;border-radius:14px;padding:12px 14px;
+      font-size:14px;font-weight:1000;cursor:pointer;
+      display:flex;justify-content:center;align-items:center;
+      text-decoration:none;
+    }
+    .btn.primary{
+      background:linear-gradient(135deg,#facc15,#f97316);
+      color:#111827;
+      box-shadow:0 10px 22px rgba(250,204,21,.25);
+    }
+    .btn.wa{
+      background:rgba(34,197,94,.14);
+      color:#bbf7d0;border:1px solid rgba(34,197,94,.45);
+    }
+    .btn.ghost{
+      background:#020617;color:#fff;border:1px solid var(--line);
+    }
+    label{
+      display:block;margin-top:10px;font-weight:900;color:#fff;
+    }
+    input,textarea{
+      width:100%;padding:11px 12px;margin-top:6px;
+      border-radius:12px;border:1px solid var(--line);
+      background:#020617;color:#fff;outline:none;
+    }
+    textarea{min-height:92px;resize:vertical}
+    .note{
+      margin-top:12px;padding:10px 12px;border-radius:12px;
+      border:1px solid var(--line);white-space:pre-line;font-weight:800;
+    }
+    .note.ok{border-color:rgba(34,197,94,.45);color:#bbf7d0}
+    .note.bad{border-color:rgba(239,68,68,.45);color:#fecaca}
+    .muted{color:var(--muted)}
+    .small{font-size:12px}
+  </style>
 </head>
 
 <body>
-<div class="wrap">
-
-  <!-- ===== HERO / STORY ===== -->
-  <section class="card">
-    <div class="hero-media">
-      <img id="photo" class="hero-photo" alt="">
-
-      <!-- ✅ Drive iframe supprimé -> bouton -->
-      <div class="video-box" id="videoBox">
-        <strong>🎬 Vidéo du logement</strong>
-        <div class="small muted">Google Drive bloque l’intégration dans la page. Clique pour ouvrir.</div>
-        <a class="video-btn" id="videoLink" href="#" target="_blank" rel="noopener">▶️ Voir la vidéo</a>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <div class="logo">🏠</div>
+        <div>DIGIY LOC — Fiche logement</div>
       </div>
+      <a class="back" href="./index.html">← Retour vitrine</a>
     </div>
 
-    <h1 id="nom">—</h1>
-    <div class="muted" id="ville">—</div>
-    <p id="desc" class="small"></p>
-
-    <div class="chips">
-      <span class="chip">0% commission</span>
-      <span class="chip">Paiement direct</span>
-      <span class="chip">Wave accepté</span>
-      <span class="chip">Confirmation par acompte</span>
-    </div>
-  </section>
-
-  <!-- ===== TARIFS ===== -->
-  <section class="card">
-    <strong>💰 Tarifs</strong>
-    <div class="sep"></div>
-    <div>Nuit : <b id="prixNuit">—</b></div>
-    <div class="small muted">Les tarifs longs séjours sont confirmés avec le propriétaire.</div>
-  </section>
-
-  <!-- ===== RÉSERVATION + ACOMPTE ===== -->
-  <section class="card">
-    <h3>📅 Réserver (anti-lapin)</h3>
-    <div class="small muted">
-      <b>Règle DIGIY :</b> sans acompte = pas confirmé.
-      Le logement reste disponible jusqu’au paiement de l’acompte.
-    </div>
-
-    <label>Date d’arrivée</label>
-    <input type="date" id="dateIn">
-
-    <label>Date de départ</label>
-    <input type="date" id="dateOut">
-
-    <div id="datesHint" class="inlineHint">Choisis tes dates pour calculer l’acompte.</div>
-
-    <label>Votre nom</label>
-    <input id="clientName" placeholder="Votre nom">
-
-    <label>Votre téléphone</label>
-    <input id="clientPhone" placeholder="+221 …">
-
-    <!-- ✅ LANGUE + OPT-IN -->
-    <div class="optin-box">
-      <strong>🌍 Langue & rappels</strong>
-      <div class="small muted">On vous enverra les rappels dans votre langue (WhatsApp).</div>
-
-      <div class="row">
-        <div>
-          <label>Votre langue</label>
-          <select id="clientLang">
-            <option value="fr">Français</option>
-            <option value="wo">Wolof</option>
-            <option value="en">English</option>
-          </select>
-        </div>
-        <div>
-          <label>Rappels WhatsApp</label>
-          <div class="switch">
-            <input type="checkbox" id="waOptin" checked>
-            <span class="small muted">Recevoir J-1 / Jour J / etc.</span>
+    <div class="grid">
+      <section class="card">
+        <div class="hero">
+          <img id="photo" class="hero-photo" alt="Photo logement" src="">
+          <div class="hero-overlay">
+            <h1 id="nom">Chargement…</h1>
+            <div class="sub" id="ville">—</div>
+            <div class="chips" id="chips"></div>
           </div>
         </div>
-      </div>
 
-      <button class="btn ghost" id="btnSavePrefs" type="button">💾 Enregistrer langue & rappels</button>
-      <div class="small muted" id="prefsHint"></div>
+        <div class="body">
+          <div class="section">
+            <div class="kicker">Description</div>
+            <div id="desc" class="desc">Patiente un instant…</div>
+          </div>
+
+          <div class="section">
+            <div class="kicker">Infos clés</div>
+            <div class="info-grid">
+              <div class="info">
+                <div class="k">Type</div>
+                <div class="v" id="typeLogement">—</div>
+              </div>
+              <div class="info">
+                <div class="k">Capacité</div>
+                <div class="v" id="personnesMax">—</div>
+              </div>
+              <div class="info">
+                <div class="k">Prix / nuit</div>
+                <div class="v" id="prixNuit">—</div>
+              </div>
+              <div class="info">
+                <div class="k">Prix / semaine</div>
+                <div class="v" id="prixSemaine">—</div>
+              </div>
+              <div class="info" style="grid-column:1/-1">
+                <div class="k">Prix / mois</div>
+                <div class="v" id="prixMois">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="card">
+        <div class="body">
+          <div class="section">
+            <div class="kicker">Règle DIGIY</div>
+            <div class="desc">0% commission. Paiement direct au propriétaire. DIGIY ne touche pas l’argent.</div>
+          </div>
+
+          <div class="section">
+            <div class="kicker">Contact</div>
+            <div style="font-size:22px;font-weight:1000" id="contactPhone">—</div>
+            <div class="small muted" style="margin-top:6px">WhatsApp direct • réponse rapide</div>
+            <div class="actions">
+              <button class="btn wa" id="btnWa" type="button">📲 Écrire sur WhatsApp</button>
+              <button class="btn ghost" id="btnCopy" type="button">🔗 Copier le lien</button>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="kicker">Demande de réservation</div>
+
+            <label>Date d’arrivée</label>
+            <input type="date" id="dateIn">
+
+            <label>Date de départ</label>
+            <input type="date" id="dateOut">
+
+            <label>Votre nom</label>
+            <input id="clientName" placeholder="Votre nom">
+
+            <label>Votre téléphone</label>
+            <input id="clientPhone" placeholder="+221 …">
+
+            <label>Message</label>
+            <textarea id="clientMsg" placeholder="Bonjour, je veux réserver ce logement..."></textarea>
+
+            <button class="btn primary" id="btnReserve" type="button">✅ Envoyer la demande</button>
+            <div id="status" class="note" style="display:none"></div>
+          </div>
+        </div>
+      </aside>
     </div>
+  </div>
 
-    <!-- ===== ACOMPTE WAVE ===== -->
-    <div class="wave-box">
-      <strong>💳 Acompte Wave</strong><br>
-      Bénéficiaire : <b id="waveName">—</b><br>
-      Numéro : <b id="wavePhone">—</b><br>
-      Acompte demandé : <b id="depositAmount">—</b>
-    </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
+    const SB = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    <label>Référence / ID transaction Wave</label>
-    <input id="waveRef" placeholder="Ex : WAVE-8F92KD…">
+    const FALLBACK_IMG = "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80";
+    const TEAM_WA = "+221771342889";
 
-    <button class="btn primary" id="btnConfirm">✅ J’ai payé l’acompte</button>
-    <div id="status" class="note"></div>
-  </section>
+    const qs = new URLSearchParams(location.search);
+    const listingSlug = (qs.get("slug") || "").trim();
 
-</div>
+    const photo = document.getElementById("photo");
+    const nom = document.getElementById("nom");
+    const ville = document.getElementById("ville");
+    const chips = document.getElementById("chips");
+    const desc = document.getElementById("desc");
+    const typeLogement = document.getElementById("typeLogement");
+    const personnesMax = document.getElementById("personnesMax");
+    const prixNuit = document.getElementById("prixNuit");
+    const prixSemaine = document.getElementById("prixSemaine");
+    const prixMois = document.getElementById("prixMois");
+    const contactPhone = document.getElementById("contactPhone");
+    const btnWa = document.getElementById("btnWa");
+    const btnCopy = document.getElementById("btnCopy");
+    const btnReserve = document.getElementById("btnReserve");
+    const statusBox = document.getElementById("status");
 
-<script>
-/* =========================
-   SUPABASE
-========================= */
-const SUPABASE_URL="https://wesqmwjjtsefyjnluosj.supabase.co";
-const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
-const SB=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+    const dateIn = document.getElementById("dateIn");
+    const dateOut = document.getElementById("dateOut");
+    const clientName = document.getElementById("clientName");
+    const clientPhone = document.getElementById("clientPhone");
+    const clientMsg = document.getElementById("clientMsg");
 
-/* =========================
-   QUERY PARAMS (slug-first)
-========================= */
-const qs = new URLSearchParams(location.search);
-const listingSlug = (qs.get("slug") || "").trim();
-const listingId = (qs.get("id") || "").trim(); // fallback only
+    let logement = null;
 
-/* =========================
-   HELPERS
-========================= */
-function note(msg,type){
-  const n=document.getElementById("status");
-  n.className="note "+(type||"");
-  n.textContent=msg;
-}
-
-function money(x){ return (x||0).toLocaleString("fr-FR")+" FCFA"; }
-
-function safeNum(v, fallback=0){
-  const n = Number(v);
-  return Number.isFinite(n) ? n : fallback;
-}
-
-function nights(){
-  if(!dateIn.value || !dateOut.value) return 0;
-  const d=(new Date(dateOut.value)-new Date(dateIn.value))/86400000;
-  return d>0 ? Math.round(d) : 0;
-}
-
-/* ✅ Normalise phone Senegal (+221...) : simple, sans prise de tête */
-function normPhone(raw){
-  const s = String(raw||"").trim();
-  if(!s) return "";
-  let x = s.replace(/[^\d+]/g,"");
-  if(x.startsWith("00")) x = "+" + x.slice(2);
-
-  const digits = x.replace(/[^\d]/g,"");
-
-  // si l’utilisateur tape 77xxxxxxx (9 chiffres), on le met en +221
-  if(!x.startsWith("+") && digits.length === 9) return "+221" + digits;
-
-  if(x.startsWith("+")) return x;
-
-  return digits ? ("+" + digits) : "";
-}
-
-/* ✅ convertit un lien Drive "file/d/ID/view" en lien "view" (à ouvrir) */
-function driveOpenLink(url){
-  if(!url) return "";
-  const s = String(url);
-  const m = s.match(/drive\.google\.com\/file\/d\/([^/]+)/);
-  if(m && m[1]) return `https://drive.google.com/file/d/${m[1]}/view`;
-  if(s.includes("drive.google.com")) return s;
-  return "";
-}
-
-/* =========================
-   UI - Dates hints
-========================= */
-function setDatesHint(){
-  const h = document.getElementById("datesHint");
-  const n = nights();
-
-  if(!dateIn.value || !dateOut.value){
-    h.className = "inlineHint";
-    h.textContent = "Choisis tes dates pour calculer l’acompte.";
-    return;
-  }
-  if(n <= 0){
-    h.className = "inlineHint bad";
-    h.textContent = "Dates invalides : la date de départ doit être après la date d’arrivée.";
-    return;
-  }
-  h.className = "inlineHint ok";
-  h.textContent = `Séjour : ${n} nuit(s).`;
-}
-
-/* =========================
-   LOAD LOGEMENT (slug-first)
-========================= */
-let logement=null;
-
-async function load(){
-  if(!listingSlug && !listingId){
-    note("Fiche invalide : paramètre manquant (slug).","bad");
-    return;
-  }
-
-  let q = SB.from("digiy_logements").select("*");
-
-  // ✅ slug-first (public)
-  if(listingSlug){
-    q = q.eq("slug", listingSlug).single();
-  }else{
-    q = q.eq("id", listingId).single();
-  }
-
-  const { data, error } = await q;
-
-  if(error || !data){
-    console.error(error);
-    note("Logement introuvable (slug/id).","bad");
-    return;
-  }
-
-  logement=data;
-
-  // ✅ anti-NULL
-  logement.deposit_percent = safeNum(logement.deposit_percent, 0);
-  logement.prix_nuit       = safeNum(logement.prix_nuit, 0);
-
-  photo.src = logement.photo_url || "";
-  photo.alt = logement.nom || "Logement";
-
-  nom.textContent = logement.nom || "Logement";
-  ville.textContent = logement.ville || "";
-  desc.textContent = logement.description || "";
-
-  prixNuit.textContent = money(logement.prix_nuit);
-
-  waveName.textContent = logement.wave_name || "Propriétaire";
-  wavePhone.textContent = logement.wave_phone || "—";
-
-  // ✅ vidéo -> bouton
-  const open = driveOpenLink(logement.video_url);
-  if(open){
-    videoBox.style.display="block";
-    videoLink.href = open;
-  }else{
-    videoBox.style.display="none";
-  }
-
-  // UI
-  setDatesHint();
-  updateDeposit();
-
-  // si phone déjà dans URL ou prérempli, on peut tenter de charger prefs
-  tryLoadPrefs();
-}
-
-function updateDeposit(){
-  if(!logement) return;
-
-  const n = nights();
-  setDatesHint();
-
-  const dp = safeNum(logement.deposit_percent, 0);
-
-  if(n <= 0 || !dp || !logement.prix_nuit){
-    depositAmount.textContent = "—";
-    return;
-  }
-
-  const amt = Math.round(n * logement.prix_nuit * (dp/100));
-  depositAmount.textContent = amt ? money(amt) : "—";
-}
-
-[dateIn,dateOut].forEach(el=>el.addEventListener("change", updateDeposit));
-
-/* =========================
-   PREFS LANGUE + OPT-IN
-========================= */
-async function savePrefs(){
-  const rawPhone = clientPhone.value || "";
-  const phone = normPhone(rawPhone);
-  const lang = (clientLang.value || "fr").toLowerCase();
-  const optin = !!waOptin.checked;
-
-  if(!phone){
-    prefsHint.textContent = "⚠️ Renseigne ton téléphone d’abord.";
-    return { ok:false };
-  }
-
-  // Table: digiy_loc_contact_prefs(phone UNIQUE, lang, whatsapp_optin, updated_at)
-  const row = {
-    phone,
-    lang,
-    whatsapp_optin: optin,
-    updated_at: new Date().toISOString()
-  };
-
-  const { error } = await SB
-    .from("digiy_loc_contact_prefs")
-    .upsert([row], { onConflict: "phone" });
-
-  if(error){
-    console.error(error);
-    prefsHint.textContent = "❌ Impossible d’enregistrer (voir console).";
-    return { ok:false, error };
-  }
-
-  clientPhone.value = phone; // normalisé
-  prefsHint.textContent = optin
-    ? "✅ OK. Tu recevras les rappels WhatsApp dans ta langue."
-    : "✅ OK. Rappels WhatsApp désactivés.";
-
-  return { ok:true, phone, lang, optin };
-}
-
-async function tryLoadPrefs(){
-  const phone = normPhone(clientPhone.value || "");
-  if(!phone) return;
-
-  const { data, error } = await SB
-    .from("digiy_loc_contact_prefs")
-    .select("lang, whatsapp_optin")
-    .eq("phone", phone)
-    .maybeSingle();
-
-  if(error) return;
-
-  if(data){
-    if(data.lang) clientLang.value = String(data.lang).toLowerCase();
-    if(typeof data.whatsapp_optin === "boolean") waOptin.checked = data.whatsapp_optin;
-    prefsHint.textContent = "✅ Préférences chargées.";
-  }
-}
-
-btnSavePrefs.onclick = async ()=>{
-  await savePrefs();
-};
-
-/* =========================
-   CONFIRM ACOMPTE
-========================= */
-btnConfirm.onclick = async ()=>{
-  try{
-    if(!logement){
-      note("Logement non chargé","bad");
-      return;
+    function note(msg, type){
+      statusBox.style.display = "block";
+      statusBox.className = "note " + (type || "");
+      statusBox.textContent = msg;
     }
 
-    const n = nights();
-    if(n <= 0){
-      note("Dates invalides : départ après arrivée.","bad");
-      return;
+    function money(x){
+      const n = Number(x);
+      if (!Number.isFinite(n) || n <= 0) return "—";
+      return n.toLocaleString("fr-FR") + " FCFA";
     }
 
-    // ✅ on enregistre prefs avant tout (lang + opt-in)
-    const prefs = await savePrefs();
-    if(!prefs.ok){
-      note("Merci d’enregistrer d’abord votre téléphone / langue.","bad");
-      return;
+    function normPhone(raw){
+      const s = String(raw || "").trim();
+      if (!s) return "";
+      let x = s.replace(/[^\d+]/g, "");
+      if (x.startsWith("00")) x = "+" + x.slice(2);
+      const digits = x.replace(/[^\d]/g, "");
+      if (!x.startsWith("+") && digits.length === 9) return "+221" + digits;
+      if (x.startsWith("+")) return x;
+      return digits ? ("+" + digits) : "";
     }
 
-    if(!waveRef.value.trim()){
-      note("Référence Wave obligatoire","bad");
-      return;
+    function waDigits(phone){
+      return String(phone || "").replace(/\D/g, "");
     }
 
-    const dp = safeNum(logement.deposit_percent, 0);
-    const amt = Math.round(n * logement.prix_nuit * (dp/100));
-
-    if(!amt){
-      note("Acompte non calculable (vérifie prix / % / dates).","bad");
-      return;
+    function openWa(phone, message){
+      const digits = waDigits(phone);
+      if (!digits) return;
+      const url = "https://wa.me/" + digits + "?text=" + encodeURIComponent(message || "");
+      window.open(url, "_blank", "noopener,noreferrer");
     }
 
-    const payload = {
-      listing_id: logement.id,
-      owner_id: logement.owner_id,
-      client_name: (clientName.value || "Client").trim(),
-      client_phone: prefs.phone,
-      client_lang: prefs.lang,
-      whatsapp_optin: prefs.optin,
-      date_in: dateIn.value,
-      date_out: dateOut.value,
-      amount_expected: amt,
-      deposit_percent: dp,
-      payment_method: "wave",
-      wave_phone: logement.wave_phone,
-      wave_name: logement.wave_name,
-      wave_tx_ref: waveRef.value.trim(),
-      status: "pending"
-    };
+    function setChips(row){
+      chips.innerHTML = "";
 
-    const { error } = await SB.from("loc_payment_intents").insert([payload]);
+      const list = [
+        "0% commission",
+        "Paiement direct",
+        row.type_logement || "Location",
+        row.slug || "slug"
+      ];
 
-    if(error){
-      console.error(error);
-      note("Erreur enregistrement acompte","bad");
-      return;
+      list.forEach(text => {
+        const el = document.createElement("span");
+        el.className = "chip";
+        el.textContent = text;
+        chips.appendChild(el);
+      });
     }
 
-    note("Acompte déclaré ✅ Le propriétaire va confirmer.\nSi WhatsApp est activé, vous recevrez les rappels.","ok");
-  }catch(e){
-    console.error(e);
-    note("Erreur technique (console)","bad");
-  }
-};
+    async function load(){
+      if(!listingSlug){
+        note("Slug manquant dans l’URL publique.", "bad");
+        return;
+      }
 
-load();
-</script>
+      const { data, error } = await SB
+        .from("digiy_loc_rooms")
+        .select("*")
+        .eq("slug", listingSlug)
+        .eq("is_public", true)
+        .in("status", ["active", "actif"])
+        .maybeSingle();
+
+      if(error){
+        console.error(error);
+        note("Erreur chargement fiche publique.", "bad");
+        return;
+      }
+
+      if(!data){
+        note("Logement introuvable ou non public.", "bad");
+        return;
+      }
+
+      logement = data;
+
+      document.title = "DIGIY LOC — " + (logement.nom || "Fiche logement");
+
+      photo.src = logement.photo_url || FALLBACK_IMG;
+      photo.alt = logement.nom || "Logement";
+      photo.onerror = () => { photo.onerror = null; photo.src = FALLBACK_IMG; };
+
+      nom.textContent = logement.nom || "Logement";
+      ville.textContent = logement.adresse || "Sénégal";
+      desc.textContent = logement.description || "Contact direct propriétaire. Paiement direct. 0% commission DIGIY.";
+
+      typeLogement.textContent = logement.type_logement || "—";
+      personnesMax.textContent = logement.personnes_max ? `${logement.personnes_max} pers.` : "—";
+      prixNuit.textContent = money(logement.prix_nuit);
+      prixSemaine.textContent = money(logement.prix_semaine);
+      prixMois.textContent = money(logement.prix_mois);
+
+      contactPhone.textContent = logement.phone || TEAM_WA;
+      setChips(logement);
+
+      if(!clientMsg.value.trim()){
+        clientMsg.value = `Bonjour, je souhaite avoir des informations pour "${logement.nom || "ce logement"}".`;
+      }
+    }
+
+    btnWa.addEventListener("click", () => {
+      if(!logement){
+        note("Fiche non chargée.", "bad");
+        return;
+      }
+      openWa(logement.phone || TEAM_WA, `Bonjour, je souhaite avoir des informations pour "${logement.nom || "ce logement"}" via DIGIY LOC.`);
+    });
+
+    btnCopy.addEventListener("click", async () => {
+      try{
+        await navigator.clipboard.writeText(location.href);
+        note("Lien copié ✅", "ok");
+      }catch(e){
+        console.error(e);
+        note("Copie impossible automatiquement.", "bad");
+      }
+    });
+
+    btnReserve.addEventListener("click", () => {
+      if(!logement){
+        note("Fiche non chargée.", "bad");
+        return;
+      }
+
+      const name = (clientName.value || "").trim();
+      const phone = normPhone(clientPhone.value || "");
+      const din = dateIn.value || "";
+      const dout = dateOut.value || "";
+      const msg = (clientMsg.value || "").trim();
+
+      if(!name){
+        note("Merci d’indiquer votre nom.", "bad");
+        return;
+      }
+      if(!phone){
+        note("Merci d’indiquer votre téléphone.", "bad");
+        return;
+      }
+      if(!din || !dout){
+        note("Merci de choisir vos dates.", "bad");
+        return;
+      }
+
+      const fullMsg = [
+        "Bonjour 👋",
+        `Je vous contacte pour : ${logement.nom || "ce logement"}`,
+        `Arrivée : ${din}`,
+        `Départ : ${dout}`,
+        `Nom : ${name}`,
+        `Téléphone : ${phone}`,
+        msg ? `Message : ${msg}` : ""
+      ].filter(Boolean).join("\n");
+
+      openWa(logement.phone || TEAM_WA, fullMsg);
+      note("Demande prête ✅ WhatsApp ouvert.", "ok");
+    });
+
+    load();
+  </script>
 </body>
 </html>
