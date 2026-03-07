@@ -200,6 +200,7 @@
       color:#e5e7eb;
       line-height:1.7;
       font-weight:650;
+      white-space:pre-wrap;
     }
 
     .infoGrid{
@@ -352,12 +353,22 @@
       try { return n.toLocaleString("fr-FR") + " FCFA"; } catch { return String(n) + " FCFA"; }
     }
 
-    function computeKindFromNom(nom){
-      const t = String(nom || "").toLowerCase();
-      if(t.includes("villa")) return "Villa • Direct propriétaire";
-      if(t.includes("studio")) return "Studio • Direct propriétaire";
-      if(t.includes("appart")) return "Appartement • Direct propriétaire";
-      if(t.includes("chambre")) return "Chambre • Direct propriétaire";
+    function computeKind(row){
+      const type = String(row?.type_logement || "").toLowerCase();
+
+      if(type.includes("villa")) return "Villa • Direct propriétaire";
+      if(type.includes("studio")) return "Studio • Direct propriétaire";
+      if(type.includes("appartement")) return "Appartement • Direct propriétaire";
+      if(type.includes("chambre")) return "Chambre • Direct propriétaire";
+      if(type.includes("maison")) return "Maison • Direct propriétaire";
+
+      const nom = String(row?.nom || "").toLowerCase();
+      if(nom.includes("villa")) return "Villa • Direct propriétaire";
+      if(nom.includes("studio")) return "Studio • Direct propriétaire";
+      if(nom.includes("appart")) return "Appartement • Direct propriétaire";
+      if(nom.includes("chambre")) return "Chambre • Direct propriétaire";
+      if(nom.includes("maison")) return "Maison • Direct propriétaire";
+
       return "Location • Direct propriétaire";
     }
 
@@ -366,8 +377,8 @@
         .from("digiy_loc_rooms")
         .select("*")
         .eq("slug", slug)
-        .eq("status", "actif")
         .eq("is_public", true)
+        .in("status", ["active", "actif"])
         .maybeSingle();
       return { data, error };
     }
@@ -377,8 +388,8 @@
         .from("digiy_loc_rooms")
         .select("*")
         .eq("id", id)
-        .eq("status", "actif")
         .eq("is_public", true)
+        .in("status", ["active", "actif"])
         .maybeSingle();
       return { data, error };
     }
@@ -386,7 +397,7 @@
     function renderRoom(row){
       const title = row?.nom || "Logement";
       const city  = row?.adresse || "—";
-      const kind  = computeKindFromNom(title);
+      const kind  = computeKind(row);
 
       const desc  = row?.description || "Contact direct propriétaire. Paiement direct. 0% commission DIGIY.";
       const cover = row?.photo_url || "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80";
@@ -524,7 +535,6 @@
         row = res.data;
       }
 
-      // fallback: si slug pas trouvé, tente id
       if(!row && id){
         const res2 = await fetchRoomById(id);
         err = res2.error || err;
@@ -545,4 +555,3 @@
   </script>
 </body>
 </html>
-
