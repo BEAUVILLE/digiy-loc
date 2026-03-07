@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <title>DIGIY LOC — Fiche logement</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="DIGIY LOC — fiche logement premium. Paiement direct propriétaire, 0% commission." />
+  <meta name="theme-color" content="#06131d" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root{
+      --bg:#06131d;
+      --bg2:#0b1c2a;
+      --card:#0d2233;
+      --line:rgba(255,255,255,.12);
+      --text:#f4f8fb;
+      --muted:rgba(244,248,251,.72);
+      --gold:#facc15;
+      --green:#22c55e;
+      --green2:#16a34a;
+      --red:#ef4444;
+      --shadow:0 18px 50px rgba(0,0,0,.35);
+      --radius:20px;
+      --max:1080px;
+    }
+
+    *{box-sizing:border-box}
+
+    html,body{
+      margin:0;
+      padding:0;
+      background:
+        radial-gradient(circle at top, #15314b 0%, #06131d 55%, #041019 100%);
+      color:var(--text);
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    }
+
+    a{color:inherit}
+
+    .wrap{
+      max-width:var(--max);
+      margin:0 auto;
+      padding:16px;
+    }
+
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+
+    .brand{
+      font-weight:900;
+      letter-spacing:.02em;
+      font-size:18px;
+    }
+
+    .brand span{ color:var(--gold); }
+
+    .top-actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    .pill{
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:12px;
+      color:var(--muted);
+      background:rgba(255,255,255,.04);
+    }
+
+    .back-link{
+      text-decoration:none;
+      font-weight:800;
+      color:#fff;
+    }
+
+    .hero{
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:16px;
+      margin-bottom:16px;
+    }
+
+    @media (max-width: 900px){
+      .hero{ grid-template-columns:1fr; }
+    }
+
+    .panel{
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .media{
+      position:relative;
+      min-height:320px;
+      background:#07141f;
+    }
+
+    .media img{
+      width:100%;
+      height:100%;
+      min-height:320px;
+      display:block;
+      background:#07141f;
+    }
+
+    .badge-row{
+      position:absolute;
+      left:14px;
+      top:14px;
+      right:14px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+
+    .badge{
+      padding:7px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:800;
+      background:rgba(0,0,0,.35);
+      border:1px solid rgba(255,255,255,.18);
+      backdrop-filter: blur(6px);
+    }
+
+    .badge.gold{
+      background:rgba(250,204,21,.18);
+      color:#fde68a;
+      border-color:rgba(250,204,21,.45);
+    }
+
+    .hero-body{
+      padding:18px;
+    }
+
+    .hero-title{
+      margin:0 0 8px;
+      font-size:30px;
+      line-height:1.1;
+      font-weight:900;
+    }
+
+    .hero-sub{
+      margin:0 0 12px;
+      color:var(--muted);
+      font-size:15px;
+      line-height:1.6;
+    }
+
+    .meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-bottom:14px;
+    }
+
+    .meta .item{
+      padding:8px 10px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      font-size:13px;
+      color:var(--muted);
+    }
+
+    .price-box{
+      padding:18px;
+    }
+
+    .section-title{
+      margin:0 0 10px;
+      font-size:18px;
+      font-weight:900;
+    }
+
+    .tarifs{
+      display:grid;
+      gap:10px;
+      margin:12px 0 14px;
+    }
+
+    .tarif{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      font-size:14px;
+    }
+
+    .tarif strong{
+      color:#86efac;
+      font-size:18px;
+    }
+
+    .note{
+      font-size:13px;
+      color:var(--muted);
+      line-height:1.6;
+    }
+
+    .payment-card{
+      margin-top:14px;
+      padding:16px;
+      border-radius:16px;
+      background:linear-gradient(180deg, rgba(34,197,94,.12), rgba(34,197,94,.06));
+      border:1px solid rgba(34,197,94,.35);
+    }
+
+    .payment-title{
+      font-size:15px;
+      font-weight:900;
+      margin-bottom:8px;
+    }
+
+    .payment-number{
+      font-size:26px;
+      font-weight:900;
+      color:#86efac;
+      margin-bottom:6px;
+    }
+
+    .cta-col{
+      display:grid;
+      gap:10px;
+      margin-top:16px;
+    }
+
+    .btn{
+      appearance:none;
+      border:none;
+      border-radius:999px;
+      padding:13px 16px;
+      font-size:14px;
+      font-weight:900;
+      cursor:pointer;
+      text-decoration:none;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap:8px;
+    }
+
+    .btn-wa{
+      background:linear-gradient(180deg, #22c55e, #16a34a);
+      color:#fff;
+    }
+
+    .btn-call{
+      background:#132536;
+      color:#fff;
+      border:1px solid var(--line);
+    }
+
+    .btn-copy{
+      background:#facc15;
+      color:#111827;
+    }
+
+    .btn-video{
+      background:#0f172a;
+      color:#fff;
+      border:1px solid #334155;
+    }
+
+    .layout{
+      display:grid;
+      grid-template-columns:1fr .92fr;
+      gap:16px;
+    }
+
+    @media (max-width: 900px){
+      .layout{ grid-template-columns:1fr; }
+    }
+
+    .card{
+      padding:18px;
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+
+    .small{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.6;
+    }
+
+    .form-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-top:14px;
+    }
+
+    @media (max-width: 640px){
+      .form-grid{ grid-template-columns:1fr; }
+    }
+
+    .field label{
+      display:block;
+      margin:0 0 6px;
+      font-size:12px;
+      font-weight:800;
+      color:#fde68a;
+    }
+
+    .field input,
+    .field select,
+    .field textarea{
+      width:100%;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:#0a1723;
+      color:#fff;
+      padding:12px 13px;
+      font-size:14px;
+      outline:none;
+    }
+
+    .field textarea{
+      min-height:110px;
+      resize:vertical;
+    }
+
+    .summary-box{
+      margin-top:14px;
+      padding:14px;
+      border-radius:16px;
+      background:rgba(250,204,21,.08);
+      border:1px solid rgba(250,204,21,.28);
+      font-size:14px;
+      line-height:1.7;
+      color:#fff8dc;
+    }
+
+    .summary-box strong{
+      color:#fff;
+    }
+
+    .status{
+      margin-top:12px;
+      padding:12px;
+      border-radius:14px;
+      display:none;
+      font-size:13px;
+      font-weight:700;
+    }
+
+    .status.ok{
+      display:block;
+      background:rgba(34,197,94,.12);
+      border:1px solid rgba(34,197,94,.35);
+      color:#bbf7d0;
+    }
+
+    .status.bad{
+      display:block;
+      background:rgba(239,68,68,.12);
+      border:1px solid rgba(239,68,68,.35);
+      color:#fecaca;
+    }
+
+    .list{
+      margin:12px 0 0 18px;
+      padding:0;
+      line-height:1.75;
+      color:#e8eef4;
+      font-size:14px;
+    }
+
+    .contact-box{
+      margin-top:14px;
+      padding:14px;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      line-height:1.8;
+      font-size:14px;
+    }
+
+    .loading,
+    .error{
+      max-width:var(--max);
+      margin:28px auto;
+      padding:18px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+    }
+
+    .error{
+      color:#fecaca;
+      border-color:rgba(239,68,68,.35);
+    }
+
+    footer{
+      padding:16px 0 10px;
+      color:var(--muted);
+      text-align:center;
+      font-size:12px;
+    }
+  </style>
+</head>
+<body>
+  <div id="loading" class="loading">Chargement de la fiche DIGIY LOC…</div>
+  <div id="error" class="error" style="display:none;"></div>
+
+  <div id="app" style="display:none;">
+    <div class="wrap">
+      <div class="topbar">
+        <div class="brand" id="brand">DIGIY LOC — <span>Fiche logement</span></div>
+        <div class="top-actions">
+          <div class="pill" id="headerTag">Chargement…</div>
+          <a class="pill back-link" href="./index.html">← Retour vitrine</a>
+        </div>
+      </div>
+
+      <section class="hero">
+        <div class="panel media">
+          <img id="heroImage" alt="Photo logement" />
+          <div class="badge-row" id="badgeRow"></div>
+        </div>
+
+        <div class="panel price-box">
+          <h1 class="hero-title" id="heroTitle">Chargement…</h1>
+          <p class="hero-sub" id="heroTagline">Patiente un instant…</p>
+
+          <div class="meta" id="metaRow"></div>
+
+          <h2 class="section-title">Tarifs</h2>
+          <div class="tarifs">
+            <div class="tarif"><span>Nuit</span><strong id="prixNuit">—</strong></div>
+            <div class="tarif"><span>Semaine</span><strong id="prixSemaine">—</strong></div>
+            <div class="tarif"><span>Mois</span><strong id="prixMois">—</strong></div>
+          </div>
+
+          <div class="note" id="senelecNote">—</div>
+
+          <div class="payment-card">
+            <div class="payment-title">💳 Paiement direct propriétaire</div>
+            <div class="payment-number" id="wavePhone">—</div>
+            <div class="note" id="paymentNote">—</div>
+            <div class="note" style="margin-top:8px;">
+              Propriétaire : <strong id="ownerName">—</strong><br>
+              Nom Wave : <strong id="waveName">—</strong>
+            </div>
+          </div>
+
+          <div class="cta-col">
+            <a class="btn btn-wa" href="#" id="btnWa">💬 Réserver par WhatsApp</a>
+            <a class="btn btn-call" href="#" id="btnCall">📞 Appeler le propriétaire</a>
+            <button class="btn btn-copy" type="button" id="btnCopy">🔗 Copier le lien</button>
+            <a class="btn btn-video" href="#" id="btnVideo" target="_blank" rel="noopener" style="display:none;">🎥 Voir la vidéo</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="layout">
+        <article class="card">
+          <h2 class="section-title">Réserver ce logement</h2>
+          <div class="small">
+            Choisissez vos dates, remplissez vos infos, puis envoyez votre demande directement au propriétaire sur WhatsApp.
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label>Date d’arrivée</label>
+              <input type="date" id="dateIn" />
+            </div>
+
+            <div class="field">
+              <label>Date de départ</label>
+              <input type="date" id="dateOut" />
+            </div>
+
+            <div class="field">
+              <label>Nombre de personnes</label>
+              <select id="guests"></select>
+            </div>
+
+            <div class="field">
+              <label>Votre nom</label>
+              <input type="text" id="clientName" placeholder="Votre nom" />
+            </div>
+
+            <div class="field">
+              <label>Votre téléphone</label>
+              <input type="tel" id="clientPhone" placeholder="+221 ..." />
+            </div>
+
+            <div class="field">
+              <label>Mode de paiement</label>
+              <input type="text" id="payMethod" disabled />
+            </div>
+          </div>
+
+          <div class="field" style="margin-top:12px;">
+            <label>Message complémentaire</label>
+            <textarea id="clientMsg" placeholder="Ex : arrivée tardive, besoin particulier, infos complémentaires..."></textarea>
+          </div>
+
+          <div class="summary-box" id="summaryBox">
+            Sélectionnez vos dates d’arrivée et de départ pour voir le nombre de nuits et une estimation.
+          </div>
+
+          <button class="btn btn-wa" type="button" id="btnReserve" style="margin-top:14px;">
+            💬 Envoyer la demande sur WhatsApp
+          </button>
+
+          <div id="statusBox" class="status"></div>
+        </article>
+
+        <article class="card">
+          <h2 class="section-title">Infos pratiques</h2>
+          <div class="small" id="shortRules">—</div>
+
+          <ul class="list" id="amenitiesList"></ul>
+
+          <div class="contact-box" id="contactBox"></div>
+        </article>
+      </section>
+
+      <footer id="footerText">DIGIY LOC — fiche publique</footer>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const FALLBACK_IMG = "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80";
+    const qs = new URLSearchParams(location.search);
+    const slug = (qs.get("slug") || "").trim();
+
+    const loadingEl = document.getElementById("loading");
+    const errorEl = document.getElementById("error");
+    const appEl = document.getElementById("app");
+
+    const brandEl = document.getElementById("brand");
+    const headerTagEl = document.getElementById("headerTag");
+    const heroImageEl = document.getElementById("heroImage");
+    const badgeRowEl = document.getElementById("badgeRow");
+    const heroTitleEl = document.getElementById("heroTitle");
+    const heroTaglineEl = document.getElementById("heroTagline");
+    const metaRowEl = document.getElementById("metaRow");
+
+    const prixNuitEl = document.getElementById("prixNuit");
+    const prixSemaineEl = document.getElementById("prixSemaine");
+    const prixMoisEl = document.getElementById("prixMois");
+    const senelecNoteEl = document.getElementById("senelecNote");
+
+    const wavePhoneEl = document.getElementById("wavePhone");
+    const paymentNoteEl = document.getElementById("paymentNote");
+    const ownerNameEl = document.getElementById("ownerName");
+    const waveNameEl = document.getElementById("waveName");
+
+    const btnWaEl = document.getElementById("btnWa");
+    const btnCallEl = document.getElementById("btnCall");
+    const btnCopyEl = document.getElementById("btnCopy");
+    const btnVideoEl = document.getElementById("btnVideo");
+    const btnReserveEl = document.getElementById("btnReserve");
+
+    const dateInEl = document.getElementById("dateIn");
+    const dateOutEl = document.getElementById("dateOut");
+    const guestsEl = document.getElementById("guests");
+    const clientNameEl = document.getElementById("clientName");
+    const clientPhoneEl = document.getElementById("clientPhone");
+    const payMethodEl = document.getElementById("payMethod");
+    const clientMsgEl = document.getElementById("clientMsg");
+    const summaryBoxEl = document.getElementById("summaryBox");
+    const statusBoxEl = document.getElementById("statusBox");
+
+    const shortRulesEl = document.getElementById("shortRules");
+    const amenitiesListEl = document.getElementById("amenitiesList");
+    const contactBoxEl = document.getElementById("contactBox");
+    const footerTextEl = document.getElementById("footerText");
+
+    let room = null;
+
+    function safeText(value, fallback = "") {
+      const s = String(value ?? "").trim();
+      return s || fallback;
+    }
+
+    function money(value) {
+      const n = Number(value);
+      if (!Number.isFinite(n) || n <= 0) return "—";
+      return n.toLocaleString("fr-FR") + " F CFA";
+    }
+
+    function digitsOnly(value) {
+      return String(value || "").replace(/\D/g, "");
+    }
+
+    function normalizePhone(value) {
+      let s = String(value || "").trim();
+      if (!s) return "";
+      s = s.replace(/[^\d+]/g, "");
+      if (s.startsWith("00")) s = "+" + s.slice(2);
+
+      const digits = s.replace(/\D/g, "");
+      if (!s.startsWith("+") && digits.length === 9) return "+221" + digits;
+      if (s.startsWith("+")) return s;
+      if (digits) return "+" + digits;
+      return "";
+    }
+
+    function parseArray(value) {
+      if (Array.isArray(value)) return value.filter(Boolean).map(v => String(v));
+      if (!value) return [];
+      if (typeof value === "string") {
+        try {
+          const parsed = JSON.parse(value);
+          if (Array.isArray(parsed)) return parsed.filter(Boolean).map(v => String(v));
+        } catch (_) {}
+      }
+      return [];
+    }
+
+    function getMainImage(data) {
+      const gallery = parseArray(data.gallery_urls);
+      return safeText(gallery[0], safeText(data.photo_url, FALLBACK_IMG));
+    }
+
+    function addBadge(text, gold = false) {
+      const span = document.createElement("span");
+      span.className = "badge" + (gold ? " gold" : "");
+      span.textContent = text;
+      badgeRowEl.appendChild(span);
+    }
+
+    function showError(message) {
+      loadingEl.style.display = "none";
+      appEl.style.display = "none";
+      errorEl.style.display = "";
+      errorEl.textContent = message;
+    }
+
+    function setStatus(message, type) {
+      statusBoxEl.className = "status " + (type || "");
+      statusBoxEl.textContent = message || "";
+    }
+
+    function fillGuests(maxPeople) {
+      guestsEl.innerHTML = "";
+      const max = Math.max(1, Number(maxPeople || 4));
+      for (let i = 1; i <= max; i++) {
+        const option = document.createElement("option");
+        option.value = String(i);
+        option.textContent = String(i);
+        if (i === Math.min(2, max)) option.selected = true;
+        guestsEl.appendChild(option);
+      }
+    }
+
+    function getNights() {
+      if (!dateInEl.value || !dateOutEl.value) return 0;
+      const inDate = new Date(dateInEl.value);
+      const outDate = new Date(dateOutEl.value);
+      const diff = outDate - inDate;
+      if (!Number.isFinite(diff) || diff <= 0) return 0;
+      return Math.round(diff / 86400000);
+    }
+
+    function buildSummary() {
+      if (!room) {
+        summaryBoxEl.innerHTML = "Sélectionnez vos dates d’arrivée et de départ pour voir le nombre de nuits et une estimation.";
+        return;
+      }
+
+      const nights = getNights();
+      const prixNuit = Number(room.prix_nuit || 0);
+      const guests = Number(guestsEl.value || 1);
+      const depositPercent = Number(room.deposit_percent || 0);
+
+      if (!nights) {
+        summaryBoxEl.innerHTML = `
+          Sélectionnez vos dates d’arrivée et de départ pour voir le nombre de nuits et une estimation.
+          <br><br>
+          Tarif nuit affiché : <strong>${money(prixNuit)}</strong>.
+        `;
+        return;
+      }
+
+      const estimated = prixNuit > 0 ? nights * prixNuit : 0;
+      const depositAmount = depositPercent > 0 && estimated > 0
+        ? Math.round(estimated * depositPercent / 100)
+        : 0;
+
+      summaryBoxEl.innerHTML = `
+        Séjour de <strong>${nights}</strong> nuit(s) pour <strong>${guests}</strong> personne(s).
+        <br>
+        Estimation au tarif nuit : <strong>${money(estimated)}</strong>.
+        ${depositAmount > 0 ? `<br>Acompte indicatif (${depositPercent}%) : <strong>${money(depositAmount)}</strong>.` : ""}
+        <br><br>
+        Le tarif final sera confirmé directement avec le propriétaire.
+      `;
+    }
+
+    function buildWhatsappMessage() {
+      const roomName = safeText(room.nom, "ce logement");
+      const owner = safeText(room.owner_name, "le propriétaire");
+      const guests = Number(guestsEl.value || 1);
+      const nights = getNights();
+      const prixNuit = Number(room.prix_nuit || 0);
+      const estimated = nights > 0 ? nights * prixNuit : 0;
+      const depositPercent = Number(room.deposit_percent || 0);
+      const depositAmount = depositPercent > 0 && estimated > 0
+        ? Math.round(estimated * depositPercent / 100)
+        : 0;
+
+      let message = `Bonjour ${owner}, je souhaite réserver "${roomName}" via DIGIY LOC.\n`;
+      if (clientNameEl.value.trim()) message += `- Nom : ${clientNameEl.value.trim()}\n`;
+      if (clientPhoneEl.value.trim()) message += `- Téléphone : ${normalizePhone(clientPhoneEl.value.trim()) || clientPhoneEl.value.trim()}\n`;
+      if (dateInEl.value) message += `- Arrivée : ${dateInEl.value}\n`;
+      if (dateOutEl.value) message += `- Départ : ${dateOutEl.value}\n`;
+      message += `- Nombre de personnes : ${guests}\n`;
+
+      if (nights > 0) message += `- Durée : ${nights} nuit(s)\n`;
+      if (estimated > 0) message += `- Estimation : ${money(estimated)}\n`;
+      if (depositAmount > 0) message += `- Acompte indicatif (${depositPercent}%) : ${money(depositAmount)}\n`;
+
+      message += `- Paiement prévu : ${safeText(room.payment_note, "Paiement direct propriétaire")}\n`;
+
+      if (clientMsgEl.value.trim()) {
+        message += `- Message : ${clientMsgEl.value.trim()}\n`;
+      }
+
+      message += `\nMerci de me confirmer la disponibilité.`;
+      return message;
+    }
+
+    function openWhatsapp(phone, message) {
+      const digits = digitsOnly(phone);
+      if (!digits) {
+        setStatus("Numéro WhatsApp introuvable.", "bad");
+        return;
+      }
+      const url = `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
+      window.open(url, "_blank", "noopener,noreferrer");
+      setStatus("WhatsApp ouvert ✅", "ok");
+    }
+
+    async function loadRoom() {
+      if (!slug) {
+        showError("Slug manquant dans l’URL publique.");
+        return;
+      }
+
+      const { data, error } = await supabaseClient
+        .from("digiy_loc_rooms")
+        .select("*")
+        .eq("slug", slug)
+        .eq("is_public", true)
+        .maybeSingle();
+
+      if (error) {
+        console.error(error);
+        showError("Erreur chargement fiche publique.");
+        return;
+      }
+
+      if (!data) {
+        showError("Logement introuvable ou non public.");
+        return;
+      }
+
+      room = data;
+
+      const nom = safeText(room.nom, "Logement DIGIY LOC");
+      const ownerName = safeText(room.owner_name, "Propriétaire");
+      const waveName = safeText(room.wave_name, ownerName);
+      const tagline = safeText(room.tagline, safeText(room.description, "Fiche logement DIGIY LOC"));
+      const quartier = safeText(room.quartier, "");
+      const city = safeText(room.city, "");
+      const country = safeText(room.country, "Sénégal");
+      const fullPlace = [quartier, city, country].filter(Boolean).join(" · ");
+      const mainImage = getMainImage(room);
+      const coverMode = safeText(room.cover_mode, "cover").toLowerCase() === "contain" ? "contain" : "cover";
+
+      const waPhone = safeText(room.whatsapp_phone, room.phone || "");
+      const callPhone = safeText(room.call_phone, room.phone || "");
+      const wavePhone = safeText(room.wave_phone, room.phone || "");
+      const videoUrl = safeText(room.video_url, "");
+      const shortRules = safeText(
+        room.short_rules,
+        "Réservation directe propriétaire. Confirmation après échange et acompte si demandé."
+      );
+      const paymentNote = safeText(room.payment_note, "Paiement direct propriétaire par Wave");
+      const senelecNote = safeText(room.senelec_note, "Conditions à confirmer avec le propriétaire.");
+      const amenities = parseArray(room.amenities);
+      const heroBadges = parseArray(room.hero_badges);
+
+      document.title = `${nom} — DIGIY LOC`;
+      brandEl.innerHTML = `${nom} — <span>DIGIY LOC</span>`;
+      headerTagEl.textContent = fullPlace || "Fiche publique DIGIY LOC";
+      heroTitleEl.textContent = nom;
+      heroTaglineEl.textContent = tagline;
+
+      heroImageEl.src = mainImage || FALLBACK_IMG;
+      heroImageEl.alt = nom;
+      heroImageEl.style.objectFit = coverMode;
+      heroImageEl.onerror = () => {
+        heroImageEl.onerror = null;
+        heroImageEl.src = FALLBACK_IMG;
+      };
+
+      badgeRowEl.innerHTML = "";
+      if (room.is_featured) addBadge("⭐ Fiche vedette", true);
+      if (room.type_logement) addBadge(room.type_logement);
+      if (room.personnes_max) addBadge(`${room.personnes_max} personnes max`);
+      addBadge("0% commission");
+      addBadge("Paiement direct");
+      heroBadges.forEach(item => addBadge(item));
+
+      metaRowEl.innerHTML = "";
+      [fullPlace, safeText(room.adresse, ""), safeText(room.type_logement, "")].filter(Boolean).forEach(item => {
+        const div = document.createElement("div");
+        div.className = "item";
+        div.textContent = item;
+        metaRowEl.appendChild(div);
+      });
+
+      prixNuitEl.textContent = money(room.prix_nuit);
+      prixSemaineEl.textContent = money(room.prix_semaine);
+      prixMoisEl.textContent = money(room.prix_mois);
+      senelecNoteEl.textContent = senelecNote;
+
+      wavePhoneEl.textContent = wavePhone || "—";
+      paymentNoteEl.textContent = paymentNote;
+      ownerNameEl.textContent = ownerName;
+      waveNameEl.textContent = waveName;
+
+      payMethodEl.value = wavePhone ? `Wave (${wavePhone})` : "Paiement direct propriétaire";
+
+      btnWaEl.href = "#";
+      btnWaEl.onclick = (e) => {
+        e.preventDefault();
+        openWhatsapp(waPhone, `Bonjour, je souhaite avoir des informations pour "${nom}" via DIGIY LOC.`);
+      };
+
+      btnCallEl.href = callPhone ? `tel:${callPhone}` : "#";
+      btnCallEl.onclick = (e) => {
+        if (!callPhone) {
+          e.preventDefault();
+          setStatus("Numéro d’appel non renseigné.", "bad");
+        }
+      };
+
+      btnCopyEl.onclick = async () => {
+        try {
+          await navigator.clipboard.writeText(location.href);
+          setStatus("Lien copié ✅", "ok");
+        } catch (err) {
+          console.error(err);
+          setStatus("Copie automatique impossible.", "bad");
+        }
+      };
+
+      if (videoUrl) {
+        btnVideoEl.style.display = "flex";
+        btnVideoEl.href = videoUrl;
+      }
+
+      shortRulesEl.textContent = shortRules;
+
+      amenitiesListEl.innerHTML = "";
+      const list = amenities.length
+        ? amenities
+        : [
+            "Paiement direct propriétaire",
+            "Contact WhatsApp direct",
+            "Réservation simple et rapide"
+          ];
+
+      list.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = item;
+        amenitiesListEl.appendChild(li);
+      });
+
+      contactBoxEl.innerHTML = `
+        <strong>WhatsApp principal :</strong><br>
+        <a href="https://wa.me/${digitsOnly(waPhone)}" target="_blank" rel="noopener">${waPhone || "—"}</a>
+        <br><br>
+        <strong>Appel direct :</strong><br>
+        <a href="${callPhone ? `tel:${callPhone}` : '#'}">${callPhone || "—"}</a>
+        <br><br>
+        <strong>Numéro Wave :</strong><br>
+        ${wavePhone || "—"}
+        <br><br>
+        <strong>Note paiement :</strong><br>
+        ${paymentNote}
+        ${videoUrl ? `<br><br><strong>Vidéo :</strong><br><a href="${videoUrl}" target="_blank" rel="noopener">Voir la vidéo</a>` : ""}
+      `;
+
+      footerTextEl.textContent = `${nom} · ${fullPlace || "Sénégal"} · DIGIY LOC`;
+
+      fillGuests(room.personnes_max);
+      buildSummary();
+
+      loadingEl.style.display = "none";
+      errorEl.style.display = "none";
+      appEl.style.display = "";
+    }
+
+    [dateInEl, dateOutEl, guestsEl].forEach(el => {
+      el.addEventListener("change", buildSummary);
+    });
+
+    btnReserveEl.addEventListener("click", () => {
+      if (!room) {
+        setStatus("Fiche non chargée.", "bad");
+        return;
+      }
+
+      const waPhone = safeText(room.whatsapp_phone, room.phone || "");
+      const message = buildWhatsappMessage();
+      openWhatsapp(waPhone, message);
+    });
+
+    loadRoom();
+  </script>
+</body>
+</html>
