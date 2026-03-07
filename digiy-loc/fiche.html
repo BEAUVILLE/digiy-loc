@@ -69,6 +69,7 @@
       align-items:center;
       gap:10px;
       margin-bottom:12px;
+      flex-wrap:wrap;
     }
     .brand{display:flex;align-items:center;gap:10px}
     .brand-logo{
@@ -175,6 +176,7 @@
       line-height:1.7;
       color:#f3f4f6;
       font-weight:650;
+      white-space:pre-wrap;
     }
 
     .galleryWrap{
@@ -238,6 +240,33 @@
       margin-top:8px;font-size:14px;color:#e5e7eb;line-height:1.6;font-weight:650
     }
 
+    .infoGrid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:10px;
+    }
+    @media(max-width:560px){ .infoGrid{grid-template-columns:1fr} }
+    .info{
+      border:1px solid rgba(148,163,184,.18);
+      background:rgba(15,23,42,.35);
+      border-radius:16px;
+      padding:10px 12px;
+    }
+    .info .k{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:900;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+    .info .v{
+      margin-top:6px;
+      font-size:18px;
+      font-weight:950;
+      color:#fff;
+    }
+
     .actions{
       display:flex;
       gap:10px;
@@ -288,7 +317,6 @@
       line-height:1.55;
     }
 
-    /* Lightbox */
     .overlay{
       position:fixed; inset:0;
       background:rgba(0,0,0,.72);
@@ -372,7 +400,6 @@
     </header>
 
     <main class="shell">
-      <!-- MAIN -->
       <section class="panel">
         <div class="cover">
           <img id="coverImg" alt="Photo du logement" src="" />
@@ -402,19 +429,12 @@
         </div>
       </section>
 
-      <!-- SIDE -->
       <aside class="panel">
         <div class="side">
           <div class="box">
             <div class="kicker">Règle DIGIY</div>
             <div class="big">0% commission</div>
-            <div class="txt">Paiement direct au propriétaire (Wave/espèces selon le logement). DIGIY ne touche pas l’argent.</div>
-          </div>
-
-          <div class="box" id="ndBox" style="display:none">
-            <div class="kicker">NDIMBAL</div>
-            <div class="big">2 nuits payées = 3ᵉ offerte</div>
-            <div class="txt">Valable du lundi au jeudi (selon disponibilité). Tu restes +1 nuit → le quartier gagne +1 jour.</div>
+            <div class="txt">Paiement direct au propriétaire. DIGIY ne touche pas l’argent.</div>
           </div>
 
           <div class="box">
@@ -428,8 +448,42 @@
           </div>
 
           <div class="box">
+            <div class="kicker">Infos clés</div>
+            <div class="infoGrid">
+              <div class="info">
+                <div class="k">Type</div>
+                <div class="v" id="typeEl">—</div>
+              </div>
+              <div class="info">
+                <div class="k">Ville</div>
+                <div class="v" id="cityEl">—</div>
+              </div>
+              <div class="info">
+                <div class="k">Capacité</div>
+                <div class="v" id="capEl">—</div>
+              </div>
+              <div class="info">
+                <div class="k">Slug</div>
+                <div class="v" id="slugEl">—</div>
+              </div>
+              <div class="info">
+                <div class="k">Prix / Nuit</div>
+                <div class="v" id="pnEl">—</div>
+              </div>
+              <div class="info">
+                <div class="k">Prix / Semaine</div>
+                <div class="v" id="psEl">—</div>
+              </div>
+              <div class="info" style="grid-column:1/-1">
+                <div class="k">Prix / Mois</div>
+                <div class="v" id="pmEl">—</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="box">
             <div class="kicker">Sécurité</div>
-            <div class="txt">Cette page est publique (client). Le cockpit propriétaire est protégé par PIN côté PRO.</div>
+            <div class="txt">Cette page est publique côté client. Le cockpit propriétaire reste protégé côté PRO.</div>
           </div>
         </div>
       </aside>
@@ -441,7 +495,6 @@
     </footer>
   </div>
 
-  <!-- LIGHTBOX -->
   <div class="overlay" id="lbOverlay" aria-hidden="true">
     <div class="lightbox" role="dialog" aria-modal="true" aria-label="Photo">
       <div class="lbTop">
@@ -454,25 +507,14 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    /* =========================
-       SUPABASE (DIGIY)
-    ========================= */
     const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
     const SUPABASE_ANON_KEY =
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    /* =========================
-       CONSTANTES TERRAIN
-    ========================= */
     const TEAM_WA = "+221771342889";
-    const NDIMBAL_NAME_UP = "CHEZ ASTOU SALY";
-    const NDIMBAL_RULE = "2 nuits payées = 3e offerte (Lun-Jeu)";
     const FALLBACK_IMG = "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80";
 
-    /* =========================
-       DOM
-    ========================= */
     const coverImg = document.getElementById("coverImg");
     const titleEl = document.getElementById("titleEl");
     const subEl = document.getElementById("subEl");
@@ -484,18 +526,21 @@
     const btnReserve = document.getElementById("btnReserve");
     const waEl = document.getElementById("waEl");
     const btnWa = document.getElementById("btnWa");
-    const ndBox = document.getElementById("ndBox");
+
+    const typeEl = document.getElementById("typeEl");
+    const cityEl = document.getElementById("cityEl");
+    const capEl = document.getElementById("capEl");
+    const slugEl = document.getElementById("slugEl");
+    const pnEl = document.getElementById("pnEl");
+    const psEl = document.getElementById("psEl");
+    const pmEl = document.getElementById("pmEl");
 
     const lbOverlay = document.getElementById("lbOverlay");
     const lbClose = document.getElementById("lbClose");
     const lbImg = document.getElementById("lbImg");
     const lbTitle = document.getElementById("lbTitle");
 
-    /* =========================
-       HELPERS
-    ========================= */
     function norm(s){ return String(s || "").trim().toLowerCase(); }
-    function up(s){ return String(s || "").toUpperCase().trim(); }
 
     function escapeHtml(str){
       return String(str ?? "")
@@ -512,48 +557,52 @@
       return String(u.searchParams.get("slug") || "").trim();
     }
 
-    function pickWhatsApp(row){
-      const slug = String(row?.slug || "").toLowerCase();
-      const title = up(row?.title || "");
-      if (slug === "chez-astou-saly" || title.includes("CHEZ ASTOU SALY")) return "+221778765785";
-      const wa = row?.whatsapp || row?.phone || "";
-      const digits = String(wa).replace(/\D/g,"");
-      if (digits.length >= 9) return wa;
-      return TEAM_WA;
-    }
-
-    function openWa(phone, message){
-      const txt = encodeURIComponent(message || "");
-      const digits = String(phone || "").replace(/\D/g, "");
-      if (!digits) return;
-      const url = "https://wa.me/" + digits + (txt ? "?text=" + txt : "");
-      window.open(url, "_blank", "noopener,noreferrer");
-    }
-
-    function isNdimbal(row){
-      return up(row?.title || "") === NDIMBAL_NAME_UP;
-    }
-
-    function computeKind(row){
-      const t = norm(row?.title || "");
-      if (t.includes("villa")) return "Villa • Direct propriétaire";
-      if (t.includes("studio")) return "Studio • Direct propriétaire";
-      if (t.includes("appart")) return "Appartement • Direct propriétaire";
-      if (t.includes("chambre")) return "Chambre • Direct propriétaire";
-      return "Location • Direct propriétaire";
-    }
-
     function safeImg(img){
       const src = String(img || "").trim();
       return src ? src : FALLBACK_IMG;
     }
 
-    // photos formats:
-    // - array
-    // - JSON string '["url1","url2"]'
-    // - CSV "url1,url2"
-    // - single url
+    function money(x){
+      const n = Number(x);
+      if (!isFinite(n) || n <= 0) return "—";
+      try { return n.toLocaleString("fr-FR") + " FCFA"; }
+      catch { return String(n) + " FCFA"; }
+    }
+
+    function waDigits(phone){
+      return String(phone || "").replace(/\D/g, "");
+    }
+
+    function pickWhatsApp(row){
+      const wa = row?.phone || TEAM_WA;
+      const digits = waDigits(wa);
+      if (digits.length >= 9) return wa;
+      return TEAM_WA;
+    }
+
+    function computeKind(row){
+      const type = String(row?.type_logement || "").toLowerCase();
+      if (type.includes("villa")) return "Villa • Direct propriétaire";
+      if (type.includes("studio")) return "Studio • Direct propriétaire";
+      if (type.includes("appartement")) return "Appartement • Direct propriétaire";
+      if (type.includes("chambre")) return "Chambre • Direct propriétaire";
+      if (type.includes("maison")) return "Maison • Direct propriétaire";
+
+      const nom = String(row?.nom || "").toLowerCase();
+      if (nom.includes("villa")) return "Villa • Direct propriétaire";
+      if (nom.includes("studio")) return "Studio • Direct propriétaire";
+      if (nom.includes("appart")) return "Appartement • Direct propriétaire";
+      if (nom.includes("chambre")) return "Chambre • Direct propriétaire";
+      if (nom.includes("maison")) return "Maison • Direct propriétaire";
+
+      return "Location • Direct propriétaire";
+    }
+
     function parsePhotos(row){
+      const out = [];
+
+      if (row?.photo_url) out.push(String(row.photo_url).trim());
+
       const raw =
         row?.photos ??
         row?.gallery ??
@@ -562,28 +611,35 @@
         row?.photo_urls ??
         null;
 
-      if (!raw) return [];
-
-      if (Array.isArray(raw)){
-        return raw.map(x => String(x || "").trim()).filter(Boolean);
+      if (raw) {
+        if (Array.isArray(raw)) {
+          raw.forEach(x => { if (x) out.push(String(x).trim()); });
+        } else {
+          const s = String(raw).trim();
+          if (s) {
+            if ((s.startsWith("[") && s.endsWith("]")) || (s.startsWith("{") && s.endsWith("}"))) {
+              try {
+                const j = JSON.parse(s);
+                if (Array.isArray(j)) j.forEach(x => { if (x) out.push(String(x).trim()); });
+                else if (j && Array.isArray(j.photos)) j.photos.forEach(x => { if (x) out.push(String(x).trim()); });
+                else if (j && Array.isArray(j.gallery)) j.gallery.forEach(x => { if (x) out.push(String(x).trim()); });
+              } catch {}
+            } else if (s.includes(",")) {
+              s.split(",").forEach(x => { if (x.trim()) out.push(x.trim()); });
+            } else {
+              out.push(s);
+            }
+          }
+        }
       }
 
-      const s = String(raw).trim();
-      if (!s) return [];
-
-      if ((s.startsWith("[") && s.endsWith("]")) || (s.startsWith("{") && s.endsWith("}"))){
-        try{
-          const j = JSON.parse(s);
-          if (Array.isArray(j)) return j.map(x => String(x || "").trim()).filter(Boolean);
-          if (j && Array.isArray(j.photos)) return j.photos.map(x=>String(x||"").trim()).filter(Boolean);
-          if (j && Array.isArray(j.gallery)) return j.gallery.map(x=>String(x||"").trim()).filter(Boolean);
-        }catch(e){}
-      }
-
-      if (s.includes(",")){
-        return s.split(",").map(x=>x.trim()).filter(Boolean);
-      }
-      return [s];
+      const seen = new Set();
+      return out.filter(x => {
+        const k = String(x || "").trim();
+        if (!k || seen.has(k)) return false;
+        seen.add(k);
+        return true;
+      });
     }
 
     function setMetaTitle(name){
@@ -602,9 +658,6 @@
     function hideError(){ errEl.style.display = "none"; errEl.innerHTML = ""; }
     function hideWarn(){ warnEl.style.display = "none"; warnEl.innerHTML = ""; }
 
-    /* =========================
-       LIGHTBOX
-    ========================= */
     function openLightbox(url, title, n, total){
       lbTitle.textContent = (title || "Photo") + (total ? ` • ${n}/${total}` : "");
       lbImg.src = safeImg(url);
@@ -621,10 +674,8 @@
     document.addEventListener("keydown",(e)=>{ if (e.key === "Escape") closeLightbox(); });
 
     function renderGallery(list, title){
-      const photos = Array.isArray(list) ? list.filter(Boolean) : [];
       galleryEl.innerHTML = "";
-
-      const finalList = photos.length ? photos : [FALLBACK_IMG];
+      const finalList = (Array.isArray(list) && list.length) ? list : [FALLBACK_IMG];
 
       finalList.forEach((url, idx)=>{
         const item = document.createElement("div");
@@ -641,39 +692,41 @@
       });
     }
 
-    /* =========================
-       FETCH PIN BY SLUG (PUBLIC)
-    ========================= */
-    async function fetchPinBySlug(slug){
+    async function fetchRoomBySlug(slug){
       const { data, error } = await sb
-        .from("go_pins")
+        .from("digiy_loc_rooms")
         .select("*")
-        .eq("category","loc")
-        .eq("is_public", true)
-        .eq("is_active", true)
         .eq("slug", slug)
+        .eq("is_public", true)
+        .in("status", ["active", "actif"])
         .maybeSingle();
 
-      if (error) return { ok:false, row:null, error: error.message };
-      return { ok:true, row:data || null, error:null };
+      return { data, error };
     }
 
     function renderNotFound(slug){
       setMetaTitle("Introuvable");
       titleEl.textContent = "Logement introuvable";
-      descEl.textContent = "Ce lien n’existe pas (ou le logement n’est plus public). Retourne à la galerie.";
+      descEl.textContent = "Ce lien n’existe pas ou le logement n’est plus public. Retourne à la galerie.";
       coverImg.src = FALLBACK_IMG;
-      coverImg.onerror = () => { coverImg.onerror=null; coverImg.src = FALLBACK_IMG; };
+      coverImg.onerror = () => { coverImg.onerror = null; coverImg.src = FALLBACK_IMG; };
 
       subEl.innerHTML = "";
       renderGallery([], "Photo");
-      showWarn("Slug demandé : " + (slug || "—") + " • Vérifie le lien depuis la galerie.");
+      showWarn("Slug demandé : " + (slug || "—"));
       hideError();
+
+      typeEl.textContent = "—";
+      cityEl.textContent = "—";
+      capEl.textContent = "—";
+      slugEl.textContent = slug || "—";
+      pnEl.textContent = "—";
+      psEl.textContent = "—";
+      pmEl.textContent = "—";
 
       waEl.textContent = TEAM_WA;
       btnReserve.onclick = ()=> openWa(TEAM_WA, "Bonjour DIGIY 👋 Je cherche un logement mais le lien ne marche pas. Slug: " + (slug||"—"));
       btnWa.onclick = ()=> openWa(TEAM_WA, "Bonjour DIGIY 👋 Je veux un logement. Zone + budget + dates :");
-      ndBox.style.display = "none";
     }
 
     async function main(){
@@ -681,46 +734,35 @@
 
       if (!slug){
         renderNotFound("");
-        showWarn("Aucun slug dans l’URL. Exemple : fiche.html?slug=chez-astou-saly");
+        showWarn("Aucun slug dans l’URL. Exemple : fiche.html?slug=loc-room-a07c151a");
         return;
       }
 
-      const res = await fetchPinBySlug(slug);
-      if (!res.ok){
+      const res = await fetchRoomBySlug(slug);
+      if (res.error){
         renderNotFound(slug);
-        showError(res.error || "Erreur Supabase");
+        showError(res.error.message || "Erreur Supabase");
         return;
       }
-      if (!res.row){
+      if (!res.data){
         renderNotFound(slug);
         return;
       }
 
-      const row = res.row;
-
-      // Data normalize
-      const title = row.title || "Logement";
-      const city = row.address_label || row.city || "Sénégal";
-      const kind = row.kind || computeKind(row);
+      const row = res.data;
+      const title = row.nom || "Logement";
+      const city = row.adresse || "Sénégal";
+      const kind = computeKind(row);
       const wa = pickWhatsApp(row);
-      const cover = safeImg(row.cover);
-
-      const desc =
-        row.desc ||
-        row.description ||
-        "Contact direct propriétaire. Paiement direct (Wave/espèces selon le logement). 0% commission.";
-
+      const cover = safeImg(row.photo_url);
+      const desc = row.description || "Contact direct propriétaire. Paiement direct. 0% commission.";
       const photos = parsePhotos(row);
-      const allPhotos = [cover, ...photos].map(safeImg).filter(Boolean);
 
-      // Meta
       setMetaTitle(title);
 
-      // UI text
       titleEl.textContent = title;
       descEl.textContent = desc;
 
-      // Chips
       subEl.innerHTML = "";
       const c1 = document.createElement("span");
       c1.className = "chip blue";
@@ -735,47 +777,36 @@
       subEl.appendChild(c2);
       subEl.appendChild(c3);
 
-      // NDIMBAL
-      const nd = isNdimbal(row);
-      ndBox.style.display = nd ? "" : "none";
-
-      // WhatsApp UI
-      waEl.textContent = wa || TEAM_WA;
-
-      // ✅ COVER SAFE
-      const safeCover = (typeof cover === "string" ? cover.trim() : "");
       coverImg.loading = "eager";
-      coverImg.src = safeCover || FALLBACK_IMG;
-
+      coverImg.src = cover;
       coverImg.onerror = () => {
         coverImg.onerror = null;
         coverImg.src = FALLBACK_IMG;
       };
 
-      coverImg.addEventListener("load", () => {
-        if (!coverImg.naturalWidth || !coverImg.naturalHeight) {
-          coverImg.src = FALLBACK_IMG;
-        }
-      }, { once:true });
+      renderGallery(photos, title);
 
-      // Gallery + Lightbox
-      renderGallery(allPhotos, title);
+      waEl.textContent = wa;
+      typeEl.textContent = kind;
+      cityEl.textContent = city;
+      capEl.textContent = row.personnes_max ? String(row.personnes_max) + " pers." : "—";
+      slugEl.textContent = row.slug || "—";
+      pnEl.textContent = money(row.prix_nuit);
+      psEl.textContent = money(row.prix_semaine);
+      pmEl.textContent = money(row.prix_mois);
 
-      // Buttons
       btnReserve.onclick = () => {
-        const ndLine = nd ? `\n\n🌙 NDIMBAL : ${NDIMBAL_RULE}\nJe veux en profiter si dispo (Lun-Jeu).` : "";
-        openWa(wa || TEAM_WA, `Bonjour, je souhaite réserver / avoir des infos pour "${title}" via DIGIY LOC.${ndLine}`);
+        openWa(wa, `Bonjour, je souhaite réserver / avoir des infos pour "${title}" via DIGIY LOC.`);
       };
 
       btnWa.onclick = () => {
-        openWa(wa || TEAM_WA, `Bonjour 👋 Je veux des infos pour "${title}" (dates + budget).`);
+        openWa(wa, `Bonjour 👋 Je veux des infos pour "${title}" (dates + budget).`);
       };
 
       hideWarn();
       hideError();
     }
 
-    // Boot
     main().catch((e)=>{
       console.error(e);
       renderNotFound(getSlug());
