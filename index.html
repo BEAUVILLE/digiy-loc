@@ -1,7 +1,8 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8">.  FRÉROT SERT TOI DE CE MODÈLE POUR RÉALISER L'INDEX.HTML DE RESA RESTO FRÉROT POSSIBLE QU'EN PENSE TU ?
   <title>DIGIY LOC — Galerie des logements partenaires</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="description" content="DIGIY LOC — Locations direct propriétaire, paiement direct, 0% commission.">
@@ -637,474 +638,463 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<script>
-  const CITY_LOCK = "Saly";
-  const NEW_DAYS = 7;
-  const MIN_VISIBLE_CARDS = 6;
-
-  const FALLBACK_PHOTO = "https://orange-pig-270004.hostingersite.com/wp-content/uploads/2026/03/chatgpt-image-4-mars-2026-23_40_53.png";
-  const HUB_URL = "https://beauville.github.io/digiy-hub/";
-  const SUPPORT_WA = "221771342889";
-
-  const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
-
-  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-      detectSessionInUrl: false,
-      storage: {
-        getItem: () => null,
-        setItem: () => {},
-        removeItem: () => {}
-      }
-    },
-    global: { headers: { "X-Client-Info": "digiy-resa-public-vitrine" } }
-  });
-
-  const DEMO_CARDS = [
-    {
-      kind: "demo",
-      demo_id: "terrasse-lagune",
-      slug: "",
-      display_name: "Terrasse Lagune",
-      category: "Cuisine sunset",
-      city: "Saly",
-      address: "Près plage • ambiance coucher de soleil",
-      bio: "Une table d’ambiance pensée pour les fins d’après-midi, les dîners détendus et les rendez-vous en bord de mer.",
-      badge: "✨ SÉLECTION DIGIY",
-      hub_badge: "🌅 AMBIANCE SALY",
-      price_label: "Horaires: 12:00 - 23:00",
-      tags: ["Cuisine sunset", "Terrasse", "Cocktails", "Saly"],
-      photo_url: "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=1200&q=80",
-      created_at: new Date().toISOString()
-    },
-    {
-      kind: "demo",
-      demo_id: "braise-ocean",
-      slug: "",
-      display_name: "Braise Océan",
-      category: "Grillades & poisson",
-      city: "Saly",
-      address: "Zone résidentielle • service du soir",
-      bio: "Un esprit grillades, poisson braisé et table généreuse pour les repas simples, efficaces et chaleureux.",
-      badge: "✨ SÉLECTION DIGIY",
-      hub_badge: "🔥 TABLE CHALEUREUSE",
-      price_label: "Horaires: 19:00 - 00:00",
-      tags: ["Poisson", "Braises", "Dîner", "Saly"],
-      photo_url: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80",
-      created_at: new Date(Date.now() - 86400000).toISOString()
-    },
-    {
-      kind: "demo",
-      demo_id: "jardin-brunch",
-      slug: "",
-      display_name: "Jardin Brunch",
-      category: "Brunch & famille",
-      city: "Saly",
-      address: "Coin calme • terrasse verte",
-      bio: "Un format doux pour brunch, famille, café prolongé et rendez-vous du midi dans une atmosphère végétale.",
-      badge: "✨ SÉLECTION DIGIY",
-      hub_badge: "🌿 ESPRIT JARDIN",
-      price_label: "Horaires: 09:00 - 18:00",
-      tags: ["Brunch", "Famille", "Terrasse", "Saly"],
-      photo_url: "https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=1200&q=80",
-      created_at: new Date(Date.now() - 2 * 86400000).toISOString()
-    },
-    {
-      kind: "demo",
-      demo_id: "table-nuit-doree",
-      slug: "",
-      display_name: "Table Nuit Dorée",
-      category: "Dîner signature",
-      city: "Saly",
-      address: "Ambiance chic • soirée",
-      bio: "Une table pensée pour sortir le soir, dîner à deux, célébrer un moment ou recevoir dans une ambiance plus habillée.",
-      badge: "✨ SÉLECTION DIGIY",
-      hub_badge: "🌙 SOIRÉE",
-      price_label: "Horaires: 18:30 - 23:30",
-      tags: ["Dîner", "Soirée", "Signature", "Saly"],
-      photo_url: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=80",
-      created_at: new Date(Date.now() - 3 * 86400000).toISOString()
-    },
-    {
-      kind: "demo",
-      demo_id: "cour-des-amis",
-      slug: "",
-      display_name: "Cour des Amis",
-      category: "Table conviviale",
-      city: "Saly",
-      address: "Cour intérieure • groupe & partage",
-      bio: "Un esprit grande table, partage, plats à plusieurs et accueil simple pour repas entre amis ou en petit groupe.",
-      badge: "✨ SÉLECTION DIGIY",
-      hub_badge: "🤝 CONVIVIAL",
-      price_label: "Horaires: 12:00 - 22:30",
-      tags: ["Convivial", "Groupe", "Déjeuner", "Saly"],
-      photo_url: "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=1200&q=80",
-      created_at: new Date(Date.now() - 4 * 86400000).toISOString()
-    },
-    {
-      kind: "demo",
-      demo_id: "saveurs-sable",
-      slug: "",
-      display_name: "Saveurs Sable",
-      category: "Cuisine locale revisitée",
-      city: "Saly",
-      address: "Esprit petite côte • service fluide",
-      bio: "Une proposition ancrée localement, simple à comprendre, rassurante pour le client et parfaite pour une réservation rapide.",
-      badge: "✨ SÉLECTION DIGIY",
-      hub_badge: "🏝️ PETITE CÔTE",
-      price_label: "Horaires: 12:00 - 22:00",
-      tags: ["Local", "Petite côte", "Cuisine", "Saly"],
-      photo_url: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=1200&q=80",
-      created_at: new Date(Date.now() - 5 * 86400000).toISOString()
-    }
-  ];
-
-  let LIVE_ROWS = [];
-  let ROWS = [];
-
-  (function initLinks(){
-    document.getElementById("btnHub").href = HUB_URL;
-    document.getElementById("btnSupport").href =
-      "https://wa.me/" + SUPPORT_WA + "?text=" +
-      encodeURIComponent("Salut DIGIY RESA TABLE, j'ai une question sur la vitrine de Saly.");
-    document.getElementById("btnJoinTop").href =
-      "https://wa.me/" + SUPPORT_WA + "?text=" +
-      encodeURIComponent("Salut DIGIY RESA TABLE, je veux poser ma carte dans la vitrine de Saly.");
-    document.getElementById("btnRefresh").addEventListener("click", (e) => {
-      e.preventDefault();
-      load();
-    });
-  })();
-
-  function toast(msg){
-    const t = document.getElementById("toast");
-    if(!t) return;
-    t.textContent = msg || "";
-    t.classList.add("show");
-    setTimeout(() => t.classList.remove("show"), 2200);
-  }
-
-  function setStatus(msg){
-    const el = document.getElementById("statusText");
-    if(el) el.textContent = msg || "";
-  }
-
-  function esc(s){
-    return String(s ?? "")
-      .replaceAll("&","&amp;")
-      .replaceAll("<","&lt;")
-      .replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;")
-      .replaceAll("'","&#039;");
-  }
-
-  function pick(arr, key){
-    const v = (arr || []).map(x => (x?.[key] ?? "")).filter(Boolean);
-    return Array.from(new Set(v)).sort((a,b)=>String(a).localeCompare(String(b)));
-  }
-
-  function tagsToArray(tags){
-    if(Array.isArray(tags)) return tags.filter(Boolean).map(String);
-    const s = String(tags || "").trim();
-    if(!s) return [];
-    return s.split(",").map(x => x.trim()).filter(Boolean);
-  }
-
-  function isNew(dateIso){
-    if(!dateIso) return false;
-    const t = Date.parse(dateIso);
-    if(!Number.isFinite(t)) return false;
-    const days = (Date.now() - t) / (1000 * 60 * 60 * 24);
-    return days <= NEW_DAYS;
-  }
-
-  function sameCity(a, b){
-    return String(a || "").trim().toLowerCase() === String(b || "").trim().toLowerCase();
-  }
-
-  function first(...vals){
-    for(const v of vals){
-      if(v !== null && v !== undefined && String(v).trim() !== "") return v;
-    }
-    return "";
-  }
-
-  function updateStatsBar(visibleRows, liveRows){
-    const list = Array.isArray(visibleRows) ? visibleRows : [];
-    const reals = Array.isArray(liveRows) ? liveRows : [];
-    const now = Date.now();
-
-    const new7d = reals.filter(r => {
-      const t = Date.parse(r.created_at || "");
-      return Number.isFinite(t) && ((now - t) / (1000*60*60*24) <= 7);
-    }).length;
-
-    const new24h = reals.filter(r => {
-      const t = Date.parse(r.created_at || "");
-      return Number.isFinite(t) && ((now - t) / (1000*60*60) <= 24);
-    }).length;
-
-    const cats = new Set(list.map(r => String(r.category || "").trim()).filter(Boolean)).size;
-
-    document.getElementById("msTotal").textContent = String(list.length);
-    document.getElementById("ms7d").textContent = String(new7d);
-    document.getElementById("ms24h").textContent = String(new24h);
-    document.getElementById("msPublic").textContent = String(reals.length);
-    document.getElementById("msCats").textContent = String(cats);
-  }
-
-  function updateKpi(){
-    const visible = ROWS || [];
-    const reals = LIVE_ROWS || [];
-    const total = visible.length;
-    const new7d = reals.filter(x => isNew(x.created_at)).length;
-
-    const kCount = document.getElementById("kpiCount");
-    const kNew7d = document.getElementById("kpiNew7d");
-    const kLast  = document.getElementById("kpiLast");
-
-    if(kCount) kCount.textContent = String(total);
-    if(kNew7d) kNew7d.textContent = String(new7d);
-
-    const last = [...visible].sort((a,b) => {
-      const ta = Date.parse(a.created_at || "") || 0;
-      const tb = Date.parse(b.created_at || "") || 0;
-      return tb - ta;
-    })[0] || null;
-
-    if(kLast){
-      kLast.textContent = last
-        ? `${last.display_name || "—"}${last.kind === "demo" ? " • vitrine" : ""}`
-        : "—";
-    }
-
-    setStatus(
-      reals.length
-        ? `✅ ${reals.length} carte(s) réelle(s) • vitrine présentable immédiatement`
-        : "✨ Vitrine meublée pour présentation • en attente des premières cartes réelles"
-    );
-  }
-
-  function fillSelects(){
-    const catSel = document.getElementById("cat");
-    const cats = pick(ROWS, "category");
-    catSel.innerHTML =
-      `<option value="">Toutes les catégories</option>` +
-      cats.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join("");
-  }
-
-  function renderSkeleton(){
+  <script>
+    const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
+    const SUPABASE_ANON_KEY =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const grid = document.getElementById("grid");
-    if(!grid) return;
-    grid.innerHTML = Array.from({length:6}).map(() => `
-      <div class="card">
-        <div class="photo skeleton sk-photo"></div>
-        <div class="body">
-          <div class="skeleton sk-line" style="width:70%"></div>
-          <div class="skeleton sk-line" style="width:48%"></div>
-          <div class="skeleton sk-line" style="width:90%"></div>
-          <div class="skeleton sk-line" style="width:60%"></div>
-          <div class="actions" style="margin-top:10px;">
-            <div class="skeleton sk-line" style="height:42px; width:100%"></div>
-            <div class="skeleton sk-line" style="height:42px; width:100%"></div>
-          </div>
-        </div>
-      </div>
-    `).join("");
-  }
 
-  function mapLiveRow(r){
-    return {
-      kind: "live",
-      demo_id: "",
-      slug: first(r.slug),
-      display_name: first(r.business_name, r.restaurant_name, r.name, r.establishment_name) || "Établissement",
-      category: first(r.category, r.cuisine_type, r.cuisine, r.type_label, r.speciality) || "Table locale",
-      city: first(r.city) || "",
-      address: first(r.address_text, r.address, r.location_text) || "",
-      bio: first(r.description, r.about, r.short_description) || "",
-      badge: "🍽️ ÉTABLISSEMENT",
-      hub_badge: "🟢 RÉSERVABLE",
-      price_label: first(r.open_hours, r.opening_hours) ? `Horaires: ${first(r.open_hours, r.opening_hours)}` : "",
-      tags: [
-        first(r.category, r.cuisine_type, r.cuisine, r.type_label, r.speciality) || "",
-        first(r.city) || "",
-        first(r.open_hours, r.opening_hours) ? `Horaires: ${first(r.open_hours, r.opening_hours)}` : ""
-      ].filter(Boolean),
-      photo_url: first(r.cover_image_url, r.logo_url, r.image_url, r.photo_url) || "",
-      created_at: first(r.published_at, r.updated_at, r.created_at) || null
+    const TEAM_WA = "+221771342889";
+    const NDIMBAL_RULE = "2 nuits payées = 3e offerte (Lun-Jeu)";
+    const OCCUPANCY_VIEW = "v_loc_pin_occupancy_today";
+
+    function norm(s){ return String(s || "").trim().toLowerCase(); }
+
+    const BAPTISTE_PIN = {
+      title: "CHEZ BAPTISTE",
+      slug: "chez-baptiste",
+      address_label: "Saly",
+      kind: "Appartement • Direct propriétaire",
+      whatsapp: "+221778765785",
+      phone: "+221778765785",
+      cover: "https://orange-pig-270004.hostingersite.com/wp-content/uploads/2025/06/042-BAPTISTE.png",
+      desc: "Appartement partenaire à Saly. Réservation directe propriétaire via WhatsApp. Paiement direct. 0% commission DIGIY.",
+      public_url: "https://orange-pig-270004.hostingersite.com/partenaires-chez-baptiste/"
     };
-  }
 
-  function buildVisibleRows(liveRows){
-    const rows = [...liveRows];
-    const needed = Math.max(0, MIN_VISIBLE_CARDS - rows.length);
-    if(needed > 0){
-      rows.push(...DEMO_CARDS.slice(0, needed));
+    const PLACEBOTS = [
+      { title:"Zone Dakar — ouverture progressive", slug:"zone-dakar-en-ouverture", address_label:"Dakar", kind:"Appartement • Studio", whatsapp:TEAM_WA,
+        cover:"https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80",
+        desc:"On ouvre quartier par quartier. Dis ta zone + budget, l’équipe te propose."
+      },
+      { title:"Zone Somone / Ngaparou — bons plans", slug:"zone-somone-bons-plans", address_label:"Somone", kind:"Studio • Villa", whatsapp:TEAM_WA,
+        cover:"https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&w=1400&q=80",
+        desc:"Tu veux un bon plan ? Envoie dates + budget, on te guide."
+      },
+      { title:"Mbour — logements partenaires à venir", slug:"zone-mbour-a-venir", address_label:"Mbour", kind:"Villa • Chambre", whatsapp:TEAM_WA,
+        cover:"https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1400&q=80",
+        desc:"Tu cherches sur Mbour ? On active les proprios. Contacte-nous."
+      },
+      { title:"Thiès — ouverture en cours", slug:"zone-thies-a-venir", address_label:"Thiès", kind:"Studio • Appartement", whatsapp:TEAM_WA,
+        cover:"https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1400&q=80",
+        desc:"Thiès arrive. Envoie ta zone, on te répond vite."
+      }
+    ];
+
+    function escapeHtml(str){
+      return String(str ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
     }
-    return rows;
-  }
+    function escapeAttr(str){ return escapeHtml(str).replaceAll("","&#096;"); }
 
-  function render(list){
-    const grid = document.getElementById("grid");
-    if(!grid) return;
-
-    const rows = Array.isArray(list) ? list : [];
-
-    if(!rows.length){
-      grid.innerHTML = `
-        <div class="status" style="grid-column:1/-1;">
-          <span>⚠️ Aucune carte à afficher pour le moment.</span>
-        </div>
-      `;
-      return;
+    function openWa(phone, message){
+      const txt = encodeURIComponent(message || "");
+      const digits = String(phone || "").replace(/\D/g, "");
+      if (!digits) return;
+      const url = "https://wa.me/" + digits + (txt ? "?text=" + txt : "");
+      window.open(url, "_blank", "noopener,noreferrer");
     }
 
-    grid.innerHTML = rows.map(r => {
-      const name = esc(r.display_name || "Établissement");
-      const category = esc(r.category || "Table locale");
-      const city = esc(r.city || CITY_LOCK);
-      const address = esc(r.address || "");
-      const bio = esc(r.bio || "");
-      const badge = esc(r.badge || "🍽️ ÉTABLISSEMENT");
-      const hub = esc(r.hub_badge || "📍 SALY");
-      const price = esc(r.price_label || "");
-      const tags = tagsToArray(r.tags).slice(0, 6);
-      const isNewCard = isNew(r.created_at);
+    function mergeNoDup(baseList, fillers, targetCount){
+      const merged = [...baseList];
+      const seen = new Set(baseList.map(x => String(x.slug || "").toLowerCase()).filter(Boolean));
+      for (const f of fillers){
+        if (merged.length >= targetCount) break;
+        const s = String(f.slug || "").toLowerCase();
+        if (s && seen.has(s)) continue;
+        merged.push(f);
+        if (s) seen.add(s);
+      }
+      return merged;
+    }
 
-      const rawPhoto = String(r.photo_url || "").trim();
-      const basePhoto = rawPhoto || FALLBACK_PHOTO;
-      const photoFinal = esc(basePhoto + (basePhoto.includes("?") ? "&" : "?") + "v=9");
+    function computeKind(row){
+      const type = norm(row.type_logement || "");
+      if (type.includes("villa")) return "Villa • Direct propriétaire";
+      if (type.includes("studio")) return "Studio • Direct propriétaire";
+      if (type.includes("appartement")) return "Appartement • Direct propriétaire";
+      if (type.includes("chambre")) return "Chambre • Direct propriétaire";
+      if (type.includes("maison")) return "Maison • Direct propriétaire";
 
-      const ficheHref = r.kind === "live"
-        ? `./fiche.html?slug=${encodeURIComponent(r.slug || "")}`
-        : `./fiche.html?demo=${encodeURIComponent(r.demo_id || "")}`;
+      const t = norm(row.title || row.nom || "");
+      if (t.includes("villa")) return "Villa • Direct propriétaire";
+      if (t.includes("studio")) return "Studio • Direct propriétaire";
+      if (t.includes("appart")) return "Appartement • Direct propriétaire";
+      if (t.includes("chambre")) return "Chambre • Direct propriétaire";
+      if (t.includes("maison")) return "Maison • Direct propriétaire";
 
-      const resaHref = ficheHref + "#reserver";
+      return "Location • Direct propriétaire";
+    }
 
-      return `
-        <article class="card" data-kind="${esc(r.kind || "")}" data-slug="${esc(r.slug || "")}">
+    function pickWhatsApp(row){
+      const wa = row.whatsapp || row.phone || "";
+      const digits = String(wa).replace(/\D/g, "");
+      if (digits.length >= 9) return wa;
+      return TEAM_WA;
+    }
+
+    function pickCover(row){
+      return (
+        row.cover ||
+        row.photo_url ||
+        "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80"
+      );
+    }
+
+    function ficheLinkFor(p){
+      if (p && p.public_url) return String(p.public_url);
+      const slug = String(p?.slug || "");
+      return "https://beauville.github.io/digiy-loc/fiche.html?slug=" + encodeURIComponent(slug);
+    }
+
+    const ndOverlay = document.getElementById("ndOverlay");
+    const ndClose = document.getElementById("ndClose");
+    const ndClose2 = document.getElementById("ndClose2");
+    const ndTalk = document.getElementById("ndTalk");
+    const btnNdOpenTop = document.getElementById("btnNdOpenTop");
+
+    function openNdimbal(){
+      ndOverlay.classList.add("show");
+      ndOverlay.setAttribute("aria-hidden","false");
+    }
+    function closeNdimbal(){
+      ndOverlay.classList.remove("show");
+      ndOverlay.setAttribute("aria-hidden","true");
+    }
+
+    window.openNdimbal = openNdimbal;
+    window.closeNdimbal = closeNdimbal;
+
+    btnNdOpenTop.addEventListener("click", openNdimbal);
+    ndClose.addEventListener("click", closeNdimbal);
+    ndClose2.addEventListener("click", closeNdimbal);
+    ndOverlay.addEventListener("click", (e)=>{ if (e.target === ndOverlay) closeNdimbal(); });
+    document.addEventListener("keydown",(e)=>{ if (e.key === "Escape") closeNdimbal(); });
+
+    ndTalk.addEventListener("click", ()=>{
+      openWa(TEAM_WA, Bonjour DIGIY 👋\nJe veux en savoir plus sur NDIMBAL (${NDIMBAL_RULE}).);
+    });
+
+    async function logReservationIntent(pin){
+      try{
+        await sb.from("loc_reservation_requests").insert({
+          pin_slug: pin.slug || null,
+          logement_title: pin.title || null,
+          owner_phone: pickWhatsApp(pin) || null
+        });
+      }catch(e){
+        console.warn("[DIGIY LOC] logReservationIntent ignored:", e?.message || e);
+      }
+    }
+
+    async function reserveNow(pin){
+      const wa = pickWhatsApp(pin);
+      const title = pin.title || "ce logement";
+      const msg = Bonjour, je souhaite réserver / avoir des infos pour "${title}" via DIGIY LOC.;
+      await logReservationIntent(pin);
+      openWa(wa, msg);
+    }
+    window.reserveNow = reserveNow;
+
+    function pickLocForWhatsApp(pin){
+      const title = pin?.title || "Logement";
+      const slug  = pin?.slug  || "";
+      const phone = (pin?.whatsapp || pin?.phone || TEAM_WA || "").toString();
+
+      const pickedHint = document.getElementById("pickedHint");
+      const pickLine   = document.getElementById("pickLine");
+      const pickedTitle= document.getElementById("pickedTitle");
+      const pickedSlug = document.getElementById("pickedSlug");
+      const pickedPhone= document.getElementById("pickedPhone");
+
+      pickedHint.textContent = "Logement sélectionné ✅";
+      pickLine.style.display = "flex";
+      pickedTitle.textContent = title;
+
+      pickedSlug.value  = slug;
+      pickedPhone.value = phone;
+
+      document.getElementById("contact").scrollIntoView({ behavior:"smooth", block:"start" });
+    }
+    window.pickLocForWhatsApp = pickLocForWhatsApp;
+
+    document.getElementById("pickClear").addEventListener("click", ()=>{
+      document.getElementById("pickedHint").textContent = "Choisis un logement dans la liste 👇";
+      document.getElementById("pickLine").style.display = "none";
+      document.getElementById("pickedTitle").textContent = "—";
+      document.getElementById("pickedSlug").value = "";
+      document.getElementById("pickedPhone").value = "";
+    });
+
+    document.getElementById("locLeadForm").addEventListener("submit", (e)=>{
+      e.preventDefault();
+
+      const pickedSlug = document.getElementById("pickedSlug").value.trim();
+      const pickedPhone = document.getElementById("pickedPhone").value.trim() || TEAM_WA;
+      const form = e.currentTarget;
+
+      const name = form.name.value.trim();
+      const dates = form.dates.value.trim();
+      const people = form.people.value.trim();
+      const budget = form.budget.value.trim();
+
+      const msg = [
+        "Bonjour 👋",
+        "Je vous contacte via DIGIY LOC.",
+        pickedSlug ? Logement : ${pickedSlug} : "Logement : à préciser",
+        Prénom : ${name || "à préciser"},
+        Dates : ${dates || "à préciser"},
+        Personnes : ${people || "à préciser"},
+        Budget : ${budget || "non précisé"}
+      ].join("\n");
+
+      openWa(pickedPhone, msg);
+    });
+
+    async function fetchOccupancyToday(){
+      try{
+        const { data, error } = await sb
+          .from(OCCUPANCY_VIEW)
+          .select("pin_slug,is_occupied_today");
+
+        if (error) return new Map();
+        const m = new Map();
+        (data || []).forEach(r=>{
+          if (r && r.pin_slug) m.set(String(r.pin_slug), !!r.is_occupied_today);
+        });
+        return m;
+      }catch(_){
+        return new Map();
+      }
+    }
+
+    async function fetchLocPins(){
+      const { data, error } = await sb
+        .from("digiy_loc_rooms")
+        .select(
+          id,
+          created_at,
+          updated_at,
+          owner_id,
+          nom,
+          adresse,
+          personnes_max,
+          prix_nuit,
+          prix_semaine,
+          prix_mois,
+          description,
+          photo_url,
+          status,
+          phone,
+          business_code,
+          slug,
+          is_public,
+          public_url,
+          type_logement
+        )
+        .eq("is_public", true)
+        .in("status", ["active", "actif"])
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.warn("[DIGIY LOC] Supabase error:", error.message);
+        return { ok:false, rows:[], error: error.message };
+      }
+
+      const normalized = (data || [])
+        .map(row => ({
+          title: row.nom || "",
+          slug: row.slug || "",
+          address_label: row.adresse || "",
+          kind: computeKind(row),
+          whatsapp: row.phone || TEAM_WA,
+          phone: row.phone || TEAM_WA,
+          cover: row.photo_url || "",
+          photo_url: row.photo_url || "",
+          desc: row.description || "",
+          public_url: row.public_url || "",
+          type_logement: row.type_logement || "",
+          prix_nuit: row.prix_nuit ?? null,
+          prix_semaine: row.prix_semaine ?? null,
+          prix_mois: row.prix_mois ?? null,
+          personnes_max: row.personnes_max ?? null
+        }))
+        .filter(row => {
+          return (
+            String(row.slug || "").trim() &&
+            String(row.title || "").trim() &&
+            String(row.address_label || "").trim() &&
+            String(row.cover || "").trim()
+          );
+        });
+
+      return { ok:true, rows: normalized, error:null };
+    }
+
+    function placeBaptisteFirst(list){
+      const out = [];
+      const seen = new Set();
+
+      out.push(BAPTISTE_PIN);
+      seen.add(norm(BAPTISTE_PIN.slug));
+
+      for (const p of (list || [])) {
+        const s = norm(p.slug);
+        if (!s || seen.has(s)) continue;
+        out.push(p);
+        seen.add(s);
+      }
+
+      return out;
+    }
+
+    function applyFilters(list){
+      const q = norm(document.getElementById("q").value);
+      const kind = norm(document.getElementById("kind").value);
+
+      return list.filter(p=>{
+        const title = norm(p.title || "");
+        const city  = norm(p.address_label || "");
+        const k     = norm(p.kind || computeKind(p));
+
+        if (q && !(title.includes(q) || city.includes(q))) return false;
+        if (kind && !k.includes(kind)) return false;
+        return true;
+      });
+    }
+
+    function cardTemplate(p, occMap){
+      const title = p.title || "Logement";
+      const slug  = p.slug || "";
+      const city  = p.address_label || "—";
+      const kind  = p.kind || computeKind(p);
+      const wa    = pickWhatsApp(p);
+      const cover = pickCover(p);
+
+      const isPinned = norm(p.title) === norm("CHEZ BAPTISTE") || norm(p.slug) === norm("chez-baptiste");
+      const isOccupied = occMap ? (occMap.get(slug) === true) : false;
+
+      const badges = [];
+      badges.push(<div class="badge">0% com DIGIY</div>);
+      badges.push(isOccupied
+        ? <div class="badge busy">⛔ OCCUPÉ aujourd’hui</div>
+        : <div class="badge free">✅ DISPONIBLE</div>
+      );
+      if (isPinned) badges.push(<div class="badge gold">⭐ Partenaire vedette</div>);
+      if (p.type_logement) badges.push(<div class="badge">${escapeHtml(p.type_logement)}</div>);
+
+      const safePinObj = {
+        slug: slug,
+        title: title,
+        whatsapp: p.whatsapp || "",
+        phone: p.phone || "",
+        address_label: city,
+        cover: cover,
+        kind: kind,
+        desc: p.desc || "",
+        public_url: p.public_url || ""
+      };
+
+      const ficheUrl = ficheLinkFor(p);
+
+      return 
+        <article class="card ${isPinned ? "pinned" : ""}">
+          ${isPinned ? 
+            <div class="pinnedTop">
+              <div class="left">🏆 <span>CHEZ BAPTISTE</span></div>
+              <div class="pill">Fiche officielle</div>
+            </div>
+           : }
+
           <div class="photo">
             <img
-              src="${photoFinal}"
-              alt="${name}"
               loading="lazy"
-              onerror="this.onerror=null; this.src='${esc(FALLBACK_PHOTO)}';"
-            />
-            <div class="badgeTop">
-              <span class="chip gold">${badge}</span>
-              <span class="chip green">${hub}</span>
-              ${isNewCard ? `<span class="chip new">🆕 Nouveau</span>` : ``}
-            </div>
+              alt="${escapeHtml(title)}"
+              src="${escapeAttr(cover)}"
+              onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80';"
+            >
           </div>
 
-          <div class="body">
-            <div class="name">${name}</div>
-            <div class="meta">
-              <span>🏷️ ${category}</span>
-              <span>📍 ${city}${address ? " • " + address : ""}</span>
-            </div>
+          <div class="name">${escapeHtml(title)}</div>
+          <div class="type">${escapeHtml(kind)} • ${escapeHtml(city)}</div>
 
-            ${bio
-              ? `<div class="bio">${bio}</div>`
-              : `<div class="bio" style="color:var(--muted)">Fiche publique DIGIY RESA TABLE.</div>`}
+          <div class="badges">${badges.join("")}</div>
 
-            <div class="tags">
-              ${tags.map(t => `<span class="tag">${esc(t)}</span>`).join("")}
-              ${price ? `<span class="tag" style="border-color:rgba(250,204,21,.22);color:#fde68a;">${price}</span>` : ""}
-            </div>
+          <p class="desc">
+            ${escapeHtml(p.desc || "Contact direct propriétaire. Paiement direct (Wave/espèces). 0% commission.")}
+          </p>
 
-            <div class="actions">
-              <a class="btn primary" href="${esc(ficheHref)}">📄 Voir la fiche</a>
-              <a class="btn secondary" href="${esc(resaHref)}">📅 Réserver</a>
-            </div>
+          <div class="meta">WhatsApp direct • Réponse rapide</div>
+
+          <div class="contact">
+            <div class="contact-title">Contact (WhatsApp)</div>
+            <div class="contact-value">${escapeHtml(wa)}</div>
+          </div>
+
+          <div class="actions">
+            <a class="btn btn-primary" href="${escapeAttr(ficheUrl)}" target="_blank" rel="noopener noreferrer">👁️ Voir la fiche</a>
+            <button class="btn btn-pay" type="button"
+              onclick='pickLocForWhatsApp(${JSON.stringify(safePinObj).replace(/</g,"\\u003c")})'>✅ Choisir</button>
+            <button class="btn btn-wa" type="button"
+              onclick='reserveNow(${JSON.stringify(safePinObj).replace(/</g,"\\u003c")})'>📲 Réserver</button>
+          </div>
+
+          <div class="actions">
+            <button class="btn btn-nd" type="button" onclick="openNdimbal()">🌙 NDIMBAL — Comprendre</button>
           </div>
         </article>
-      `;
-    }).join("");
-  }
-
-  function applyFilters(){
-    const q = (document.getElementById("q").value || "").trim().toLowerCase();
-    const cat = (document.getElementById("cat").value || "").trim().toLowerCase();
-
-    const filtered = (ROWS || []).filter(r => {
-      const hay = [
-        r.display_name,
-        r.category,
-        r.city,
-        r.address,
-        r.bio,
-        r.badge,
-        r.hub_badge,
-        r.price_label,
-        ...tagsToArray(r.tags)
-      ].join(" ").toLowerCase();
-
-      const okQ = !q || hay.includes(q);
-      const okCat = !cat || String(r.category || "").toLowerCase() === cat;
-      return okQ && okCat;
-    });
-
-    render(filtered);
-    updateKpi();
-  }
-
-  async function load(){
-    renderSkeleton();
-    setStatus("🔎 Chargement depuis Supabase…");
-
-    try{
-      const { data, error } = await sb
-        .from("digiy_resa_public_profiles_v2")
-        .select("*")
-        .order("updated_at", { ascending: false });
-
-      if(error) throw error;
-
-      const raw = Array.isArray(data) ? data : [];
-
-      LIVE_ROWS = raw
-        .filter(r => sameCity(first(r.city), CITY_LOCK))
-        .map(mapLiveRow);
-
-      ROWS = buildVisibleRows(LIVE_ROWS);
-
-      fillSelects();
-      updateStatsBar(ROWS, LIVE_ROWS);
-      applyFilters();
-      toast("✅ Vitrine prête");
-    }catch(e){
-      console.error(e);
-
-      LIVE_ROWS = [];
-      ROWS = buildVisibleRows([]);
-
-      fillSelects();
-      updateStatsBar(ROWS, LIVE_ROWS);
-      render(ROWS);
-      updateKpi();
-
-      setStatus("⚠️ Source live indisponible — vitrine d’ambiance affichée.");
-      toast("⚠️ Mode vitrine d’ambiance");
+      ;
     }
-  }
 
-  (function bind(){
-    const q = document.getElementById("q");
-    const cat = document.getElementById("cat");
-    let t = null;
+    async function render(){
+      grid.innerHTML = <div class="bigmsg">Chargement des logements…</div>;
 
-    q.addEventListener("input", () => {
-      clearTimeout(t);
-      t = setTimeout(applyFilters, 120);
+      const [pinsRes, occMap] = await Promise.all([
+        fetchLocPins(),
+        fetchOccupancyToday()
+      ]);
+
+      let dbPins = [];
+      if (pinsRes.ok) {
+        dbPins = (pinsRes.rows || []).map(p => ({ ...p, kind: computeKind(p) }));
+      }
+
+      const hasRealDbPins = dbPins.length > 0;
+
+      let pins = placeBaptisteFirst(dbPins);
+
+      const sourceList = hasRealDbPins
+        ? pins
+        : mergeNoDup(pins, PLACEBOTS, 6);
+
+      const filtered = applyFilters(sourceList);
+
+      if (!filtered.length){
+        grid.innerHTML = <div class="bigmsg">Aucun résultat. Clique <b>Reset</b>.</div>;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(p => cardTemplate(p, occMap)).join("");
+    }
+
+    document.getElementById("btnSearch").addEventListener("click", render);
+    document.getElementById("btnReset").addEventListener("click", ()=>{
+      document.getElementById("q").value = "";
+      document.getElementById("kind").value = "";
+      render();
     });
 
-    cat.addEventListener("change", applyFilters);
-  })();
+    document.getElementById("q").addEventListener("keydown",(e)=>{
+      if (e.key === "Enter") render();
+    });
+    document.getElementById("kind").addEventListener("change", render);
 
-  load();
-</script>
+    render();
+  </script>
+</body>
+</html>
