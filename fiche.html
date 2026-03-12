@@ -6,6 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="description" content="DIGIY LOC — fiche logement premium. Paiement direct propriétaire, 0% commission." />
   <meta name="theme-color" content="#06131d" />
+
+  <script>
+    window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
+    window.DIGIY_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
@@ -234,6 +239,7 @@
       font-weight:900;
       color:#86efac;
       margin-bottom:6px;
+      word-break:break-word;
     }
 
     .cta-col{
@@ -543,9 +549,17 @@
   </div>
 
   <script>
-    const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const supabaseClient = window.supabase.createClient(
+      window.DIGIY_SUPABASE_URL,
+      window.DIGIY_SUPABASE_ANON_KEY,
+      {
+        auth:{
+          persistSession:false,
+          autoRefreshToken:false,
+          detectSessionInUrl:false
+        }
+      }
+    );
 
     const FALLBACK_IMG = "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80";
     const qs = new URLSearchParams(location.search);
@@ -760,6 +774,23 @@
       setStatus("WhatsApp ouvert ✅", "ok");
     }
 
+    function renderContactLink(label, value, kind) {
+      const clean = safeText(value, "");
+      if (!clean) return `—`;
+
+      if (kind === "wa") {
+        const digits = digitsOnly(clean);
+        if (!digits) return clean;
+        return `<a href="https://wa.me/${digits}" target="_blank" rel="noopener">${clean}</a>`;
+      }
+
+      if (kind === "tel") {
+        return `<a href="tel:${clean}">${clean}</a>`;
+      }
+
+      return clean;
+    }
+
     async function loadRoom() {
       if (!slug) {
         showError("Slug manquant dans l’URL publique.");
@@ -868,8 +899,12 @@
 
       btnCopyEl.onclick = async () => {
         try {
-          await navigator.clipboard.writeText(location.href);
-          setStatus("Lien copié ✅", "ok");
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(location.href);
+            setStatus("Lien copié ✅", "ok");
+          } else {
+            setStatus("Copie automatique non disponible sur cet appareil.", "bad");
+          }
         } catch (err) {
           console.error(err);
           setStatus("Copie automatique impossible.", "bad");
@@ -900,10 +935,10 @@
 
       contactBoxEl.innerHTML = `
         <strong>WhatsApp principal :</strong><br>
-        <a href="https://wa.me/${digitsOnly(waPhone)}" target="_blank" rel="noopener">${waPhone || "—"}</a>
+        ${renderContactLink("WhatsApp", waPhone, "wa")}
         <br><br>
         <strong>Appel direct :</strong><br>
-        <a href="${callPhone ? `tel:${callPhone}` : '#'}">${callPhone || "—"}</a>
+        ${renderContactLink("Appel", callPhone, "tel")}
         <br><br>
         <strong>Numéro Wave :</strong><br>
         ${wavePhone || "—"}
