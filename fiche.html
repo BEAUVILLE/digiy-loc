@@ -40,7 +40,6 @@
       --muted:#cbd5f5;
       --line:rgba(148,163,184,0.22);
       --shadow-soft:0 20px 45px rgba(15,23,42,0.9);
-      --glass:rgba(2,6,23,.68);
     }
 
     *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif}
@@ -106,14 +105,23 @@
     }
 
     .brand-text-title{
-      font-size:20px;font-weight:900;letter-spacing:0.09em;
-      text-transform:uppercase;color:var(--accent-green);
+      font-size:20px;
+      font-weight:900;
+      letter-spacing:0.09em;
+      text-transform:uppercase;
+      color:var(--accent-green);
     }
 
-    .brand-text-sub{font-size:14px;color:var(--muted);font-weight:650}
+    .brand-text-sub{
+      font-size:14px;
+      color:var(--muted);
+      font-weight:650;
+    }
 
     .back-link{
-      font-size:13px;color:var(--muted);text-decoration:none;
+      font-size:13px;
+      color:var(--muted);
+      text-decoration:none;
       background:rgba(15,23,42,0.9);
       border-radius:999px;
       border:1px solid rgba(148,163,184,0.6);
@@ -125,7 +133,10 @@
       white-space:nowrap;
     }
 
-    .back-link:hover{border-color:var(--accent);color:var(--accent)}
+    .back-link:hover{
+      border-color:var(--accent);
+      color:var(--accent);
+    }
 
     .shell{
       position:relative;
@@ -221,12 +232,6 @@
       border-color:rgba(34,197,94,.55);
       color:#bbf7d0;
       background:rgba(34,197,94,.10);
-    }
-
-    .chip.gold{
-      border-color:rgba(250,204,21,.55);
-      color:#fde68a;
-      background:rgba(250,204,21,.10);
     }
 
     .chip.blue{
@@ -533,7 +538,7 @@
         </div>
       </div>
 
-      <a class="back-link" id="backLink" href="./index.html">
+      <a class="back-link" href="./index.html">
         <span>←</span> Retour galerie
       </a>
     </header>
@@ -557,7 +562,7 @@
 
           <div class="actions">
             <button class="btn btn-wa" id="btnReserve" type="button">📲 Réserver (WhatsApp)</button>
-            <a class="btn btn-primary" id="btnBack2" href="./index.html">👁️ Retour galerie</a>
+            <a class="btn btn-primary" href="./index.html">👁️ Retour galerie</a>
           </div>
         </div>
 
@@ -699,11 +704,8 @@
     function money(x){
       const n = Number(x);
       if (!isFinite(n) || n <= 0) return "—";
-      try {
-        return n.toLocaleString("fr-FR") + " FCFA";
-      } catch {
-        return String(n) + " FCFA";
-      }
+      try { return n.toLocaleString("fr-FR") + " FCFA"; }
+      catch { return String(n) + " FCFA"; }
     }
 
     function waDigits(phone){
@@ -712,10 +714,9 @@
 
     function openWa(phone, message){
       const digits = waDigits(phone);
-      if (!digits) return false;
+      if (!digits) return;
       const url = "https://wa.me/" + digits + "?text=" + encodeURIComponent(message || "");
       window.open(url, "_blank", "noopener,noreferrer");
-      return true;
     }
 
     function pickWhatsApp(row){
@@ -741,50 +742,6 @@
       if (nom.includes("maison")) return "Maison • Direct propriétaire";
 
       return "Location • Direct propriétaire";
-    }
-
-    function parsePhotos(row){
-      const out = [];
-
-      if (row?.photo_url) out.push(String(row.photo_url).trim());
-
-      const raw =
-        row?.photos ??
-        row?.gallery ??
-        row?.images ??
-        row?.imgs ??
-        row?.photo_urls ??
-        null;
-
-      if (raw) {
-        if (Array.isArray(raw)) {
-          raw.forEach(x => { if (x) out.push(String(x).trim()); });
-        } else {
-          const s = String(raw).trim();
-          if (s) {
-            if ((s.startsWith("[") && s.endsWith("]")) || (s.startsWith("{") && s.endsWith("}"))) {
-              try {
-                const j = JSON.parse(s);
-                if (Array.isArray(j)) j.forEach(x => { if (x) out.push(String(x).trim()); });
-                else if (j && Array.isArray(j.photos)) j.photos.forEach(x => { if (x) out.push(String(x).trim()); });
-                else if (j && Array.isArray(j.gallery)) j.gallery.forEach(x => { if (x) out.push(String(x).trim()); });
-              } catch {}
-            } else if (s.includes(",")) {
-              s.split(",").forEach(x => { if (x.trim()) out.push(x.trim()); });
-            } else {
-              out.push(s);
-            }
-          }
-        }
-      }
-
-      const seen = new Set();
-      return out.filter(x => {
-        const k = String(x || "").trim();
-        if (!k || seen.has(k)) return false;
-        seen.add(k);
-        return true;
-      });
     }
 
     function setMetaTitle(name){
@@ -827,26 +784,23 @@
 
     lbClose.addEventListener("click", closeLightbox);
     lbOverlay.addEventListener("click", (e)=>{ if (e.target === lbOverlay) closeLightbox(); });
-    document.addEventListener("keydown", (e)=>{ if (e.key === "Escape") closeLightbox(); });
+    document.addEventListener("keydown",(e)=>{ if (e.key === "Escape") closeLightbox(); });
 
-    function renderGallery(list, title){
+    function renderGallery(url, title){
       galleryEl.innerHTML = "";
-      const finalList = (Array.isArray(list) && list.length) ? list : [FALLBACK_IMG];
+      const finalUrl = safeImg(url);
 
-      finalList.forEach((url, idx)=>{
-        const item = document.createElement("div");
-        item.className = "gItem";
-        const safe = safeImg(url);
-        item.innerHTML = `
-          <img
-            loading="lazy"
-            alt="${escapeAttr(title || "Photo")}"
-            src="${escapeAttr(safe)}"
-            onerror="this.onerror=null;this.src='${escapeAttr(FALLBACK_IMG)}';">
-        `;
-        item.addEventListener("click", ()=> openLightbox(safe, title, idx + 1, finalList.length));
-        galleryEl.appendChild(item);
-      });
+      const item = document.createElement("div");
+      item.className = "gItem";
+      item.innerHTML = `
+        <img
+          loading="lazy"
+          alt="${escapeAttr(title || "Photo")}"
+          src="${escapeAttr(finalUrl)}"
+          onerror="this.onerror=null;this.src='${escapeAttr(FALLBACK_IMG)}';">
+      `;
+      item.addEventListener("click", ()=> openLightbox(finalUrl, title, 1, 1));
+      galleryEl.appendChild(item);
     }
 
     async function fetchRoomBySlug(slug){
@@ -866,12 +820,7 @@
           slug,
           is_public,
           public_url,
-          type_logement,
-          photos,
-          gallery,
-          images,
-          imgs,
-          photo_urls
+          type_logement
         `)
         .eq("slug", slug)
         .eq("is_public", true)
@@ -886,13 +835,10 @@
       titleEl.textContent = "Logement introuvable";
       descEl.textContent = "Ce lien n’existe pas ou le logement n’est plus public. Retourne à la galerie.";
       coverImg.src = FALLBACK_IMG;
-      coverImg.onerror = () => {
-        coverImg.onerror = null;
-        coverImg.src = FALLBACK_IMG;
-      };
+      coverImg.onerror = () => { coverImg.onerror = null; coverImg.src = FALLBACK_IMG; };
 
       subEl.innerHTML = "";
-      renderGallery([], "Photo");
+      renderGallery(FALLBACK_IMG, "Photo");
       showWarn("Slug demandé : " + (slug || "—"));
       hideError();
 
@@ -914,7 +860,7 @@
 
       if (!slug){
         renderNotFound("");
-        showWarn("Aucun slug dans l’URL. Exemple : fiche.html?slug=loc-room-a07c151a");
+        showWarn("Aucun slug dans l’URL. Exemple : fiche.html?slug=mon-logement-saly");
         return;
       }
 
@@ -937,39 +883,34 @@
       const kind = computeKind(row);
       const wa = pickWhatsApp(row);
       const cover = safeImg(row.photo_url);
-      const description = row.description || "Contact direct propriétaire. Paiement direct. 0% commission.";
-      const photos = parsePhotos(row);
+      const desc = row.description || "Contact direct propriétaire. Paiement direct. 0% commission.";
 
       setMetaTitle(title);
 
       titleEl.textContent = title;
-      descEl.textContent = description;
+      descEl.textContent = desc;
 
       subEl.innerHTML = "";
       const c1 = document.createElement("span");
       c1.className = "chip blue";
       c1.textContent = kind;
-
       const c2 = document.createElement("span");
       c2.className = "chip";
       c2.textContent = city;
-
       const c3 = document.createElement("span");
       c3.className = "chip green";
       c3.textContent = "0% commission";
-
       subEl.appendChild(c1);
       subEl.appendChild(c2);
       subEl.appendChild(c3);
 
-      coverImg.loading = "eager";
       coverImg.src = cover;
       coverImg.onerror = () => {
         coverImg.onerror = null;
         coverImg.src = FALLBACK_IMG;
       };
 
-      renderGallery(photos, title);
+      renderGallery(cover, title);
 
       waEl.textContent = wa;
       typeEl.textContent = kind;
