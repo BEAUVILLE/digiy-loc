@@ -377,6 +377,7 @@
       font-size:18px;
       font-weight:950;
       color:#fff;
+      word-break:break-word;
     }
 
     .actions{
@@ -607,7 +608,7 @@
                 <div class="v" id="capEl">—</div>
               </div>
               <div class="info">
-                <div class="k">Slug</div>
+                <div class="k">room_slug</div>
                 <div class="v" id="slugEl">—</div>
               </div>
               <div class="info">
@@ -691,9 +692,28 @@
       return escapeHtml(str).replaceAll("`","&#096;");
     }
 
-    function getSlug(){
-      const u = new URL(location.href);
-      return String(u.searchParams.get("slug") || "").trim();
+    function getRouteIdentity(){
+      const url = new URL(window.location.href);
+      const params = url.searchParams;
+
+      const roomSlug = String(params.get("room_slug") || params.get("slug") || "").trim();
+      const hadLegacySlug = !!params.get("slug");
+      const hadRoomSlug = !!params.get("room_slug");
+
+      if (roomSlug) {
+        params.set("room_slug", roomSlug);
+        if (hadLegacySlug) params.delete("slug");
+
+        if (!hadRoomSlug || hadLegacySlug) {
+          const next = `${url.pathname}?${params.toString()}${url.hash || ""}`;
+          window.history.replaceState({}, "", next);
+        }
+      }
+
+      return {
+        roomSlug,
+        legacySlug: String(params.get("slug") || "").trim()
+      };
     }
 
     function safeImg(img){
@@ -803,7 +823,7 @@
       galleryEl.appendChild(item);
     }
 
-    async function fetchRoomBySlug(slug){
+    async function fetchRoomBySlug(dbSlug){
       const { data, error } = await sb
         .from("digiy_loc_rooms")
         .select(`
@@ -822,7 +842,7 @@
           public_url,
           type_logement
         `)
-        .eq("slug", slug)
+        .eq("slug", dbSlug)
         .eq("is_public", true)
         .in("status", ["active", "actif"])
         .maybeSingle();
@@ -830,7 +850,7 @@
       return { data, error };
     }
 
-    function renderNotFound(slug){
+    function renderNotFound(roomSlug){
       setMetaTitle("Introuvable");
       titleEl.textContent = "Logement introuvable";
       descEl.textContent = "Ce lien n’existe pas ou le logement n’est plus public. Retourne à la galerie.";
@@ -839,41 +859,52 @@
 
       subEl.innerHTML = "";
       renderGallery(FALLBACK_IMG, "Photo");
-      showWarn("Slug demandé : " + (slug || "—"));
       hideError();
 
       typeEl.textContent = "—";
       cityEl.textContent = "—";
       capEl.textContent = "—";
-      slugEl.textContent = slug || "—";
+      slugEl.textContent = roomSlug || "—";
       pnEl.textContent = "—";
       psEl.textContent = "—";
       pmEl.textContent = "—";
 
+      if (roomSlug) {
+        showWarn("room_slug demandé : " + roomSlug);
+      } else {
+        showWarn("Aucun room_slug dans l’URL. Exemple : fiche.html?room_slug=mon-logement-saly");
+      }
+
       waEl.textContent = TEAM_WA;
-      btnReserve.onclick = ()=> openWa(TEAM_WA, "Bonjour DIGIY 👋 Je cherche un logement mais le lien ne marche pas. Slug: " + (slug || "—"));
-      btnWa.onclick = ()=> openWa(TEAM_WA, "Bonjour DIGIY 👋 Je veux un logement. Zone + budget + dates :");
+      btnReserve.onclick = ()=> openWa(
+        TEAM_WA,
+        "Bonjour DIGIY 👋 Je cherche un logement mais le lien ne marche pas. room_slug : " + (roomSlug || "—")
+      );
+      btnWa.onclick = ()=> openWa(
+        TEAM_WA,
+        "Bonjour DIGIY 👋 Je veux un logement. Zone + budget + dates :"
+      );
     }
 
     async function main(){
-      const slug = getSlug();
+      const route = getRouteIdentity();
+      const requestedRoomSlug = route.roomSlug;
 
-      if (!slug){
+      if (!requestedRoomSlug){
         renderNotFound("");
-        showWarn("Aucun slug dans l’URL. Exemple : fiche.html?slug=mon-logement-saly");
         return;
       }
 
-      const res = await fetchRoomBySlug(slug);
+      const res = await fetchRoomBySlug(requestedRoomSlug);
 
       if (res.error){
-        renderNotFound(slug);
+        renderNotFound(requestedRoomSlug);
         showError(res.error.message || "Erreur Supabase");
         return;
       }
 
       if (!res.data){
-        renderNotFound(slug);
+        renderNotFound(requestedRoomSlug);
         return;
       }
 
@@ -884,6 +915,7 @@
       const wa = pickWhatsApp(row);
       const cover = safeImg(row.photo_url);
       const desc = row.description || "Contact direct propriétaire. Paiement direct. 0% commission.";
+      const publicRoomSlug = String(row.slug || requestedRoomSlug || "").trim();
 
       setMetaTitle(title);
 
@@ -916,17 +948,29 @@
       typeEl.textContent = kind;
       cityEl.textContent = city;
       capEl.textContent = row.personnes_max ? String(row.personnes_max) + " pers." : "—";
-      slugEl.textContent = row.slug || "—";
+      slugEl.textContent = publicRoomSlug || "—";
       pnEl.textContent = money(row.prix_nuit);
       psEl.textContent = money(row.prix_semaine);
       pmEl.textContent = money(row.prix_mois);
 
       btnReserve.onclick = () => {
-        openWa(wa, `Bonjour, je souhaite réserver / avoir des infos pour "${title}" via DIGIY LOC.`);
+        openWa(
+          wa,
+          [
+            `Bonjour, je souhaite réserver / avoir des infos pour "${title}" via DIGIY LOC.`,
+            `room_slug : ${publicRoomSlug}`
+          ].join("\n")
+        );
       };
 
       btnWa.onclick = () => {
-        openWa(wa, `Bonjour 👋 Je veux des infos pour "${title}" (dates + budget).`);
+        openWa(
+          wa,
+          [
+            `Bonjour 👋 Je veux des infos pour "${title}" (dates + budget).`,
+            `room_slug : ${publicRoomSlug}`
+          ].join("\n")
+        );
       };
 
       hideWarn();
@@ -935,7 +979,8 @@
 
     main().catch((e)=>{
       console.error(e);
-      renderNotFound(getSlug());
+      const route = getRouteIdentity();
+      renderNotFound(route.roomSlug || "");
       showError("Erreur inattendue: " + (e?.message || e));
     });
   </script>
