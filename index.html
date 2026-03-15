@@ -1168,29 +1168,10 @@
       );
     }
 
-    function ficheLinkFor(p){
-      const roomSlug = canonicalRoomSlug(p);
-      const raw = String(p?.public_url || "").trim();
-
-      if (raw) {
-        try {
-          const url = new URL(raw, window.location.href);
-          const path = String(url.pathname || "").toLowerCase();
-
-          if ((/\/fiche(?:-abo)?\.html$/).test(path) && roomSlug) {
-            url.searchParams.set("room_slug", roomSlug);
-            url.searchParams.delete("slug");
-            return url.toString();
-          }
-
-          return raw;
-        } catch (_) {
-          return raw;
-        }
-      }
-
-      return "https://beauville.github.io/digiy-loc/fiche.html?room_slug=" + encodeURIComponent(roomSlug);
-    }
+   function ficheLinkFor(p){
+  const roomSlug = canonicalRoomSlug(p);
+  return "https://beauville.github.io/digiy-loc/fiche.html?room_slug=" + encodeURIComponent(roomSlug);
+}
 
     const ndOverlay = document.getElementById("ndOverlay");
     const ndClose = document.getElementById("ndClose");
