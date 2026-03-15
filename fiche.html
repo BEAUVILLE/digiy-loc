@@ -5,8 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>DIGIY LOC — Fiche logement</title>
   <meta name="theme-color" content="#020617" />
-  <meta name="description" content="DIGIY LOC — Fiche logement. Direct propriétaire, paiement direct, 0% commission." />
-  <meta name="robots" content="index,follow" />
+  <meta name="description" content="DIGIY LOC — Fiche logement. Direct propriétaire, 0% commission." />
 
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
@@ -15,266 +14,8 @@
     window.DIGIY_MODULE = "LOC";
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <style>
-    :root{
-      --bg:#020617;
-      --card:#0b1220;
-      --line:#1f2937;
-      --ink:#f9fafb;
-      --muted:#cbd5f5;
-      --gold:#facc15;
-      --green:#22c55e;
-      --danger:#ef4444;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-      background:
-        radial-gradient(900px 500px at 10% -10%, rgba(34,197,94,.15), transparent 60%),
-        radial-gradient(900px 500px at 90% 0%, rgba(250,204,21,.10), transparent 60%),
-        var(--bg);
-      color:var(--ink);
-    }
-    .wrap{max-width:1040px;margin:0 auto;padding:14px}
-    .top{
-      display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
-      margin-bottom:14px;
-    }
-    .brand{
-      display:flex;align-items:center;gap:10px;
-      font-weight:1000;font-size:1.1rem;
-    }
-    .logo{
-      width:42px;height:42px;border-radius:14px;
-      display:grid;place-items:center;
-      background:linear-gradient(135deg,#facc15,#f97316);
-      color:#111827;font-weight:1000;
-      box-shadow:0 12px 30px rgba(250,204,21,.35);
-    }
-    .top-links{
-      display:flex;gap:10px;flex-wrap:wrap;
-    }
-    .back{
-      display:inline-flex;align-items:center;gap:8px;
-      text-decoration:none;color:var(--muted);
-      border:1px solid var(--line);border-radius:999px;
-      padding:10px 14px;background:rgba(255,255,255,.03);font-weight:900;
-    }
-    .back:hover{color:#fff;border-color:#334155}
-    .grid{
-      display:grid;
-      grid-template-columns:1.15fr .85fr;
-      gap:14px;
-    }
-    @media(max-width:920px){.grid{grid-template-columns:1fr}}
-    .card{
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.03);
-      border-radius:20px;
-      overflow:hidden;
-      box-shadow:0 18px 40px rgba(0,0,0,.25);
-    }
-    .hero{
-      position:relative;
-      background:#020617;
-    }
-    .hero-photo{
-      width:100%;
-      max-height:70vh;
-      min-height:260px;
-      object-fit:cover;
-      display:block;
-      background:#020617;
-    }
-    .hero-overlay{
-      position:absolute;left:0;right:0;bottom:0;
-      padding:16px;
-      background:linear-gradient(180deg, rgba(2,6,23,0) 0%, rgba(2,6,23,.85) 65%, rgba(2,6,23,.96) 100%);
-    }
-    h1{margin:0 0 6px;font-size:1.8rem;line-height:1.1;color:var(--gold)}
-    .sub{color:#e5e7eb;font-weight:800}
-    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-    .chip{
-      font-size:12px;border:1px solid var(--line);border-radius:999px;
-      padding:5px 10px;color:var(--muted);font-weight:900;background:rgba(255,255,255,.03)
-    }
-    .body{padding:14px}
-    .section{
-      margin-top:12px;padding:12px;border-radius:16px;
-      border:1px solid rgba(148,163,184,.14);background:rgba(255,255,255,.02);
-    }
-    .section:first-child{margin-top:0}
-    .kicker{
-      font-size:12px;letter-spacing:.08em;text-transform:uppercase;
-      color:#bbf7d0;font-weight:1000;margin-bottom:8px;
-    }
-    .desc{
-      color:#f3f4f6;line-height:1.7;font-weight:600;white-space:pre-wrap
-    }
-    .info-grid{
-      display:grid;grid-template-columns:1fr 1fr;gap:10px;
-    }
-    @media(max-width:560px){.info-grid{grid-template-columns:1fr}}
-    .info{
-      border:1px solid rgba(148,163,184,.14);
-      background:rgba(15,23,42,.35);
-      border-radius:14px;padding:10px 12px;
-    }
-    .info .k{font-size:12px;color:var(--muted);font-weight:900;text-transform:uppercase}
-    .info .v{margin-top:6px;font-size:18px;font-weight:1000;color:#fff}
-    .actions{
-      display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;
-    }
-    .btn{
-      flex:1;min-height:46px;
-      border:none;border-radius:14px;padding:12px 14px;
-      font-size:14px;font-weight:1000;cursor:pointer;
-      display:flex;justify-content:center;align-items:center;
-      text-decoration:none;
-    }
-    .btn.primary{
-      background:linear-gradient(135deg,#facc15,#f97316);
-      color:#111827;
-      box-shadow:0 10px 22px rgba(250,204,21,.25);
-    }
-    .btn.wa{
-      background:rgba(34,197,94,.14);
-      color:#bbf7d0;border:1px solid rgba(34,197,94,.45);
-    }
-    .btn.ghost{
-      background:#020617;color:#fff;border:1px solid var(--line);
-    }
-    label{
-      display:block;margin-top:10px;font-weight:900;color:#fff;
-    }
-    input,textarea{
-      width:100%;padding:11px 12px;margin-top:6px;
-      border-radius:12px;border:1px solid var(--line);
-      background:#020617;color:#fff;outline:none;
-    }
-    textarea{min-height:92px;resize:vertical}
-    .note{
-      margin-top:12px;padding:10px 12px;border-radius:12px;
-      border:1px solid var(--line);white-space:pre-line;font-weight:800;
-    }
-    .note.ok{border-color:rgba(34,197,94,.45);color:#bbf7d0}
-    .note.bad{border-color:rgba(239,68,68,.45);color:#fecaca}
-    .muted{color:var(--muted)}
-    .small{font-size:12px}
-  </style>
-</head>
-
-<body>
-  <div class="wrap">
-    <div class="top">
-      <div class="brand">
-        <div class="logo">🏠</div>
-        <div>DIGIY LOC — Fiche logement</div>
-      </div>
-
-      <div class="top-links">
-        <a class="back" href="./index.html">← Retour vitrine</a>
-        <a class="back" href="https://digiylyfe.com/">← Retour au site</a>
-      </div>
-    </div>
-
-    <div class="grid">
-      <section class="card">
-        <div class="hero">
-          <img id="photo" class="hero-photo" alt="Photo logement" src="">
-          <div class="hero-overlay">
-            <h1 id="nom">Chargement…</h1>
-            <div class="sub" id="ville">—</div>
-            <div class="chips" id="chips"></div>
-          </div>
-        </div>
-
-        <div class="body">
-          <div class="section">
-            <div class="kicker">Description</div>
-            <div id="desc" class="desc">Patiente un instant…</div>
-          </div>
-
-          <div class="section">
-            <div class="kicker">Infos clés</div>
-            <div class="info-grid">
-              <div class="info">
-                <div class="k">Type</div>
-                <div class="v" id="typeLogement">—</div>
-              </div>
-              <div class="info">
-                <div class="k">Capacité</div>
-                <div class="v" id="personnesMax">—</div>
-              </div>
-              <div class="info">
-                <div class="k">Prix / nuit</div>
-                <div class="v" id="prixNuit">—</div>
-              </div>
-              <div class="info">
-                <div class="k">Prix / semaine</div>
-                <div class="v" id="prixSemaine">—</div>
-              </div>
-              <div class="info" style="grid-column:1/-1">
-                <div class="k">Prix / mois</div>
-                <div class="v" id="prixMois">—</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <aside class="card">
-        <div class="body">
-          <div class="section">
-            <div class="kicker">Règle DIGIY</div>
-            <div class="desc">0% commission. Paiement direct au propriétaire. DIGIY ne touche pas l’argent.</div>
-          </div>
-
-          <div class="section">
-            <div class="kicker">NDIMBAL</div>
-            <div class="desc">Certains logements DIGIY LOC peuvent proposer des nuits offertes en semaine. Demande au propriétaire si l’offre NDIMBAL est disponible sur ce logement.</div>
-          </div>
-
-          <div class="section">
-            <div class="kicker">Contact</div>
-            <div style="font-size:22px;font-weight:1000" id="contactPhone">—</div>
-            <div class="small muted" style="margin-top:6px">WhatsApp direct • réponse rapide</div>
-            <div class="actions">
-              <button class="btn wa" id="btnWa" type="button">📲 Écrire sur WhatsApp</button>
-              <button class="btn ghost" id="btnCopy" type="button">🔗 Copier le lien</button>
-            </div>
-          </div>
-
-          <div class="section">
-            <div class="kicker">Demande de réservation</div>
-
-            <label>Date d’arrivée</label>
-            <input type="date" id="dateIn">
-
-            <label>Date de départ</label>
-            <input type="date" id="dateOut">
-
-            <label>Votre nom</label>
-            <input id="clientName" placeholder="Votre nom">
-
-            <label>Votre téléphone</label>
-            <input id="clientPhone" placeholder="+221 …">
-
-            <label>Message</label>
-            <textarea id="clientMsg" placeholder="Bonjour, je veux réserver ce logement..."></textarea>
-
-            <button class="btn primary" id="btnReserve" type="button">✅ Envoyer la demande</button>
-            <div id="status" class="note" style="display:none"></div>
-          </div>
-        </div>
-      </aside>
-    </div>
-  </div>
-
   <script>
-    const SB = window.supabase.createClient(
+    const sb = supabase.createClient(
       window.DIGIY_SUPABASE_URL,
       window.DIGIY_SUPABASE_ANON_KEY,
       {
@@ -285,58 +26,684 @@
         }
       }
     );
+  </script>
 
-    const FALLBACK_IMG = "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80";
+  <style>
+    :root{
+      --bg:#020617;
+      --bg-soft:#020818;
+      --card:#030712;
+      --accent:#facc15;
+      --accent-soft:#f97316;
+      --accent-green:#22c55e;
+      --ink:#f9fafb;
+      --muted:#cbd5f5;
+      --line:rgba(148,163,184,0.22);
+      --shadow-soft:0 20px 45px rgba(15,23,42,0.9);
+      --glass:rgba(2,6,23,.68);
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif}
+
+    body{
+      min-height:100vh;
+      background:
+        radial-gradient(circle at top,rgba(250,204,21,0.16),transparent 60%),
+        radial-gradient(circle at bottom,rgba(34,197,94,0.16),transparent 55%),
+        var(--bg);
+      color:var(--ink);
+      display:flex;
+      justify-content:center;
+      padding:10px;
+      font-size:16px;
+    }
+
+    .app{
+      width:100%;
+      max-width:1100px;
+      min-height:100vh;
+      background:linear-gradient(135deg,#020617 0%,#020818 50%,#020617 100%);
+      border-radius:24px;
+      border:1px solid rgba(148,163,184,0.25);
+      box-shadow:var(--shadow-soft);
+      padding:16px 16px 22px;
+      display:flex;
+      flex-direction:column;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .app::before{
+      content:"";
+      position:absolute;
+      inset:-40%;
+      background:
+        radial-gradient(circle at 0% 0%,rgba(250,204,21,0.14),transparent 55%),
+        radial-gradient(circle at 100% 100%,rgba(34,197,94,0.14),transparent 45%);
+      opacity:0.8;
+      pointer-events:none;
+    }
+
+    header{
+      position:relative;
+      z-index:2;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      margin-bottom:12px;
+      flex-wrap:wrap;
+    }
+
+    .brand{display:flex;align-items:center;gap:10px}
+
+    .brand-logo{
+      width:42px;height:42px;border-radius:14px;
+      background:radial-gradient(circle at 30% 0%,#facc15,#f97316);
+      display:flex;align-items:center;justify-content:center;
+      font-size:24px;
+      box-shadow:0 12px 30px rgba(234,179,8,0.65);
+    }
+
+    .brand-text-title{
+      font-size:20px;font-weight:900;letter-spacing:0.09em;
+      text-transform:uppercase;color:var(--accent-green);
+    }
+
+    .brand-text-sub{font-size:14px;color:var(--muted);font-weight:650}
+
+    .back-link{
+      font-size:13px;color:var(--muted);text-decoration:none;
+      background:rgba(15,23,42,0.9);
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.6);
+      padding:8px 14px;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      font-weight:800;
+      white-space:nowrap;
+    }
+
+    .back-link:hover{border-color:var(--accent);color:var(--accent)}
+
+    .shell{
+      position:relative;
+      z-index:2;
+      display:grid;
+      grid-template-columns:1.25fr .75fr;
+      gap:16px;
+      margin-top:10px;
+    }
+
+    @media(max-width:980px){
+      .shell{grid-template-columns:1fr}
+    }
+
+    .panel{
+      background:radial-gradient(circle at top,rgba(15,23,42,0.98),#020617);
+      border-radius:24px;
+      border:1px solid rgba(30,64,175,0.7);
+      box-shadow:0 14px 34px rgba(15,23,42,0.95);
+      overflow:hidden;
+      position:relative;
+    }
+
+    .cover{
+      width:100%;
+      height:360px;
+      background:#0b1220;
+      border-bottom:1px solid rgba(148,163,184,0.18);
+      position:relative;
+    }
+
+    @media(max-width:640px){
+      .cover{height:280px}
+    }
+
+    .cover img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    .coverFade{
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(180deg, rgba(2,6,23,.08) 0%, rgba(2,6,23,.75) 88%, rgba(2,6,23,.95) 100%);
+      pointer-events:none;
+    }
+
+    .coverTop{
+      position:absolute;
+      left:14px;
+      right:14px;
+      bottom:12px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .title{
+      font-size:28px;
+      font-weight:950;
+      line-height:1.1;
+      color:var(--accent);
+      text-shadow:0 10px 20px rgba(0,0,0,.35);
+    }
+
+    .sub{
+      font-size:15px;
+      color:#e5e7eb;
+      font-weight:750;
+      opacity:.95;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    .chip{
+      width:max-content;
+      padding:6px 10px;
+      font-size:12px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.35);
+      background:rgba(2,6,23,.55);
+      color:#e5e7eb;
+      font-weight:900;
+      white-space:nowrap;
+    }
+
+    .chip.green{
+      border-color:rgba(34,197,94,.55);
+      color:#bbf7d0;
+      background:rgba(34,197,94,.10);
+    }
+
+    .chip.gold{
+      border-color:rgba(250,204,21,.55);
+      color:#fde68a;
+      background:rgba(250,204,21,.10);
+    }
+
+    .chip.blue{
+      border-color:rgba(30,64,175,.60);
+      color:#c7d2fe;
+      background:rgba(30,64,175,.12);
+    }
+
+    .body{
+      padding:14px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .desc{
+      font-size:15px;
+      line-height:1.7;
+      color:#f3f4f6;
+      font-weight:650;
+      white-space:pre-wrap;
+    }
+
+    .galleryWrap{
+      padding:12px 14px 16px;
+      border-top:1px solid rgba(148,163,184,0.15);
+      background:rgba(2,6,23,.18);
+    }
+
+    .galleryTitle{
+      font-size:13px;
+      font-weight:950;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:#bbf7d0;
+      margin-bottom:10px;
+    }
+
+    .gallery{
+      display:flex;
+      gap:10px;
+      overflow:auto;
+      padding-bottom:6px;
+      scroll-snap-type:x mandatory;
+      -webkit-overflow-scrolling:touch;
+    }
+
+    .gItem{
+      flex:0 0 auto;
+      width:220px;
+      height:150px;
+      border-radius:16px;
+      overflow:hidden;
+      border:1px solid rgba(30,64,175,0.6);
+      background:#0b1220;
+      scroll-snap-align:start;
+      position:relative;
+      cursor:pointer;
+    }
+
+    .gItem img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    .gHint{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:800;
+      margin-top:8px;
+      opacity:.95;
+    }
+
+    .side{
+      padding:14px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .box{
+      border:1px solid rgba(148,163,184,.18);
+      background:rgba(2,6,23,.55);
+      border-radius:18px;
+      padding:12px;
+    }
+
+    .kicker{
+      font-size:12px;
+      font-weight:950;
+      color:#bbf7d0;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      opacity:.95;
+    }
+
+    .big{
+      margin-top:6px;
+      font-size:18px;
+      font-weight:950;
+      line-height:1.2;
+      color:#facc15;
+    }
+
+    .txt{
+      margin-top:8px;
+      font-size:14px;
+      color:#e5e7eb;
+      line-height:1.6;
+      font-weight:650;
+    }
+
+    .infoGrid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:10px;
+    }
+
+    @media(max-width:560px){
+      .infoGrid{grid-template-columns:1fr}
+    }
+
+    .info{
+      border:1px solid rgba(148,163,184,.18);
+      background:rgba(15,23,42,.35);
+      border-radius:16px;
+      padding:10px 12px;
+    }
+
+    .info .k{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:900;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+
+    .info .v{
+      margin-top:6px;
+      font-size:18px;
+      font-weight:950;
+      color:#fff;
+    }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      border:none;
+      border-radius:999px;
+      padding:10px 14px;
+      font-size:14px;
+      font-weight:950;
+      cursor:pointer;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      text-decoration:none;
+      transition:transform .18s ease;
+      flex:1;
+      min-height:44px;
+      white-space:nowrap;
+      touch-action:manipulation;
+      -webkit-tap-highlight-color:transparent;
+      user-select:none;
+    }
+
+    .btn:active{transform:scale(.99)}
+
+    .btn-primary{
+      background:linear-gradient(135deg,#facc15,#f97316);
+      color:#111;
+      box-shadow:0 7px 18px rgba(250,204,21,0.55);
+    }
+
+    .btn-wa{
+      background:rgba(22,163,74,0.2);
+      color:#bbf7d0;
+      border:1px solid rgba(34,197,94,0.85);
+    }
+
+    .btn-ghost{
+      background:rgba(15,23,42,0.75);
+      color:#e5e7eb;
+      border:1px solid rgba(148,163,184,0.28);
+      box-shadow:none;
+    }
+
+    .warn{
+      border:1px solid rgba(250,204,21,.35);
+      background:rgba(250,204,21,.08);
+      color:#fde68a;
+      border-radius:18px;
+      padding:12px;
+      font-weight:850;
+      line-height:1.55;
+    }
+
+    .err{
+      border:1px solid rgba(248,113,113,.35);
+      background:rgba(248,113,113,.08);
+      color:#fecaca;
+      border-radius:18px;
+      padding:12px;
+      font-weight:900;
+      line-height:1.55;
+    }
+
+    .overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.72);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:14px;
+      z-index:9999;
+    }
+
+    .overlay.show{display:flex}
+
+    .lightbox{
+      width:100%;
+      max-width:980px;
+      border-radius:22px;
+      border:1px solid rgba(148,163,184,.25);
+      background:rgba(2,6,23,.92);
+      box-shadow:0 30px 80px rgba(0,0,0,.55);
+      overflow:hidden;
+      position:relative;
+    }
+
+    .lbTop{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      padding:12px 14px;
+      border-bottom:1px solid rgba(148,163,184,.18);
+    }
+
+    .lbTitle{
+      font-weight:950;
+      color:#e5e7eb;
+      font-size:14px;
+    }
+
+    .lbClose{
+      background:rgba(15,23,42,.75);
+      border:1px solid rgba(148,163,184,.28);
+      color:#e5e7eb;
+      border-radius:999px;
+      padding:8px 12px;
+      font-weight:950;
+      cursor:pointer;
+      white-space:nowrap;
+    }
+
+    .lbImg{
+      width:100%;
+      max-height:74vh;
+      background:#0b1220;
+    }
+
+    .lbImg img{
+      width:100%;
+      height:100%;
+      max-height:74vh;
+      object-fit:contain;
+      display:block;
+    }
+
+    footer{
+      margin-top:18px;
+      font-size:12px;
+      color:var(--muted);
+      font-weight:750;
+      display:flex;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      gap:6px;
+      position:relative;
+      z-index:2;
+    }
+
+    footer span{color:var(--accent);font-weight:950}
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <div class="brand-logo">🏠</div>
+        <div>
+          <div class="brand-text-title">DIGIY LOC</div>
+          <div class="brand-text-sub" id="subTitle">Fiche logement</div>
+        </div>
+      </div>
+
+      <a class="back-link" id="backLink" href="./index.html">
+        <span>←</span> Retour galerie
+      </a>
+    </header>
+
+    <main class="shell">
+      <section class="panel">
+        <div class="cover">
+          <img id="coverImg" alt="Photo du logement" src="" />
+          <div class="coverFade"></div>
+
+          <div class="coverTop">
+            <div class="title" id="titleEl">Chargement…</div>
+            <div class="sub" id="subEl"></div>
+          </div>
+        </div>
+
+        <div class="body">
+          <div class="desc" id="descEl">Patiente un instant…</div>
+          <div id="warnEl" class="warn" style="display:none"></div>
+          <div id="errEl" class="err" style="display:none"></div>
+
+          <div class="actions">
+            <button class="btn btn-wa" id="btnReserve" type="button">📲 Réserver (WhatsApp)</button>
+            <a class="btn btn-primary" id="btnBack2" href="./index.html">👁️ Retour galerie</a>
+          </div>
+        </div>
+
+        <div class="galleryWrap">
+          <div class="galleryTitle">Photos</div>
+          <div class="gallery" id="gallery"></div>
+          <div class="gHint">Astuce : clique une photo pour l’ouvrir en grand.</div>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <div class="side">
+          <div class="box">
+            <div class="kicker">Règle DIGIY</div>
+            <div class="big">0% commission</div>
+            <div class="txt">Paiement direct au propriétaire. DIGIY ne touche pas l’argent.</div>
+          </div>
+
+          <div class="box">
+            <div class="kicker">Contact</div>
+            <div class="big" id="waEl">—</div>
+            <div class="txt">WhatsApp direct • Réponse rapide</div>
+            <div class="actions" style="margin-top:10px">
+              <button class="btn btn-wa" id="btnWa" type="button">📲 Écrire sur WhatsApp</button>
+              <a class="btn btn-ghost" href="https://wa.me/221771342889" target="_blank" rel="noopener noreferrer">👥 Équipe DIGIY</a>
+            </div>
+          </div>
+
+          <div class="box">
+            <div class="kicker">Infos clés</div>
+            <div class="infoGrid">
+              <div class="info">
+                <div class="k">Type</div>
+                <div class="v" id="typeEl">—</div>
+              </div>
+              <div class="info">
+                <div class="k">Ville</div>
+                <div class="v" id="cityEl">—</div>
+              </div>
+              <div class="info">
+                <div class="k">Capacité</div>
+                <div class="v" id="capEl">—</div>
+              </div>
+              <div class="info">
+                <div class="k">Slug</div>
+                <div class="v" id="slugEl">—</div>
+              </div>
+              <div class="info">
+                <div class="k">Prix / Nuit</div>
+                <div class="v" id="pnEl">—</div>
+              </div>
+              <div class="info">
+                <div class="k">Prix / Semaine</div>
+                <div class="v" id="psEl">—</div>
+              </div>
+              <div class="info" style="grid-column:1/-1">
+                <div class="k">Prix / Mois</div>
+                <div class="v" id="pmEl">—</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="box">
+            <div class="kicker">Sécurité</div>
+            <div class="txt">Cette page est publique côté client. Le cockpit propriétaire reste protégé côté PRO.</div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      <div>DIGIY LOC • <span>Super App DIGIYLYFE</span> — Sénégal → Afrique</div>
+      <div>Direct propriétaire • Paiement direct • Galerie évolutive</div>
+    </footer>
+  </div>
+
+  <div class="overlay" id="lbOverlay" aria-hidden="true">
+    <div class="lightbox" role="dialog" aria-modal="true" aria-label="Photo">
+      <div class="lbTop">
+        <div class="lbTitle" id="lbTitle">Photo</div>
+        <button class="lbClose" type="button" id="lbClose">✕ Fermer</button>
+      </div>
+      <div class="lbImg"><img id="lbImg" alt="Photo" src=""></div>
+    </div>
+  </div>
+
+  <script>
     const TEAM_WA = "+221771342889";
+    const FALLBACK_IMG = "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80";
 
-    const qs = new URLSearchParams(location.search);
-    const listingSlug = (qs.get("slug") || "").trim();
-
-    const photo = document.getElementById("photo");
-    const nom = document.getElementById("nom");
-    const ville = document.getElementById("ville");
-    const chips = document.getElementById("chips");
-    const desc = document.getElementById("desc");
-    const typeLogement = document.getElementById("typeLogement");
-    const personnesMax = document.getElementById("personnesMax");
-    const prixNuit = document.getElementById("prixNuit");
-    const prixSemaine = document.getElementById("prixSemaine");
-    const prixMois = document.getElementById("prixMois");
-    const contactPhone = document.getElementById("contactPhone");
-    const btnWa = document.getElementById("btnWa");
-    const btnCopy = document.getElementById("btnCopy");
+    const coverImg = document.getElementById("coverImg");
+    const titleEl = document.getElementById("titleEl");
+    const subEl = document.getElementById("subEl");
+    const subTitle = document.getElementById("subTitle");
+    const descEl = document.getElementById("descEl");
+    const warnEl = document.getElementById("warnEl");
+    const errEl = document.getElementById("errEl");
+    const galleryEl = document.getElementById("gallery");
     const btnReserve = document.getElementById("btnReserve");
-    const statusBox = document.getElementById("status");
+    const waEl = document.getElementById("waEl");
+    const btnWa = document.getElementById("btnWa");
 
-    const dateIn = document.getElementById("dateIn");
-    const dateOut = document.getElementById("dateOut");
-    const clientName = document.getElementById("clientName");
-    const clientPhone = document.getElementById("clientPhone");
-    const clientMsg = document.getElementById("clientMsg");
+    const typeEl = document.getElementById("typeEl");
+    const cityEl = document.getElementById("cityEl");
+    const capEl = document.getElementById("capEl");
+    const slugEl = document.getElementById("slugEl");
+    const pnEl = document.getElementById("pnEl");
+    const psEl = document.getElementById("psEl");
+    const pmEl = document.getElementById("pmEl");
 
-    let logement = null;
+    const lbOverlay = document.getElementById("lbOverlay");
+    const lbClose = document.getElementById("lbClose");
+    const lbImg = document.getElementById("lbImg");
+    const lbTitle = document.getElementById("lbTitle");
 
-    function note(msg, type){
-      statusBox.style.display = "block";
-      statusBox.className = "note " + (type || "");
-      statusBox.textContent = msg;
+    function escapeHtml(str){
+      return String(str ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    function escapeAttr(str){
+      return escapeHtml(str).replaceAll("`","&#096;");
+    }
+
+    function getSlug(){
+      const u = new URL(location.href);
+      return String(u.searchParams.get("slug") || "").trim();
+    }
+
+    function safeImg(img){
+      const src = String(img || "").trim();
+      return src ? src : FALLBACK_IMG;
     }
 
     function money(x){
       const n = Number(x);
-      if (!Number.isFinite(n) || n <= 0) return "—";
-      return n.toLocaleString("fr-FR") + " FCFA";
-    }
-
-    function normPhone(raw){
-      const s = String(raw || "").trim();
-      if (!s) return "";
-      let x = s.replace(/[^\d+]/g, "");
-      if (x.startsWith("00")) x = "+" + x.slice(2);
-      const digits = x.replace(/[^\d]/g, "");
-      if (!x.startsWith("+") && digits.length === 9) return "+221" + digits;
-      if (x.startsWith("+")) return x;
-      return digits ? ("+" + digits) : "";
+      if (!isFinite(n) || n <= 0) return "—";
+      try {
+        return n.toLocaleString("fr-FR") + " FCFA";
+      } catch {
+        return String(n) + " FCFA";
+      }
     }
 
     function waDigits(phone){
@@ -351,59 +718,139 @@
       return true;
     }
 
-    function setChips(row){
-      chips.innerHTML = "";
+    function pickWhatsApp(row){
+      const wa = row?.phone || TEAM_WA;
+      const digits = waDigits(wa);
+      if (digits.length >= 9) return wa;
+      return TEAM_WA;
+    }
 
-      const list = [
-        "0% commission",
-        "Paiement direct",
-        row.type_logement || "Location"
-      ];
+    function computeKind(row){
+      const type = String(row?.type_logement || "").toLowerCase();
+      if (type.includes("villa")) return "Villa • Direct propriétaire";
+      if (type.includes("studio")) return "Studio • Direct propriétaire";
+      if (type.includes("appartement")) return "Appartement • Direct propriétaire";
+      if (type.includes("chambre")) return "Chambre • Direct propriétaire";
+      if (type.includes("maison")) return "Maison • Direct propriétaire";
 
-      if (row.personnes_max) list.push(`${row.personnes_max} pers.`);
-      if (row.adresse) list.push(row.adresse);
+      const nom = String(row?.nom || "").toLowerCase();
+      if (nom.includes("villa")) return "Villa • Direct propriétaire";
+      if (nom.includes("studio")) return "Studio • Direct propriétaire";
+      if (nom.includes("appart")) return "Appartement • Direct propriétaire";
+      if (nom.includes("chambre")) return "Chambre • Direct propriétaire";
+      if (nom.includes("maison")) return "Maison • Direct propriétaire";
 
-      list.forEach(text => {
-        const el = document.createElement("span");
-        el.className = "chip";
-        el.textContent = text;
-        chips.appendChild(el);
+      return "Location • Direct propriétaire";
+    }
+
+    function parsePhotos(row){
+      const out = [];
+
+      if (row?.photo_url) out.push(String(row.photo_url).trim());
+
+      const raw =
+        row?.photos ??
+        row?.gallery ??
+        row?.images ??
+        row?.imgs ??
+        row?.photo_urls ??
+        null;
+
+      if (raw) {
+        if (Array.isArray(raw)) {
+          raw.forEach(x => { if (x) out.push(String(x).trim()); });
+        } else {
+          const s = String(raw).trim();
+          if (s) {
+            if ((s.startsWith("[") && s.endsWith("]")) || (s.startsWith("{") && s.endsWith("}"))) {
+              try {
+                const j = JSON.parse(s);
+                if (Array.isArray(j)) j.forEach(x => { if (x) out.push(String(x).trim()); });
+                else if (j && Array.isArray(j.photos)) j.photos.forEach(x => { if (x) out.push(String(x).trim()); });
+                else if (j && Array.isArray(j.gallery)) j.gallery.forEach(x => { if (x) out.push(String(x).trim()); });
+              } catch {}
+            } else if (s.includes(",")) {
+              s.split(",").forEach(x => { if (x.trim()) out.push(x.trim()); });
+            } else {
+              out.push(s);
+            }
+          }
+        }
+      }
+
+      const seen = new Set();
+      return out.filter(x => {
+        const k = String(x || "").trim();
+        if (!k || seen.has(k)) return false;
+        seen.add(k);
+        return true;
       });
     }
 
-    async function copyText(text){
-      try{
-        await navigator.clipboard.writeText(text);
-        return true;
-      }catch(_){
-        try{
-          const ta = document.createElement("textarea");
-          ta.value = text;
-          ta.setAttribute("readonly", "");
-          ta.style.position = "absolute";
-          ta.style.left = "-9999px";
-          document.body.appendChild(ta);
-          ta.select();
-          document.execCommand("copy");
-          document.body.removeChild(ta);
-          return true;
-        }catch(__){
-          return false;
-        }
-      }
+    function setMetaTitle(name){
+      document.title = "DIGIY LOC — " + (name || "Fiche logement");
+      subTitle.textContent = name ? ("Fiche — " + name) : "Fiche logement";
     }
 
-    async function load(){
-      if(!listingSlug){
-        nom.textContent = "Slug manquant";
-        ville.textContent = "Retourne vers la galerie";
-        desc.textContent = "Cette fiche publique attend un slug dans l’URL.";
-        photo.src = FALLBACK_IMG;
-        note("Slug manquant dans l’URL publique.", "bad");
-        return;
-      }
+    function showError(msg){
+      errEl.style.display = "block";
+      errEl.innerHTML = "❌ " + escapeHtml(msg || "Erreur inconnue");
+    }
 
-      const { data, error } = await SB
+    function showWarn(msg){
+      warnEl.style.display = "block";
+      warnEl.innerHTML = "⚠️ " + escapeHtml(msg || "");
+    }
+
+    function hideError(){
+      errEl.style.display = "none";
+      errEl.innerHTML = "";
+    }
+
+    function hideWarn(){
+      warnEl.style.display = "none";
+      warnEl.innerHTML = "";
+    }
+
+    function openLightbox(url, title, n, total){
+      lbTitle.textContent = (title || "Photo") + (total ? ` • ${n}/${total}` : "");
+      lbImg.src = safeImg(url);
+      lbOverlay.classList.add("show");
+      lbOverlay.setAttribute("aria-hidden","false");
+    }
+
+    function closeLightbox(){
+      lbOverlay.classList.remove("show");
+      lbOverlay.setAttribute("aria-hidden","true");
+      lbImg.src = "";
+    }
+
+    lbClose.addEventListener("click", closeLightbox);
+    lbOverlay.addEventListener("click", (e)=>{ if (e.target === lbOverlay) closeLightbox(); });
+    document.addEventListener("keydown", (e)=>{ if (e.key === "Escape") closeLightbox(); });
+
+    function renderGallery(list, title){
+      galleryEl.innerHTML = "";
+      const finalList = (Array.isArray(list) && list.length) ? list : [FALLBACK_IMG];
+
+      finalList.forEach((url, idx)=>{
+        const item = document.createElement("div");
+        item.className = "gItem";
+        const safe = safeImg(url);
+        item.innerHTML = `
+          <img
+            loading="lazy"
+            alt="${escapeAttr(title || "Photo")}"
+            src="${escapeAttr(safe)}"
+            onerror="this.onerror=null;this.src='${escapeAttr(FALLBACK_IMG)}';">
+        `;
+        item.addEventListener("click", ()=> openLightbox(safe, title, idx + 1, finalList.length));
+        galleryEl.appendChild(item);
+      });
+    }
+
+    async function fetchRoomBySlug(slug){
+      const { data, error } = await sb
         .from("digiy_loc_rooms")
         .select(`
           nom,
@@ -419,132 +866,137 @@
           slug,
           is_public,
           public_url,
-          type_logement
+          type_logement,
+          photos,
+          gallery,
+          images,
+          imgs,
+          photo_urls
         `)
-        .eq("slug", listingSlug)
+        .eq("slug", slug)
         .eq("is_public", true)
         .in("status", ["active", "actif"])
         .maybeSingle();
 
-      if(error){
-        console.error(error);
-        nom.textContent = "Erreur chargement";
-        ville.textContent = "Fiche publique indisponible";
-        desc.textContent = "Impossible de charger ce logement pour le moment.";
-        photo.src = FALLBACK_IMG;
-        note("Erreur chargement fiche publique.", "bad");
-        return;
-      }
-
-      if(!data){
-        nom.textContent = "Logement introuvable";
-        ville.textContent = "Vérifie le lien";
-        desc.textContent = "Ce logement n’existe pas, n’est plus public, ou n’est pas encore actif.";
-        photo.src = FALLBACK_IMG;
-        note("Logement introuvable ou non public.", "bad");
-        return;
-      }
-
-      logement = data;
-
-      document.title = "DIGIY LOC — " + (logement.nom || "Fiche logement");
-
-      photo.src = logement.photo_url || FALLBACK_IMG;
-      photo.alt = logement.nom || "Logement";
-      photo.onerror = () => {
-        photo.onerror = null;
-        photo.src = FALLBACK_IMG;
-      };
-
-      nom.textContent = logement.nom || "Logement";
-      ville.textContent = logement.adresse || "Sénégal";
-      desc.textContent = logement.description || "Contact direct propriétaire. Paiement direct. 0% commission DIGIY.";
-
-      typeLogement.textContent = logement.type_logement || "—";
-      personnesMax.textContent = logement.personnes_max ? `${logement.personnes_max} pers.` : "—";
-      prixNuit.textContent = money(logement.prix_nuit);
-      prixSemaine.textContent = money(logement.prix_semaine);
-      prixMois.textContent = money(logement.prix_mois);
-
-      contactPhone.textContent = logement.phone || TEAM_WA;
-      setChips(logement);
-
-      if(!clientMsg.value.trim()){
-        clientMsg.value = `Bonjour, je souhaite avoir des informations pour "${logement.nom || "ce logement"}".`;
-      }
+      return { data, error };
     }
 
-    btnWa.addEventListener("click", () => {
-      if(!logement){
-        note("Fiche non chargée.", "bad");
+    function renderNotFound(slug){
+      setMetaTitle("Introuvable");
+      titleEl.textContent = "Logement introuvable";
+      descEl.textContent = "Ce lien n’existe pas ou le logement n’est plus public. Retourne à la galerie.";
+      coverImg.src = FALLBACK_IMG;
+      coverImg.onerror = () => {
+        coverImg.onerror = null;
+        coverImg.src = FALLBACK_IMG;
+      };
+
+      subEl.innerHTML = "";
+      renderGallery([], "Photo");
+      showWarn("Slug demandé : " + (slug || "—"));
+      hideError();
+
+      typeEl.textContent = "—";
+      cityEl.textContent = "—";
+      capEl.textContent = "—";
+      slugEl.textContent = slug || "—";
+      pnEl.textContent = "—";
+      psEl.textContent = "—";
+      pmEl.textContent = "—";
+
+      waEl.textContent = TEAM_WA;
+      btnReserve.onclick = ()=> openWa(TEAM_WA, "Bonjour DIGIY 👋 Je cherche un logement mais le lien ne marche pas. Slug: " + (slug || "—"));
+      btnWa.onclick = ()=> openWa(TEAM_WA, "Bonjour DIGIY 👋 Je veux un logement. Zone + budget + dates :");
+    }
+
+    async function main(){
+      const slug = getSlug();
+
+      if (!slug){
+        renderNotFound("");
+        showWarn("Aucun slug dans l’URL. Exemple : fiche.html?slug=loc-room-a07c151a");
         return;
       }
 
-      const ok = openWa(
-        logement.phone || TEAM_WA,
-        `Bonjour, je souhaite avoir des informations pour "${logement.nom || "ce logement"}" via DIGIY LOC.`
-      );
+      const res = await fetchRoomBySlug(slug);
 
-      if(!ok){
-        note("Numéro WhatsApp indisponible.", "bad");
+      if (res.error){
+        renderNotFound(slug);
+        showError(res.error.message || "Erreur Supabase");
+        return;
       }
+
+      if (!res.data){
+        renderNotFound(slug);
+        return;
+      }
+
+      const row = res.data;
+      const title = row.nom || "Logement";
+      const city = row.adresse || "Sénégal";
+      const kind = computeKind(row);
+      const wa = pickWhatsApp(row);
+      const cover = safeImg(row.photo_url);
+      const description = row.description || "Contact direct propriétaire. Paiement direct. 0% commission.";
+      const photos = parsePhotos(row);
+
+      setMetaTitle(title);
+
+      titleEl.textContent = title;
+      descEl.textContent = description;
+
+      subEl.innerHTML = "";
+      const c1 = document.createElement("span");
+      c1.className = "chip blue";
+      c1.textContent = kind;
+
+      const c2 = document.createElement("span");
+      c2.className = "chip";
+      c2.textContent = city;
+
+      const c3 = document.createElement("span");
+      c3.className = "chip green";
+      c3.textContent = "0% commission";
+
+      subEl.appendChild(c1);
+      subEl.appendChild(c2);
+      subEl.appendChild(c3);
+
+      coverImg.loading = "eager";
+      coverImg.src = cover;
+      coverImg.onerror = () => {
+        coverImg.onerror = null;
+        coverImg.src = FALLBACK_IMG;
+      };
+
+      renderGallery(photos, title);
+
+      waEl.textContent = wa;
+      typeEl.textContent = kind;
+      cityEl.textContent = city;
+      capEl.textContent = row.personnes_max ? String(row.personnes_max) + " pers." : "—";
+      slugEl.textContent = row.slug || "—";
+      pnEl.textContent = money(row.prix_nuit);
+      psEl.textContent = money(row.prix_semaine);
+      pmEl.textContent = money(row.prix_mois);
+
+      btnReserve.onclick = () => {
+        openWa(wa, `Bonjour, je souhaite réserver / avoir des infos pour "${title}" via DIGIY LOC.`);
+      };
+
+      btnWa.onclick = () => {
+        openWa(wa, `Bonjour 👋 Je veux des infos pour "${title}" (dates + budget).`);
+      };
+
+      hideWarn();
+      hideError();
+    }
+
+    main().catch((e)=>{
+      console.error(e);
+      renderNotFound(getSlug());
+      showError("Erreur inattendue: " + (e?.message || e));
     });
-
-    btnCopy.addEventListener("click", async () => {
-      const ok = await copyText(location.href);
-      note(ok ? "Lien copié ✅" : "Copie impossible automatiquement.", ok ? "ok" : "bad");
-    });
-
-    btnReserve.addEventListener("click", () => {
-      if(!logement){
-        note("Fiche non chargée.", "bad");
-        return;
-      }
-
-      const name = (clientName.value || "").trim();
-      const phone = normPhone(clientPhone.value || "");
-      const din = dateIn.value || "";
-      const dout = dateOut.value || "";
-      const msg = (clientMsg.value || "").trim();
-
-      if(!name){
-        note("Merci d’indiquer votre nom.", "bad");
-        return;
-      }
-      if(!phone){
-        note("Merci d’indiquer votre téléphone.", "bad");
-        return;
-      }
-      if(!din || !dout){
-        note("Merci de choisir vos dates.", "bad");
-        return;
-      }
-      if(dout < din){
-        note("La date de départ doit être après la date d’arrivée.", "bad");
-        return;
-      }
-
-      const fullMsg = [
-        "Bonjour 👋",
-        `Je vous contacte pour : ${logement.nom || "ce logement"}`,
-        `Arrivée : ${din}`,
-        `Départ : ${dout}`,
-        `Nom : ${name}`,
-        `Téléphone : ${phone}`,
-        msg ? `Message : ${msg}` : ""
-      ].filter(Boolean).join("\n");
-
-      const ok = openWa(logement.phone || TEAM_WA, fullMsg);
-
-      if(!ok){
-        note("Numéro WhatsApp indisponible.", "bad");
-        return;
-      }
-
-      note("Demande prête ✅ WhatsApp ouvert.", "ok");
-    });
-
-    load();
   </script>
 </body>
 </html>
