@@ -40,9 +40,16 @@
       --muted:#cbd5f5;
       --line:rgba(148,163,184,0.22);
       --shadow-soft:0 20px 45px rgba(15,23,42,0.9);
+      --wa:#22c55e;
+      --blue:#2563eb;
     }
 
-    *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif}
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif
+    }
 
     body{
       min-height:100vh;
@@ -397,7 +404,7 @@
       justify-content:center;
       align-items:center;
       text-decoration:none;
-      transition:transform .18s ease;
+      transition:transform .18s ease, opacity .18s ease;
       flex:1;
       min-height:44px;
       white-space:nowrap;
@@ -407,6 +414,7 @@
     }
 
     .btn:active{transform:scale(.99)}
+    .btn:hover{opacity:.96}
 
     .btn-primary{
       background:linear-gradient(135deg,#facc15,#f97316);
@@ -418,6 +426,12 @@
       background:rgba(22,163,74,0.2);
       color:#bbf7d0;
       border:1px solid rgba(34,197,94,0.85);
+    }
+
+    .btn-email{
+      background:rgba(37,99,235,0.18);
+      color:#dbeafe;
+      border:1px solid rgba(96,165,250,0.75);
     }
 
     .btn-ghost{
@@ -445,6 +459,86 @@
       padding:12px;
       font-weight:900;
       line-height:1.55;
+    }
+
+    .formGrid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:10px;
+    }
+
+    @media(max-width:640px){
+      .formGrid{grid-template-columns:1fr}
+    }
+
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+
+    .field.full{
+      grid-column:1/-1;
+    }
+
+    .field label{
+      font-size:12px;
+      font-weight:900;
+      color:var(--muted);
+      letter-spacing:.06em;
+      text-transform:uppercase;
+    }
+
+    .input, .textarea{
+      width:100%;
+      border-radius:14px;
+      border:1px solid rgba(148,163,184,.24);
+      background:rgba(15,23,42,.7);
+      color:#fff;
+      padding:12px 13px;
+      font-size:15px;
+      outline:none;
+    }
+
+    .input:focus, .textarea:focus{
+      border-color:rgba(250,204,21,.8);
+      box-shadow:0 0 0 3px rgba(250,204,21,.12);
+    }
+
+    .textarea{
+      min-height:110px;
+      resize:vertical;
+    }
+
+    .mini{
+      margin-top:8px;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.55;
+      font-weight:700;
+    }
+
+    .status{
+      display:none;
+      margin-top:10px;
+      border-radius:14px;
+      padding:10px 12px;
+      font-size:13px;
+      font-weight:850;
+      line-height:1.55;
+    }
+
+    .status.show{display:block}
+    .status.ok{
+      border:1px solid rgba(34,197,94,.35);
+      background:rgba(34,197,94,.10);
+      color:#bbf7d0;
+    }
+    .status.info{
+      border:1px solid rgba(96,165,250,.35);
+      background:rgba(59,130,246,.10);
+      color:#dbeafe;
     }
 
     .overlay{
@@ -562,7 +656,7 @@
           <div id="errEl" class="err" style="display:none"></div>
 
           <div class="actions">
-            <button class="btn btn-wa" id="btnReserve" type="button">📲 Réserver (WhatsApp)</button>
+            <button class="btn btn-wa" id="btnReserveTop" type="button">📲 Envoyer ma demande</button>
             <a class="btn btn-primary" href="./index.html">👁️ Retour galerie</a>
           </div>
         </div>
@@ -583,12 +677,12 @@
           </div>
 
           <div class="box">
-            <div class="kicker">Contact</div>
-            <div class="big" id="waEl">—</div>
-            <div class="txt">WhatsApp direct • Réponse rapide</div>
+            <div class="kicker">Contact DIGIY</div>
+            <div class="big" id="waEl">+221771342889</div>
+            <div class="txt">La demande part vers DIGIY par WhatsApp ou email. Aucun enregistrement obligatoire côté Supabase.</div>
             <div class="actions" style="margin-top:10px">
-              <button class="btn btn-wa" id="btnWa" type="button">📲 Écrire sur WhatsApp</button>
-              <a class="btn btn-ghost" href="https://wa.me/221771342889" target="_blank" rel="noopener noreferrer">👥 Équipe DIGIY</a>
+              <button class="btn btn-wa" id="btnWaQuick" type="button">📲 WhatsApp DIGIY</button>
+              <button class="btn btn-email" id="btnEmailQuick" type="button">✉️ Email DIGIY</button>
             </div>
           </div>
 
@@ -627,6 +721,61 @@
           </div>
 
           <div class="box">
+            <div class="kicker">Demande de logement</div>
+            <div class="txt">
+              Remplis ce bloc puis envoie la demande sur WhatsApp ou par email. DIGIY reçoit le message avec le logement, le room_slug et le lien de la fiche.
+            </div>
+
+            <div class="formGrid">
+              <div class="field">
+                <label for="guestName">Nom</label>
+                <input id="guestName" class="input" type="text" placeholder="Ex : Awa Ndiaye" />
+              </div>
+
+              <div class="field">
+                <label for="guestPhone">Téléphone</label>
+                <input id="guestPhone" class="input" type="tel" placeholder="Ex : 221771234567" />
+              </div>
+
+              <div class="field">
+                <label for="checkIn">Arrivée</label>
+                <input id="checkIn" class="input" type="date" />
+              </div>
+
+              <div class="field">
+                <label for="checkOut">Départ</label>
+                <input id="checkOut" class="input" type="date" />
+              </div>
+
+              <div class="field">
+                <label for="guestCount">Personnes</label>
+                <input id="guestCount" class="input" type="number" min="1" step="1" placeholder="1" />
+              </div>
+
+              <div class="field">
+                <label for="guestBudget">Budget indicatif</label>
+                <input id="guestBudget" class="input" type="text" placeholder="Ex : 25000 / nuit" />
+              </div>
+
+              <div class="field full">
+                <label for="guestNote">Message</label>
+                <textarea id="guestNote" class="textarea" placeholder="Ex : Je cherche 3 nuits, proche plage, arrivée en soirée…"></textarea>
+              </div>
+            </div>
+
+            <div class="actions" style="margin-top:12px">
+              <button class="btn btn-wa" id="btnReserve" type="button">📲 Envoyer sur WhatsApp</button>
+              <button class="btn btn-email" id="btnEmail" type="button">✉️ Envoyer par email</button>
+            </div>
+
+            <div class="mini">
+              Astuce terrain : même si la personne ne comprend pas les URLs, le message embarque automatiquement les infos du logement et le lien de cette fiche.
+            </div>
+
+            <div id="statusEl" class="status info"></div>
+          </div>
+
+          <div class="box">
             <div class="kicker">Sécurité</div>
             <div class="txt">Cette page est publique côté client. Le cockpit propriétaire reste protégé côté PRO.</div>
           </div>
@@ -652,6 +801,7 @@
 
   <script>
     const TEAM_WA = "+221771342889";
+    const TEAM_EMAIL = "digiylyfe@gmail.com";
     const FALLBACK_IMG = "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80";
 
     const coverImg = document.getElementById("coverImg");
@@ -662,9 +812,13 @@
     const warnEl = document.getElementById("warnEl");
     const errEl = document.getElementById("errEl");
     const galleryEl = document.getElementById("gallery");
-    const btnReserve = document.getElementById("btnReserve");
+
     const waEl = document.getElementById("waEl");
-    const btnWa = document.getElementById("btnWa");
+    const btnReserveTop = document.getElementById("btnReserveTop");
+    const btnReserve = document.getElementById("btnReserve");
+    const btnWaQuick = document.getElementById("btnWaQuick");
+    const btnEmailQuick = document.getElementById("btnEmailQuick");
+    const btnEmail = document.getElementById("btnEmail");
 
     const typeEl = document.getElementById("typeEl");
     const cityEl = document.getElementById("cityEl");
@@ -674,10 +828,21 @@
     const psEl = document.getElementById("psEl");
     const pmEl = document.getElementById("pmEl");
 
+    const guestName = document.getElementById("guestName");
+    const guestPhone = document.getElementById("guestPhone");
+    const checkIn = document.getElementById("checkIn");
+    const checkOut = document.getElementById("checkOut");
+    const guestCount = document.getElementById("guestCount");
+    const guestBudget = document.getElementById("guestBudget");
+    const guestNote = document.getElementById("guestNote");
+    const statusEl = document.getElementById("statusEl");
+
     const lbOverlay = document.getElementById("lbOverlay");
     const lbClose = document.getElementById("lbClose");
     const lbImg = document.getElementById("lbImg");
     const lbTitle = document.getElementById("lbTitle");
+
+    let CURRENT_ROOM = null;
 
     function escapeHtml(str){
       return String(str ?? "")
@@ -739,11 +904,12 @@
       window.open(url, "_blank", "noopener,noreferrer");
     }
 
-    function pickWhatsApp(row){
-      const wa = row?.phone || TEAM_WA;
-      const digits = waDigits(wa);
-      if (digits.length >= 9) return wa;
-      return TEAM_WA;
+    function openMail(to, subject, body){
+      const href =
+        "mailto:" + encodeURIComponent(to) +
+        "?subject=" + encodeURIComponent(subject || "") +
+        "&body=" + encodeURIComponent(body || "");
+      window.location.href = href;
     }
 
     function computeKind(row){
@@ -787,6 +953,16 @@
     function hideWarn(){
       warnEl.style.display = "none";
       warnEl.innerHTML = "";
+    }
+
+    function showStatus(msg, mode="info"){
+      statusEl.className = "status show " + mode;
+      statusEl.textContent = msg || "";
+    }
+
+    function hideStatus(){
+      statusEl.className = "status info";
+      statusEl.textContent = "";
     }
 
     function openLightbox(url, title, n, total){
@@ -850,10 +1026,139 @@
       return { data, error };
     }
 
+    function focusDemandBox(){
+      const box = document.getElementById("guestName");
+      if (!box) return;
+      box.scrollIntoView({ behavior:"smooth", block:"center" });
+      setTimeout(()=> box.focus(), 250);
+    }
+
+    function formatDateFr(yyyyMmDd){
+      const v = String(yyyyMmDd || "").trim();
+      if (!v) return "—";
+      const parts = v.split("-");
+      if (parts.length !== 3) return v;
+      return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+
+    function buildInquiryPayload(){
+      const room = CURRENT_ROOM || {};
+      const title = room.title || "Logement";
+      const city = room.city || "—";
+      const roomSlug = room.roomSlug || "—";
+      const priceNight = room.priceNight || "—";
+      const priceWeek = room.priceWeek || "—";
+      const priceMonth = room.priceMonth || "—";
+      const url = window.location.href;
+
+      const name = String(guestName.value || "").trim();
+      const phone = String(guestPhone.value || "").trim();
+      const arrival = String(checkIn.value || "").trim();
+      const departure = String(checkOut.value || "").trim();
+      const people = String(guestCount.value || "").trim();
+      const budget = String(guestBudget.value || "").trim();
+      const note = String(guestNote.value || "").trim();
+
+      const subject = `DIGIY LOC — Demande logement — ${title}`;
+
+      const bodyLines = [
+        "Bonjour DIGIY 👋",
+        "",
+        "Nouvelle demande logement depuis la fiche publique.",
+        "",
+        "LOGEMENT",
+        `Nom : ${title}`,
+        `Ville : ${city}`,
+        `room_slug : ${roomSlug}`,
+        `Prix / nuit : ${priceNight}`,
+        `Prix / semaine : ${priceWeek}`,
+        `Prix / mois : ${priceMonth}`,
+        "",
+        "CLIENT",
+        `Nom : ${name || "—"}`,
+        `Téléphone : ${phone || "—"}`,
+        `Arrivée : ${formatDateFr(arrival)}`,
+        `Départ : ${formatDateFr(departure)}`,
+        `Personnes : ${people || "—"}`,
+        `Budget : ${budget || "—"}`,
+        "",
+        "MESSAGE",
+        note || "—",
+        "",
+        "LIEN FICHE",
+        url
+      ];
+
+      return {
+        subject,
+        body: bodyLines.join("\n"),
+        name,
+        phone
+      };
+    }
+
+    function validateInquiry(){
+      const payload = buildInquiryPayload();
+
+      if (!payload.name) {
+        showStatus("Ajoute au moins le nom du client pour envoyer une demande propre.", "info");
+        guestName.focus();
+        return false;
+      }
+
+      if (!payload.phone) {
+        showStatus("Ajoute au moins un téléphone pour que DIGIY puisse rappeler.", "info");
+        guestPhone.focus();
+        return false;
+      }
+
+      hideStatus();
+      return true;
+    }
+
+    function sendInquiryWhatsApp(){
+      if (!validateInquiry()) return;
+      const payload = buildInquiryPayload();
+      openWa(TEAM_WA, payload.body);
+      showStatus("WhatsApp DIGIY ouvert avec la demande préremplie.", "ok");
+    }
+
+    function sendInquiryEmail(){
+      if (!validateInquiry()) return;
+      const payload = buildInquiryPayload();
+      openMail(TEAM_EMAIL, payload.subject, payload.body);
+      showStatus("Email DIGIY préparé avec la demande préremplie.", "ok");
+    }
+
+    function quickContactWhatsApp(){
+      if (CURRENT_ROOM) {
+        sendInquiryWhatsApp();
+        return;
+      }
+      openWa(TEAM_WA, "Bonjour DIGIY 👋 Je veux des informations sur un logement.");
+    }
+
+    function quickContactEmail(){
+      if (CURRENT_ROOM) {
+        sendInquiryEmail();
+        return;
+      }
+      openMail(TEAM_EMAIL, "DIGIY LOC — Demande logement", "Bonjour DIGIY,\n\nJe veux des informations sur un logement.\n");
+    }
+
     function renderNotFound(roomSlug){
+      CURRENT_ROOM = {
+        title:"Logement introuvable",
+        city:"—",
+        roomSlug: roomSlug || "—",
+        priceNight:"—",
+        priceWeek:"—",
+        priceMonth:"—"
+      };
+
       setMetaTitle("Introuvable");
       titleEl.textContent = "Logement introuvable";
-      descEl.textContent = "Ce lien n’existe pas ou le logement n’est plus public. Retourne à la galerie.";
+      descEl.textContent = "Ce lien n’existe pas ou le logement n’est plus public. Retourne à la galerie ou envoie une demande à DIGIY.";
       coverImg.src = FALLBACK_IMG;
       coverImg.onerror = () => { coverImg.onerror = null; coverImg.src = FALLBACK_IMG; };
 
@@ -876,14 +1181,7 @@
       }
 
       waEl.textContent = TEAM_WA;
-      btnReserve.onclick = ()=> openWa(
-        TEAM_WA,
-        "Bonjour DIGIY 👋 Je cherche un logement mais le lien ne marche pas. room_slug : " + (roomSlug || "—")
-      );
-      btnWa.onclick = ()=> openWa(
-        TEAM_WA,
-        "Bonjour DIGIY 👋 Je veux un logement. Zone + budget + dates :"
-      );
+      hideStatus();
     }
 
     async function main(){
@@ -912,10 +1210,19 @@
       const title = row.nom || "Logement";
       const city = row.adresse || "Sénégal";
       const kind = computeKind(row);
-      const wa = pickWhatsApp(row);
       const cover = safeImg(row.photo_url);
       const desc = row.description || "Contact direct propriétaire. Paiement direct. 0% commission.";
       const publicRoomSlug = String(row.slug || requestedRoomSlug || "").trim();
+
+      CURRENT_ROOM = {
+        title,
+        city,
+        roomSlug: publicRoomSlug,
+        kind,
+        priceNight: money(row.prix_nuit),
+        priceWeek: money(row.prix_semaine),
+        priceMonth: money(row.prix_mois)
+      };
 
       setMetaTitle(title);
 
@@ -944,7 +1251,7 @@
 
       renderGallery(cover, title);
 
-      waEl.textContent = wa;
+      waEl.textContent = TEAM_WA;
       typeEl.textContent = kind;
       cityEl.textContent = city;
       capEl.textContent = row.personnes_max ? String(row.personnes_max) + " pers." : "—";
@@ -953,29 +1260,16 @@
       psEl.textContent = money(row.prix_semaine);
       pmEl.textContent = money(row.prix_mois);
 
-      btnReserve.onclick = () => {
-        openWa(
-          wa,
-          [
-            `Bonjour, je souhaite réserver / avoir des infos pour "${title}" via DIGIY LOC.`,
-            `room_slug : ${publicRoomSlug}`
-          ].join("\n")
-        );
-      };
-
-      btnWa.onclick = () => {
-        openWa(
-          wa,
-          [
-            `Bonjour 👋 Je veux des infos pour "${title}" (dates + budget).`,
-            `room_slug : ${publicRoomSlug}`
-          ].join("\n")
-        );
-      };
-
       hideWarn();
       hideError();
+      hideStatus();
     }
+
+    btnReserveTop.addEventListener("click", focusDemandBox);
+    btnReserve.addEventListener("click", sendInquiryWhatsApp);
+    btnWaQuick.addEventListener("click", quickContactWhatsApp);
+    btnEmailQuick.addEventListener("click", quickContactEmail);
+    btnEmail.addEventListener("click", sendInquiryEmail);
 
     main().catch((e)=>{
       console.error(e);
