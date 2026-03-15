@@ -5,7 +5,16 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>DIGIY LOC — Fiche logement</title>
   <meta name="theme-color" content="#020617" />
-  <meta name="description" content="DIGIY LOC — Fiche logement. Direct propriétaire, 0% commission." />
+  <meta name="description" content="DIGIY LOC — Fiche logement. Direct propriétaire, paiement direct, 0% commission." />
+  <meta name="robots" content="index,follow" />
+
+  <script>
+    window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
+    window.DIGIY_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
+    window.DIGIY_SUPABASE_ANON = window.DIGIY_SUPABASE_ANON_KEY;
+    window.DIGIY_MODULE = "LOC";
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     :root{
@@ -43,6 +52,9 @@
       background:linear-gradient(135deg,#facc15,#f97316);
       color:#111827;font-weight:1000;
       box-shadow:0 12px 30px rgba(250,204,21,.35);
+    }
+    .top-links{
+      display:flex;gap:10px;flex-wrap:wrap;
     }
     .back{
       display:inline-flex;align-items:center;gap:8px;
@@ -161,7 +173,11 @@
         <div class="logo">🏠</div>
         <div>DIGIY LOC — Fiche logement</div>
       </div>
-      <a class="back" href="./index.html">← Retour vitrine</a>
+
+      <div class="top-links">
+        <a class="back" href="./index.html">← Retour vitrine</a>
+        <a class="back" href="https://digiylyfe.com/">← Retour au site</a>
+      </div>
     </div>
 
     <div class="grid">
@@ -217,6 +233,11 @@
           </div>
 
           <div class="section">
+            <div class="kicker">NDIMBAL</div>
+            <div class="desc">Certains logements DIGIY LOC peuvent proposer des nuits offertes en semaine. Demande au propriétaire si l’offre NDIMBAL est disponible sur ce logement.</div>
+          </div>
+
+          <div class="section">
             <div class="kicker">Contact</div>
             <div style="font-size:22px;font-weight:1000" id="contactPhone">—</div>
             <div class="small muted" style="margin-top:6px">WhatsApp direct • réponse rapide</div>
@@ -252,11 +273,18 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
-    const SB = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const SB = window.supabase.createClient(
+      window.DIGIY_SUPABASE_URL,
+      window.DIGIY_SUPABASE_ANON_KEY,
+      {
+        auth:{
+          persistSession:false,
+          autoRefreshToken:false,
+          detectSessionInUrl:false
+        }
+      }
+    );
 
     const FALLBACK_IMG = "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80";
     const TEAM_WA = "+221771342889";
@@ -317,9 +345,10 @@
 
     function openWa(phone, message){
       const digits = waDigits(phone);
-      if (!digits) return;
+      if (!digits) return false;
       const url = "https://wa.me/" + digits + "?text=" + encodeURIComponent(message || "");
       window.open(url, "_blank", "noopener,noreferrer");
+      return true;
     }
 
     function setChips(row){
@@ -328,9 +357,11 @@
       const list = [
         "0% commission",
         "Paiement direct",
-        row.type_logement || "Location",
-        row.slug || "slug"
+        row.type_logement || "Location"
       ];
+
+      if (row.personnes_max) list.push(`${row.personnes_max} pers.`);
+      if (row.adresse) list.push(row.adresse);
 
       list.forEach(text => {
         const el = document.createElement("span");
@@ -340,15 +371,56 @@
       });
     }
 
+    async function copyText(text){
+      try{
+        await navigator.clipboard.writeText(text);
+        return true;
+      }catch(_){
+        try{
+          const ta = document.createElement("textarea");
+          ta.value = text;
+          ta.setAttribute("readonly", "");
+          ta.style.position = "absolute";
+          ta.style.left = "-9999px";
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          document.body.removeChild(ta);
+          return true;
+        }catch(__){
+          return false;
+        }
+      }
+    }
+
     async function load(){
       if(!listingSlug){
+        nom.textContent = "Slug manquant";
+        ville.textContent = "Retourne vers la galerie";
+        desc.textContent = "Cette fiche publique attend un slug dans l’URL.";
+        photo.src = FALLBACK_IMG;
         note("Slug manquant dans l’URL publique.", "bad");
         return;
       }
 
       const { data, error } = await SB
         .from("digiy_loc_rooms")
-        .select("*")
+        .select(`
+          nom,
+          adresse,
+          personnes_max,
+          prix_nuit,
+          prix_semaine,
+          prix_mois,
+          description,
+          photo_url,
+          status,
+          phone,
+          slug,
+          is_public,
+          public_url,
+          type_logement
+        `)
         .eq("slug", listingSlug)
         .eq("is_public", true)
         .in("status", ["active", "actif"])
@@ -356,11 +428,19 @@
 
       if(error){
         console.error(error);
+        nom.textContent = "Erreur chargement";
+        ville.textContent = "Fiche publique indisponible";
+        desc.textContent = "Impossible de charger ce logement pour le moment.";
+        photo.src = FALLBACK_IMG;
         note("Erreur chargement fiche publique.", "bad");
         return;
       }
 
       if(!data){
+        nom.textContent = "Logement introuvable";
+        ville.textContent = "Vérifie le lien";
+        desc.textContent = "Ce logement n’existe pas, n’est plus public, ou n’est pas encore actif.";
+        photo.src = FALLBACK_IMG;
         note("Logement introuvable ou non public.", "bad");
         return;
       }
@@ -371,7 +451,10 @@
 
       photo.src = logement.photo_url || FALLBACK_IMG;
       photo.alt = logement.nom || "Logement";
-      photo.onerror = () => { photo.onerror = null; photo.src = FALLBACK_IMG; };
+      photo.onerror = () => {
+        photo.onerror = null;
+        photo.src = FALLBACK_IMG;
+      };
 
       nom.textContent = logement.nom || "Logement";
       ville.textContent = logement.adresse || "Sénégal";
@@ -396,17 +479,20 @@
         note("Fiche non chargée.", "bad");
         return;
       }
-      openWa(logement.phone || TEAM_WA, `Bonjour, je souhaite avoir des informations pour "${logement.nom || "ce logement"}" via DIGIY LOC.`);
+
+      const ok = openWa(
+        logement.phone || TEAM_WA,
+        `Bonjour, je souhaite avoir des informations pour "${logement.nom || "ce logement"}" via DIGIY LOC.`
+      );
+
+      if(!ok){
+        note("Numéro WhatsApp indisponible.", "bad");
+      }
     });
 
     btnCopy.addEventListener("click", async () => {
-      try{
-        await navigator.clipboard.writeText(location.href);
-        note("Lien copié ✅", "ok");
-      }catch(e){
-        console.error(e);
-        note("Copie impossible automatiquement.", "bad");
-      }
+      const ok = await copyText(location.href);
+      note(ok ? "Lien copié ✅" : "Copie impossible automatiquement.", ok ? "ok" : "bad");
     });
 
     btnReserve.addEventListener("click", () => {
@@ -433,6 +519,10 @@
         note("Merci de choisir vos dates.", "bad");
         return;
       }
+      if(dout < din){
+        note("La date de départ doit être après la date d’arrivée.", "bad");
+        return;
+      }
 
       const fullMsg = [
         "Bonjour 👋",
@@ -444,7 +534,13 @@
         msg ? `Message : ${msg}` : ""
       ].filter(Boolean).join("\n");
 
-      openWa(logement.phone || TEAM_WA, fullMsg);
+      const ok = openWa(logement.phone || TEAM_WA, fullMsg);
+
+      if(!ok){
+        note("Numéro WhatsApp indisponible.", "bad");
+        return;
+      }
+
       note("Demande prête ✅ WhatsApp ouvert.", "ok");
     });
 
