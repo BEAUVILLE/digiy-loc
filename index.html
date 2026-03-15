@@ -905,7 +905,7 @@
         </div>
 
         <form id="locLeadForm" class="digiy-form">
-          <input type="hidden" name="picked_slug" id="pickedSlug">
+          <input type="hidden" name="picked_room_slug" id="pickedRoomSlug">
           <input type="hidden" name="picked_phone" id="pickedPhone">
 
           <label>Votre prénom
@@ -1043,9 +1043,19 @@
       return String(s || "").trim().toLowerCase();
     }
 
+    function canonicalRoomSlug(obj){
+      return String(obj?.room_slug || obj?.slug || "").trim();
+    }
+
+    function canonicalLegacySlug(obj){
+      return String(obj?.legacy_slug || obj?.slug || "").trim();
+    }
+
     const BAPTISTE_PIN = {
       title: "CHEZ BAPTISTE",
+      room_slug: "chez-baptiste",
       slug: "chez-baptiste",
+      legacy_slug: "chez-baptiste",
       address_label: "Saly",
       kind: "Appartement • Direct propriétaire",
       whatsapp: "+221778765785",
@@ -1060,7 +1070,9 @@
     const OPENING_ZONES = [
       {
         title:"Zone Dakar — ouverture progressive",
+        room_slug:"zone-dakar-en-ouverture",
         slug:"zone-dakar-en-ouverture",
+        legacy_slug:"zone-dakar-en-ouverture",
         address_label:"Dakar",
         kind:"Appartement • Studio",
         whatsapp:TEAM_WA,
@@ -1069,7 +1081,9 @@
       },
       {
         title:"Zone Somone / Ngaparou — bons plans",
+        room_slug:"zone-somone-bons-plans",
         slug:"zone-somone-bons-plans",
+        legacy_slug:"zone-somone-bons-plans",
         address_label:"Somone",
         kind:"Studio • Villa",
         whatsapp:TEAM_WA,
@@ -1078,7 +1092,9 @@
       },
       {
         title:"Mbour — logements partenaires à venir",
+        room_slug:"zone-mbour-a-venir",
         slug:"zone-mbour-a-venir",
+        legacy_slug:"zone-mbour-a-venir",
         address_label:"Mbour",
         kind:"Villa • Chambre",
         whatsapp:TEAM_WA,
@@ -1087,7 +1103,9 @@
       },
       {
         title:"Thiès — ouverture en cours",
+        room_slug:"zone-thies-a-venir",
         slug:"zone-thies-a-venir",
+        legacy_slug:"zone-thies-a-venir",
         address_label:"Thiès",
         kind:"Studio • Appartement",
         whatsapp:TEAM_WA,
@@ -1151,9 +1169,27 @@
     }
 
     function ficheLinkFor(p){
-      if (p && p.public_url) return String(p.public_url);
-      const slug = String(p?.slug || "");
-      return "https://beauville.github.io/digiy-loc/fiche.html?slug=" + encodeURIComponent(slug);
+      const roomSlug = canonicalRoomSlug(p);
+      const raw = String(p?.public_url || "").trim();
+
+      if (raw) {
+        try {
+          const url = new URL(raw, window.location.href);
+          const path = String(url.pathname || "").toLowerCase();
+
+          if ((/\/fiche(?:-abo)?\.html$/).test(path) && roomSlug) {
+            url.searchParams.set("room_slug", roomSlug);
+            url.searchParams.delete("slug");
+            return url.toString();
+          }
+
+          return raw;
+        } catch (_) {
+          return raw;
+        }
+      }
+
+      return "https://beauville.github.io/digiy-loc/fiche.html?room_slug=" + encodeURIComponent(roomSlug);
     }
 
     const ndOverlay = document.getElementById("ndOverlay");
@@ -1188,7 +1224,7 @@
     async function logReservationIntent(pin){
       try{
         await sb.from("loc_reservation_requests").insert({
-          pin_slug: pin.slug || null,
+          pin_slug: canonicalRoomSlug(pin) || canonicalLegacySlug(pin) || null,
           logement_title: pin.title || null,
           owner_phone: pickWhatsApp(pin) || null
         });
@@ -1200,7 +1236,12 @@
     async function reserveNow(pin){
       const wa = pickWhatsApp(pin);
       const title = pin.title || "ce logement";
-      const msg = `Bonjour, je souhaite réserver / avoir des infos pour "${title}" via DIGIY LOC.`;
+      const roomSlug = canonicalRoomSlug(pin);
+      const msg = [
+        `Bonjour, je souhaite réserver / avoir des infos pour "${title}" via DIGIY LOC.`,
+        roomSlug ? `room_slug : ${roomSlug}` : ""
+      ].filter(Boolean).join("\n");
+
       await logReservationIntent(pin);
       openWa(wa, msg);
     }
@@ -1208,20 +1249,20 @@
 
     function pickLocForWhatsApp(pin){
       const title = pin?.title || "Logement";
-      const slug  = pin?.slug  || "";
+      const roomSlug = canonicalRoomSlug(pin);
       const phone = (pin?.whatsapp || pin?.phone || TEAM_WA || "").toString();
 
       const pickedHint = document.getElementById("pickedHint");
-      const pickLine   = document.getElementById("pickLine");
-      const pickedTitle= document.getElementById("pickedTitle");
-      const pickedSlug = document.getElementById("pickedSlug");
-      const pickedPhone= document.getElementById("pickedPhone");
+      const pickLine = document.getElementById("pickLine");
+      const pickedTitle = document.getElementById("pickedTitle");
+      const pickedRoomSlug = document.getElementById("pickedRoomSlug");
+      const pickedPhone = document.getElementById("pickedPhone");
 
       pickedHint.textContent = "Logement sélectionné ✅";
       pickLine.style.display = "flex";
       pickedTitle.textContent = title;
 
-      pickedSlug.value  = slug;
+      pickedRoomSlug.value = roomSlug;
       pickedPhone.value = phone;
 
       document.getElementById("contact").scrollIntoView({ behavior:"smooth", block:"start" });
@@ -1232,14 +1273,14 @@
       document.getElementById("pickedHint").textContent = "Choisis un logement dans la liste 👇";
       document.getElementById("pickLine").style.display = "none";
       document.getElementById("pickedTitle").textContent = "—";
-      document.getElementById("pickedSlug").value = "";
+      document.getElementById("pickedRoomSlug").value = "";
       document.getElementById("pickedPhone").value = "";
     });
 
     document.getElementById("locLeadForm").addEventListener("submit", (e)=>{
       e.preventDefault();
 
-      const pickedSlug = document.getElementById("pickedSlug").value.trim();
+      const pickedRoomSlug = document.getElementById("pickedRoomSlug").value.trim();
       const pickedPhone = document.getElementById("pickedPhone").value.trim() || TEAM_WA;
       const form = e.currentTarget;
 
@@ -1251,7 +1292,7 @@
       const msg = [
         "Bonjour 👋",
         "Je vous contacte via DIGIY LOC.",
-        pickedSlug ? `Logement : ${pickedSlug}` : "Logement : à préciser",
+        pickedRoomSlug ? `room_slug : ${pickedRoomSlug}` : "room_slug : à préciser",
         `Prénom : ${name || "à préciser"}`,
         `Dates : ${dates || "à préciser"}`,
         `Personnes : ${people || "à préciser"}`,
@@ -1300,6 +1341,7 @@
             phone,
             business_code,
             slug,
+            room_slug,
             is_public,
             public_url,
             type_logement
@@ -1316,7 +1358,9 @@
         const normalized = (data || [])
           .map(row => ({
             title: row.nom || "",
-            slug: row.slug || "",
+            room_slug: row.room_slug || row.slug || "",
+            slug: row.room_slug || row.slug || "",
+            legacy_slug: row.slug || "",
             address_label: row.adresse || "",
             kind: computeKind(row),
             whatsapp: row.phone || TEAM_WA,
@@ -1333,7 +1377,7 @@
           }))
           .filter(row => {
             return (
-              String(row.slug || "").trim() &&
+              String(row.room_slug || row.slug || "").trim() &&
               String(row.title || "").trim() &&
               String(row.address_label || "").trim() &&
               String(row.cover || "").trim()
@@ -1352,10 +1396,10 @@
       const seen = new Set();
 
       out.push(BAPTISTE_PIN);
-      seen.add(norm(BAPTISTE_PIN.slug));
+      seen.add(norm(canonicalRoomSlug(BAPTISTE_PIN)));
 
       for (const p of (list || [])) {
-        const s = norm(p.slug);
+        const s = norm(canonicalRoomSlug(p));
         if (!s || seen.has(s)) continue;
         out.push(p);
         seen.add(s);
@@ -1372,8 +1416,9 @@
         const title = norm(p.title || "");
         const city  = norm(p.address_label || "");
         const k     = norm(p.kind || computeKind(p));
+        const roomSlug = norm(canonicalRoomSlug(p));
 
-        if (q && !(title.includes(q) || city.includes(q))) return false;
+        if (q && !(title.includes(q) || city.includes(q) || roomSlug.includes(q))) return false;
         if (kind && !k.includes(kind)) return false;
         return true;
       });
@@ -1381,14 +1426,15 @@
 
     function cardTemplate(p, occMap){
       const title = p.title || "Logement";
-      const slug  = p.slug || "";
-      const city  = p.address_label || "—";
-      const kind  = p.kind || computeKind(p);
-      const wa    = pickWhatsApp(p);
+      const roomSlug = canonicalRoomSlug(p);
+      const legacySlug = canonicalLegacySlug(p);
+      const city = p.address_label || "—";
+      const kind = p.kind || computeKind(p);
+      const wa = pickWhatsApp(p);
       const cover = pickCover(p);
 
-      const isPinned = !!p.is_official_partner || norm(p.title) === norm("CHEZ BAPTISTE") || norm(p.slug) === norm("chez-baptiste");
-      const isOccupied = occMap ? (occMap.get(slug) === true) : false;
+      const isPinned = !!p.is_official_partner || norm(p.title) === norm("CHEZ BAPTISTE") || norm(roomSlug) === norm("chez-baptiste");
+      const isOccupied = occMap ? ((occMap.get(roomSlug) === true) || (occMap.get(legacySlug) === true)) : false;
 
       const badges = [];
       badges.push(`<div class="badge">0% com DIGIY</div>`);
@@ -1398,9 +1444,12 @@
       );
       if (isPinned) badges.push(`<div class="badge gold">⭐ Partenaire vedette</div>`);
       if (p.type_logement) badges.push(`<div class="badge">${escapeHtml(p.type_logement)}</div>`);
+      if (roomSlug) badges.push(`<div class="badge soft">room_slug : ${escapeHtml(roomSlug)}</div>`);
 
       const safePinObj = {
-        slug: slug,
+        room_slug: roomSlug,
+        slug: roomSlug,
+        legacy_slug: legacySlug,
         title: title,
         whatsapp: p.whatsapp || "",
         phone: p.phone || "",
@@ -1469,7 +1518,9 @@
       const cover = pickCover(p);
 
       const safePinObj = {
-        slug: p.slug || "",
+        room_slug: canonicalRoomSlug(p),
+        slug: canonicalRoomSlug(p),
+        legacy_slug: canonicalLegacySlug(p),
         title: title,
         whatsapp: p.whatsapp || TEAM_WA,
         phone: p.phone || TEAM_WA,
