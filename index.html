@@ -1062,9 +1062,10 @@
       phone: "+221778765785",
       cover: "https://orange-pig-270004.hostingersite.com/wp-content/uploads/2025/06/042-BAPTISTE.png",
       desc: "Appartement partenaire à Saly. Réservation directe propriétaire via WhatsApp. Paiement direct. 0% commission DIGIY.",
-      public_url: "",
+      public_url: "https://orange-pig-270004.hostingersite.com/partenaires-chez-baptiste/",
       type_logement: "Appartement",
-      is_official_partner: true
+      is_official_partner: true,
+      source_type: "partner"
     };
 
     const OPENING_ZONES = [
@@ -1169,6 +1170,9 @@
     }
 
     function ficheLinkFor(p){
+      const direct = String(p?.public_url || "").trim();
+      if (direct) return direct;
+
       const roomSlug = canonicalRoomSlug(p);
       return "https://beauville.github.io/digiy-loc/fiche.html?room_slug=" + encodeURIComponent(roomSlug);
     }
@@ -1444,7 +1448,7 @@
         cover: cover,
         kind: kind,
         desc: p.desc || "",
-        public_url: ""
+        public_url: p.public_url || ""
       };
 
       const ficheUrl = ficheLinkFor(p);
@@ -1515,7 +1519,7 @@
         cover: cover,
         kind: kind,
         desc: p.desc || "",
-        public_url: ""
+        public_url: p.public_url || ""
       };
 
       return `
