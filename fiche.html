@@ -803,6 +803,7 @@
     const TEAM_WA = "+221771342889";
     const TEAM_EMAIL = "digiylyfe@gmail.com";
     const FALLBACK_IMG = "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80";
+    const MAX_GALLERY_PHOTOS = 5;
 
     const coverImg = document.getElementById("coverImg");
     const titleEl = document.getElementById("titleEl");
@@ -982,21 +983,58 @@
     lbOverlay.addEventListener("click", (e)=>{ if (e.target === lbOverlay) closeLightbox(); });
     document.addEventListener("keydown",(e)=>{ if (e.key === "Escape") closeLightbox(); });
 
-    function renderGallery(url, title){
-      galleryEl.innerHTML = "";
-      const finalUrl = safeImg(url);
+    function parsePhotosUrls(value){
+      return String(value || "")
+        .split(/\r?\n/)
+        .map(v => String(v || "").trim())
+        .filter(Boolean)
+        .slice(0, MAX_GALLERY_PHOTOS);
+    }
 
-      const item = document.createElement("div");
-      item.className = "gItem";
-      item.innerHTML = `
-        <img
-          loading="lazy"
-          alt="${escapeAttr(title || "Photo")}"
-          src="${escapeAttr(finalUrl)}"
-          onerror="this.onerror=null;this.src='${escapeAttr(FALLBACK_IMG)}';">
-      `;
-      item.addEventListener("click", ()=> openLightbox(finalUrl, title, 1, 1));
-      galleryEl.appendChild(item);
+    function buildGalleryPhotos(row){
+      const cover = safeImg(row?.photo_url);
+      const list = parsePhotosUrls(row?.photos_urls);
+
+      const unique = [];
+      const seen = new Set();
+
+      const pushUnique = (url) => {
+        const clean = String(url || "").trim();
+        if (!clean) return;
+        if (seen.has(clean)) return;
+        seen.add(clean);
+        unique.push(clean);
+      };
+
+      list.forEach(pushUnique);
+
+      if (!unique.length) {
+        pushUnique(cover);
+      }
+
+      return unique.slice(0, MAX_GALLERY_PHOTOS);
+    }
+
+    function renderGallery(urls, title){
+      galleryEl.innerHTML = "";
+
+      const list = Array.isArray(urls) && urls.length ? urls : [FALLBACK_IMG];
+      const total = list.length;
+
+      list.forEach((url, index) => {
+        const finalUrl = safeImg(url);
+        const item = document.createElement("div");
+        item.className = "gItem";
+        item.innerHTML = `
+          <img
+            loading="lazy"
+            alt="${escapeAttr((title || "Photo") + " " + (index + 1))}"
+            src="${escapeAttr(finalUrl)}"
+            onerror="this.onerror=null;this.src='${escapeAttr(FALLBACK_IMG)}';">
+        `;
+        item.addEventListener("click", ()=> openLightbox(finalUrl, title, index + 1, total));
+        galleryEl.appendChild(item);
+      });
     }
 
     async function fetchRoomBySlug(dbSlug){
@@ -1011,6 +1049,7 @@
           prix_mois,
           description,
           photo_url,
+          photos_urls,
           status,
           phone,
           slug,
@@ -1153,7 +1192,9 @@
         roomSlug: roomSlug || "—",
         priceNight:"—",
         priceWeek:"—",
-        priceMonth:"—"
+        priceMonth:"—",
+        cover:FALLBACK_IMG,
+        gallery:[FALLBACK_IMG]
       };
 
       setMetaTitle("Introuvable");
@@ -1163,7 +1204,7 @@
       coverImg.onerror = () => { coverImg.onerror = null; coverImg.src = FALLBACK_IMG; };
 
       subEl.innerHTML = "";
-      renderGallery(FALLBACK_IMG, "Photo");
+      renderGallery([FALLBACK_IMG], "Photo");
       hideError();
 
       typeEl.textContent = "—";
@@ -1211,6 +1252,7 @@
       const city = row.adresse || "Sénégal";
       const kind = computeKind(row);
       const cover = safeImg(row.photo_url);
+      const galleryPhotos = buildGalleryPhotos(row);
       const desc = row.description || "Contact direct propriétaire. Paiement direct. 0% commission.";
       const publicRoomSlug = String(row.slug || requestedRoomSlug || "").trim();
 
@@ -1221,7 +1263,9 @@
         kind,
         priceNight: money(row.prix_nuit),
         priceWeek: money(row.prix_semaine),
-        priceMonth: money(row.prix_mois)
+        priceMonth: money(row.prix_mois),
+        cover,
+        gallery: galleryPhotos
       };
 
       setMetaTitle(title);
@@ -1249,7 +1293,7 @@
         coverImg.src = FALLBACK_IMG;
       };
 
-      renderGallery(cover, title);
+      renderGallery(galleryPhotos, title);
 
       waEl.textContent = TEAM_WA;
       typeEl.textContent = kind;
