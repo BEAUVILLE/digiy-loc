@@ -7,27 +7,6 @@
   <meta name="theme-color" content="#020617" />
   <meta name="description" content="DIGIY LOC — Fiche logement. Direct propriétaire, 0% commission." />
 
-  <script>
-    window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
-    window.DIGIY_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
-    window.DIGIY_SUPABASE_ANON = window.DIGIY_SUPABASE_ANON_KEY;
-    window.DIGIY_MODULE = "LOC";
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    const sb = supabase.createClient(
-      window.DIGIY_SUPABASE_URL,
-      window.DIGIY_SUPABASE_ANON_KEY,
-      {
-        auth:{
-          persistSession:false,
-          autoRefreshToken:false,
-          detectSessionInUrl:false
-        }
-      }
-    );
-  </script>
-
   <style>
     :root{
       --bg:#020617;
@@ -434,13 +413,6 @@
       border:1px solid rgba(96,165,250,0.75);
     }
 
-    .btn-ghost{
-      background:rgba(15,23,42,0.75);
-      color:#e5e7eb;
-      border:1px solid rgba(148,163,184,0.28);
-      box-shadow:none;
-    }
-
     .warn{
       border:1px solid rgba(250,204,21,.35);
       background:rgba(250,204,21,.08);
@@ -679,7 +651,7 @@
           <div class="box">
             <div class="kicker">Contact DIGIY</div>
             <div class="big" id="waEl">+221771342889</div>
-            <div class="txt">La demande part vers DIGIY par WhatsApp ou email. Aucun enregistrement obligatoire côté Supabase.</div>
+            <div class="txt">La demande part vers DIGIY par WhatsApp ou email. Aucun enregistrement obligatoire.</div>
             <div class="actions" style="margin-top:10px">
               <button class="btn btn-wa" id="btnWaQuick" type="button">📲 WhatsApp DIGIY</button>
               <button class="btn btn-email" id="btnEmailQuick" type="button">✉️ Email DIGIY</button>
@@ -858,30 +830,6 @@
       return escapeHtml(str).replaceAll("`","&#096;");
     }
 
-    function getRouteIdentity(){
-      const url = new URL(window.location.href);
-      const params = url.searchParams;
-
-      const roomSlug = String(params.get("room_slug") || params.get("slug") || "").trim();
-      const hadLegacySlug = !!params.get("slug");
-      const hadRoomSlug = !!params.get("room_slug");
-
-      if (roomSlug) {
-        params.set("room_slug", roomSlug);
-        if (hadLegacySlug) params.delete("slug");
-
-        if (!hadRoomSlug || hadLegacySlug) {
-          const next = `${url.pathname}?${params.toString()}${url.hash || ""}`;
-          window.history.replaceState({}, "", next);
-        }
-      }
-
-      return {
-        roomSlug,
-        legacySlug: String(params.get("slug") || "").trim()
-      };
-    }
-
     function safeImg(img){
       const src = String(img || "").trim();
       return src ? src : FALLBACK_IMG;
@@ -913,20 +861,23 @@
       window.location.href = href;
     }
 
-    function computeKind(row){
-      const type = String(row?.type_logement || "").toLowerCase();
-      if (type.includes("villa")) return "Villa • Direct propriétaire";
-      if (type.includes("studio")) return "Studio • Direct propriétaire";
-      if (type.includes("appartement")) return "Appartement • Direct propriétaire";
-      if (type.includes("chambre")) return "Chambre • Direct propriétaire";
-      if (type.includes("maison")) return "Maison • Direct propriétaire";
+    function getParams(){
+      return new URL(window.location.href).searchParams;
+    }
 
-      const nom = String(row?.nom || "").toLowerCase();
-      if (nom.includes("villa")) return "Villa • Direct propriétaire";
-      if (nom.includes("studio")) return "Studio • Direct propriétaire";
-      if (nom.includes("appart")) return "Appartement • Direct propriétaire";
-      if (nom.includes("chambre")) return "Chambre • Direct propriétaire";
-      if (nom.includes("maison")) return "Maison • Direct propriétaire";
+    function getParam(name){
+      return String(getParams().get(name) || "").trim();
+    }
+
+    function computeKindFromType(type, nom){
+      const t = String(type || "").toLowerCase();
+      const n = String(nom || "").toLowerCase();
+
+      if (t.includes("villa") || n.includes("villa")) return "Villa • Direct propriétaire";
+      if (t.includes("studio") || n.includes("studio")) return "Studio • Direct propriétaire";
+      if (t.includes("appartement") || n.includes("appart")) return "Appartement • Direct propriétaire";
+      if (t.includes("chambre") || n.includes("chambre")) return "Chambre • Direct propriétaire";
+      if (t.includes("maison") || n.includes("maison")) return "Maison • Direct propriétaire";
 
       return "Location • Direct propriétaire";
     }
@@ -983,33 +934,26 @@
     lbOverlay.addEventListener("click", (e)=>{ if (e.target === lbOverlay) closeLightbox(); });
     document.addEventListener("keydown",(e)=>{ if (e.key === "Escape") closeLightbox(); });
 
-    function parsePhotosUrls(value){
-      return String(value || "")
-        .split(/\r?\n/)
-        .map(v => String(v || "").trim())
-        .filter(Boolean)
-        .slice(0, MAX_GALLERY_PHOTOS);
-    }
-
-    function buildGalleryPhotos(row){
-      const cover = safeImg(row?.photo_url);
-      const list = parsePhotosUrls(row?.photos_urls);
+    function buildGalleryPhotos(){
+      const raw = [];
+      for (let i = 1; i <= MAX_GALLERY_PHOTOS; i += 1) {
+        const v = getParam("p" + i);
+        if (v) raw.push(v);
+      }
 
       const unique = [];
       const seen = new Set();
-
-      const pushUnique = (url) => {
+      raw.forEach((url) => {
         const clean = String(url || "").trim();
-        if (!clean) return;
-        if (seen.has(clean)) return;
+        if (!clean || seen.has(clean)) return;
         seen.add(clean);
         unique.push(clean);
-      };
+      });
 
-      list.forEach(pushUnique);
+      const cover = safeImg(getParam("cover"));
 
       if (!unique.length) {
-        pushUnique(cover);
+        unique.push(cover);
       }
 
       return unique.slice(0, MAX_GALLERY_PHOTOS);
@@ -1017,7 +961,6 @@
 
     function renderGallery(urls, title){
       galleryEl.innerHTML = "";
-
       const list = Array.isArray(urls) && urls.length ? urls : [FALLBACK_IMG];
       const total = list.length;
 
@@ -1035,34 +978,6 @@
         item.addEventListener("click", ()=> openLightbox(finalUrl, title, index + 1, total));
         galleryEl.appendChild(item);
       });
-    }
-
-    async function fetchRoomBySlug(dbSlug){
-      const { data, error } = await sb
-        .from("digiy_loc_rooms")
-        .select(`
-          nom,
-          adresse,
-          personnes_max,
-          prix_nuit,
-          prix_semaine,
-          prix_mois,
-          description,
-          photo_url,
-          photos_urls,
-          status,
-          phone,
-          slug,
-          is_public,
-          public_url,
-          type_logement
-        `)
-        .eq("slug", dbSlug)
-        .eq("is_public", true)
-        .in("status", ["active", "actif"])
-        .maybeSingle();
-
-      return { data, error };
     }
 
     function focusDemandBox(){
@@ -1218,60 +1133,48 @@
       if (roomSlug) {
         showWarn("room_slug demandé : " + roomSlug);
       } else {
-        showWarn("Aucun room_slug dans l’URL. Exemple : fiche.html?room_slug=mon-logement-saly");
+        showWarn("Aucun room_slug dans l’URL. Exemple : fiche.html?slug=mon-logement-saly");
       }
 
       waEl.textContent = TEAM_WA;
       hideStatus();
     }
 
-    async function main(){
-      const route = getRouteIdentity();
-      const requestedRoomSlug = route.roomSlug;
+    function main(){
+      const title = getParam("nom");
+      const city = getParam("ville");
+      const type = getParam("type");
+      const roomSlug = getParam("slug") || getParam("room_slug");
+      const cap = getParam("cap");
+      const pn = getParam("pn");
+      const ps = getParam("ps");
+      const pm = getParam("pm");
+      const desc = getParam("desc");
+      const cover = safeImg(getParam("cover"));
+      const galleryPhotos = buildGalleryPhotos();
+      const kind = computeKindFromType(type, title);
 
-      if (!requestedRoomSlug){
+      if (!title && !roomSlug) {
         renderNotFound("");
         return;
       }
 
-      const res = await fetchRoomBySlug(requestedRoomSlug);
-
-      if (res.error){
-        renderNotFound(requestedRoomSlug);
-        showError(res.error.message || "Erreur Supabase");
-        return;
-      }
-
-      if (!res.data){
-        renderNotFound(requestedRoomSlug);
-        return;
-      }
-
-      const row = res.data;
-      const title = row.nom || "Logement";
-      const city = row.adresse || "Sénégal";
-      const kind = computeKind(row);
-      const cover = safeImg(row.photo_url);
-      const galleryPhotos = buildGalleryPhotos(row);
-      const desc = row.description || "Contact direct propriétaire. Paiement direct. 0% commission.";
-      const publicRoomSlug = String(row.slug || requestedRoomSlug || "").trim();
-
       CURRENT_ROOM = {
-        title,
-        city,
-        roomSlug: publicRoomSlug,
+        title: title || "Logement",
+        city: city || "Sénégal",
+        roomSlug: roomSlug || "—",
         kind,
-        priceNight: money(row.prix_nuit),
-        priceWeek: money(row.prix_semaine),
-        priceMonth: money(row.prix_mois),
+        priceNight: money(pn),
+        priceWeek: money(ps),
+        priceMonth: money(pm),
         cover,
         gallery: galleryPhotos
       };
 
-      setMetaTitle(title);
+      setMetaTitle(CURRENT_ROOM.title);
 
-      titleEl.textContent = title;
-      descEl.textContent = desc;
+      titleEl.textContent = CURRENT_ROOM.title;
+      descEl.textContent = desc || "Contact direct propriétaire. Paiement direct. 0% commission.";
 
       subEl.innerHTML = "";
       const c1 = document.createElement("span");
@@ -1279,7 +1182,7 @@
       c1.textContent = kind;
       const c2 = document.createElement("span");
       c2.className = "chip";
-      c2.textContent = city;
+      c2.textContent = CURRENT_ROOM.city;
       const c3 = document.createElement("span");
       c3.className = "chip green";
       c3.textContent = "0% commission";
@@ -1293,16 +1196,16 @@
         coverImg.src = FALLBACK_IMG;
       };
 
-      renderGallery(galleryPhotos, title);
+      renderGallery(galleryPhotos, CURRENT_ROOM.title);
 
       waEl.textContent = TEAM_WA;
       typeEl.textContent = kind;
-      cityEl.textContent = city;
-      capEl.textContent = row.personnes_max ? String(row.personnes_max) + " pers." : "—";
-      slugEl.textContent = publicRoomSlug || "—";
-      pnEl.textContent = money(row.prix_nuit);
-      psEl.textContent = money(row.prix_semaine);
-      pmEl.textContent = money(row.prix_mois);
+      cityEl.textContent = CURRENT_ROOM.city;
+      capEl.textContent = cap ? `${cap} pers.` : "—";
+      slugEl.textContent = CURRENT_ROOM.roomSlug || "—";
+      pnEl.textContent = money(pn);
+      psEl.textContent = money(ps);
+      pmEl.textContent = money(pm);
 
       hideWarn();
       hideError();
@@ -1315,12 +1218,13 @@
     btnEmailQuick.addEventListener("click", quickContactEmail);
     btnEmail.addEventListener("click", sendInquiryEmail);
 
-    main().catch((e)=>{
+    try {
+      main();
+    } catch (e) {
       console.error(e);
-      const route = getRouteIdentity();
-      renderNotFound(route.roomSlug || "");
+      renderNotFound(getParam("slug") || getParam("room_slug"));
       showError("Erreur inattendue: " + (e?.message || e));
-    });
+    }
   </script>
 </body>
 </html>
