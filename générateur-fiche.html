@@ -6,445 +6,78 @@
   <title>DIGIY LOC — Générateur fiche publique</title>
   <meta name="theme-color" content="#07140f">
   <meta name="description" content="Générateur statique DIGIY LOC pour fabriquer une URL de fiche publique sans Supabase.">
-
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
   <style>
     :root{
-      --bg:#07140f;
-      --bg2:#0b1d16;
-      --card:rgba(255,255,255,.05);
-      --line:rgba(255,255,255,.10);
-      --text:#ecfff4;
-      --muted:rgba(236,255,244,.72);
-      --gold:#facc15;
-      --green:#22c55e;
-      --blue:#60a5fa;
-      --shadow:0 20px 60px rgba(0,0,0,.38);
-      --r:22px;
-      --max:1200px;
+      --bg:#07140f;--bg2:#0b1d16;--card:rgba(255,255,255,.05);--line:rgba(255,255,255,.10);
+      --text:#ecfff4;--muted:rgba(236,255,244,.72);--gold:#facc15;--green:#22c55e;--blue:#60a5fa;
+      --shadow:0 20px 60px rgba(0,0,0,.38);--r:22px;--max:1200px;
+      /* ━━━ AVANT : system-ui seul → Outfit ━━━ */
+      --fontA:"Outfit",system-ui,-apple-system,sans-serif;
     }
-
     *{box-sizing:border-box}
     html,body{margin:0;padding:0;min-height:100%}
-    body{
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-      color:var(--text);
-      background:
-        radial-gradient(circle at top left, rgba(250,204,21,.10), transparent 25%),
-        radial-gradient(circle at bottom right, rgba(34,197,94,.10), transparent 25%),
-        linear-gradient(135deg,var(--bg),var(--bg2));
-    }
-
-    .wrap{
-      max-width:var(--max);
-      margin:0 auto;
-      padding:16px;
-    }
-
-    .hero{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      flex-wrap:wrap;
-      background:var(--card);
-      border:1px solid var(--line);
-      border-radius:24px;
-      padding:18px;
-      box-shadow:var(--shadow);
-      margin-bottom:16px;
-    }
-
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:12px;
-    }
-
-    .logo{
-      width:48px;height:48px;border-radius:16px;
-      display:grid;place-items:center;
-      background:radial-gradient(circle at 30% 0%,#facc15,#f97316);
-      color:#111;
-      font-size:24px;
-      font-weight:1000;
-      box-shadow:0 12px 30px rgba(250,204,21,.28);
-    }
-
-    h1{
-      margin:0;
-      font-size:1.3rem;
-      line-height:1.1;
-      color:#d1fae5;
-    }
-
-    .sub{
-      margin-top:4px;
-      color:var(--muted);
-      font-weight:700;
-      font-size:.92rem;
-    }
-
-    .top-actions{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-
-    .btn{
-      border:none;
-      border-radius:12px;
-      padding:12px 14px;
-      min-height:44px;
-      cursor:pointer;
-      font-weight:900;
-      text-decoration:none;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      line-height:1;
-      transition:transform .15s ease, opacity .15s ease;
-    }
-
+    body{font-family:var(--fontA);color:var(--text);background:radial-gradient(circle at top left, rgba(250,204,21,.10), transparent 25%),radial-gradient(circle at bottom right, rgba(34,197,94,.10), transparent 25%),linear-gradient(135deg,var(--bg),var(--bg2));}
+    .wrap{max-width:var(--max);margin:0 auto;padding:16px;}
+    .hero{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);border-radius:24px;padding:18px;box-shadow:var(--shadow);margin-bottom:16px;}
+    .brand{display:flex;align-items:center;gap:12px;}
+    .logo{width:48px;height:48px;border-radius:16px;display:grid;place-items:center;background:radial-gradient(circle at 30% 0%,#facc15,#f97316);color:#111;font-size:24px;font-weight:1000;box-shadow:0 12px 30px rgba(250,204,21,.28);}
+    h1{margin:0;font-size:1.3rem;line-height:1.1;color:#d1fae5;}
+    .sub{margin-top:4px;color:var(--muted);font-weight:700;font-size:.92rem;}
+    .top-actions{display:flex;gap:10px;flex-wrap:wrap;}
+    .btn{border:none;border-radius:12px;padding:12px 14px;min-height:44px;cursor:pointer;font-weight:900;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;line-height:1;transition:transform .15s ease, opacity .15s ease;font-family:var(--fontA);}
     .btn:active{transform:translateY(1px)}
-    .btn-primary{
-      background:linear-gradient(135deg,#facc15,#f97316);
-      color:#111;
-    }
-    .btn-secondary{
-      background:rgba(255,255,255,.08);
-      color:var(--text);
-      border:1px solid var(--line);
-    }
-    .btn-green{
-      background:rgba(34,197,94,.18);
-      color:#dcfce7;
-      border:1px solid rgba(34,197,94,.35);
-    }
-    .btn-blue{
-      background:rgba(96,165,250,.16);
-      color:#dbeafe;
-      border:1px solid rgba(96,165,250,.35);
-    }
-    .btn-danger{
-      background:rgba(239,68,68,.18);
-      color:#fee2e2;
-      border:1px solid rgba(239,68,68,.35);
-    }
-
-    .banner{
-      margin-bottom:16px;
-      border-radius:18px;
-      padding:14px 16px;
-      border:1px solid rgba(250,204,21,.25);
-      background:rgba(250,204,21,.08);
-      color:#fde68a;
-      font-weight:800;
-      line-height:1.6;
-      box-shadow:var(--shadow);
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns:1.05fr .95fr;
-      gap:16px;
-    }
-
-    @media(max-width:980px){
-      .grid{grid-template-columns:1fr}
-    }
-
-    .card{
-      background:var(--card);
-      border:1px solid var(--line);
-      border-radius:22px;
-      box-shadow:var(--shadow);
-      overflow:hidden;
-    }
-
-    .head{
-      padding:16px 18px;
-      border-bottom:1px solid var(--line);
-      background:rgba(255,255,255,.03);
-    }
-
-    .head h2{
-      margin:0;
-      font-size:1.04rem;
-      color:var(--gold);
-    }
-
-    .head p{
-      margin:6px 0 0;
-      color:var(--muted);
-      font-weight:700;
-      line-height:1.5;
-      font-size:.92rem;
-    }
-
-    .body{
-      padding:18px;
-    }
-
-    .fields{
-      display:grid;
-      gap:14px;
-    }
-
-    .row2{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:14px;
-    }
-
-    .row3{
-      display:grid;
-      grid-template-columns:1fr 1fr 1fr;
-      gap:14px;
-    }
-
-    @media(max-width:760px){
-      .row2,.row3{grid-template-columns:1fr}
-    }
-
-    label{
-      display:grid;
-      gap:7px;
-      font-size:.92rem;
-      font-weight:900;
-      color:#f3f4f6;
-    }
-
-    input,select,textarea{
-      width:100%;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(2,6,23,.72);
-      color:#fff;
-      padding:12px 13px;
-      outline:none;
-      font:inherit;
-    }
-
-    textarea{
-      min-height:120px;
-      resize:vertical;
-    }
-
-    input:focus,select:focus,textarea:focus{
-      border-color:rgba(250,204,21,.45);
-      box-shadow:0 0 0 3px rgba(250,204,21,.10);
-    }
-
-    .toolbar{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:16px;
-    }
-
-    .status{
-      display:none;
-      margin-top:16px;
-      white-space:pre-line;
-      border-radius:16px;
-      padding:14px;
-      font-weight:850;
-      line-height:1.55;
-    }
-
-    .status.ok{
-      display:block;
-      border:1px solid rgba(34,197,94,.35);
-      background:rgba(34,197,94,.10);
-      color:#dcfce7;
-    }
-
-    .status.warn{
-      display:block;
-      border:1px solid rgba(250,204,21,.35);
-      background:rgba(250,204,21,.10);
-      color:#fde68a;
-    }
-
-    .status.bad{
-      display:block;
-      border:1px solid rgba(239,68,68,.35);
-      background:rgba(239,68,68,.10);
-      color:#fee2e2;
-    }
-
-    .mini{
-      margin-top:8px;
-      color:var(--muted);
-      font-size:.82rem;
-      line-height:1.55;
-      font-weight:700;
-    }
-
-    .urlbox{
-      width:100%;
-      min-height:180px;
-      border-radius:16px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(2,6,23,.72);
-      color:#fff;
-      padding:14px;
-      line-height:1.6;
-      word-break:break-all;
-    }
-
-    .preview{
-      display:flex;
-      flex-direction:column;
-      gap:16px;
-    }
-
-    .previewCard{
-      border:1px solid rgba(30,64,175,.50);
-      background:radial-gradient(circle at top,rgba(15,23,42,.98),#020617);
-      border-radius:24px;
-      overflow:hidden;
-      box-shadow:0 16px 40px rgba(15,23,42,.85);
-    }
-
-    .previewCover{
-      height:260px;
-      background:#0b1220;
-      position:relative;
-    }
-
-    .previewCover img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      display:block;
-    }
-
-    .previewFade{
-      position:absolute;
-      inset:0;
-      background:linear-gradient(180deg, rgba(2,6,23,.04) 0%, rgba(2,6,23,.72) 80%, rgba(2,6,23,.94) 100%);
-    }
-
-    .previewTop{
-      position:absolute;
-      left:14px;
-      right:14px;
-      bottom:12px;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-    }
-
-    .previewName{
-      font-size:1.6rem;
-      line-height:1.1;
-      font-weight:950;
-      color:var(--gold);
-      text-shadow:0 12px 24px rgba(0,0,0,.35);
-    }
-
-    .chips{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-    }
-
-    .chip{
-      width:max-content;
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid rgba(148,163,184,.28);
-      background:rgba(2,6,23,.56);
-      color:#e5e7eb;
-      font-size:.78rem;
-      font-weight:900;
-      white-space:nowrap;
-    }
-
-    .chip.green{
-      border-color:rgba(34,197,94,.45);
-      background:rgba(34,197,94,.12);
-      color:#dcfce7;
-    }
-
-    .chip.gold{
-      border-color:rgba(250,204,21,.45);
-      background:rgba(250,204,21,.12);
-      color:#fde68a;
-    }
-
-    .previewBody{
-      padding:16px;
-      display:flex;
-      flex-direction:column;
-      gap:14px;
-    }
-
-    .pbox{
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(255,255,255,.03);
-      border-radius:16px;
-      padding:14px;
-    }
-
-    .pbox .k{
-      font-size:.78rem;
-      color:#bbf7d0;
-      font-weight:950;
-      text-transform:uppercase;
-      letter-spacing:.06em;
-    }
-
-    .pbox .v{
-      margin-top:8px;
-      color:#f8fafc;
-      font-weight:700;
-      line-height:1.65;
-      white-space:pre-wrap;
-      word-break:break-word;
-    }
-
-    .pgrid{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:12px;
-    }
-
-    @media(max-width:760px){
-      .pgrid{grid-template-columns:1fr}
-    }
-
-    .gallery{
-      display:grid;
-      grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
-      gap:10px;
-    }
-
-    .thumb{
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:14px;
-      overflow:hidden;
-      background:rgba(2,6,23,.55);
-    }
-
-    .thumb img{
-      width:100%;
-      height:100px;
-      object-fit:cover;
-      display:block;
-      background:#0b1220;
-    }
-
-    .thumb .cap{
-      padding:8px;
-      font-size:.74rem;
-      color:#cbd5e1;
-      font-weight:800;
-      line-height:1.4;
-      word-break:break-word;
-    }
+    .btn-primary{background:linear-gradient(135deg,#facc15,#f97316);color:#111;}
+    .btn-secondary{background:rgba(255,255,255,.08);color:var(--text);border:1px solid var(--line);}
+    .btn-green{background:rgba(34,197,94,.18);color:#dcfce7;border:1px solid rgba(34,197,94,.35);}
+    .btn-blue{background:rgba(96,165,250,.16);color:#dbeafe;border:1px solid rgba(96,165,250,.35);}
+    .btn-danger{background:rgba(239,68,68,.18);color:#fee2e2;border:1px solid rgba(239,68,68,.35);}
+    .banner{margin-bottom:16px;border-radius:18px;padding:14px 16px;border:1px solid rgba(250,204,21,.25);background:rgba(250,204,21,.08);color:#fde68a;font-weight:800;line-height:1.6;box-shadow:var(--shadow);}
+    .grid{display:grid;grid-template-columns:1.05fr .95fr;gap:16px;}
+    @media(max-width:980px){.grid{grid-template-columns:1fr}}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);overflow:hidden;}
+    .head{padding:16px 18px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.03);}
+    .head h2{margin:0;font-size:1.04rem;color:var(--gold);}
+    .head p{margin:6px 0 0;color:var(--muted);font-weight:700;line-height:1.5;font-size:.92rem;}
+    .body{padding:18px;}
+    .fields{display:grid;gap:14px;}
+    .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+    .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+    @media(max-width:760px){.row2,.row3{grid-template-columns:1fr}}
+    label{display:grid;gap:7px;font-size:.92rem;font-weight:900;color:#f3f4f6;}
+    input,select,textarea{width:100%;border-radius:14px;border:1px solid rgba(255,255,255,.10);background:rgba(2,6,23,.72);color:#fff;padding:12px 13px;outline:none;font-family:var(--fontA);font-size:inherit;}
+    textarea{min-height:120px;resize:vertical;}
+    input:focus,select:focus,textarea:focus{border-color:rgba(250,204,21,.45);box-shadow:0 0 0 3px rgba(250,204,21,.10);}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
+    .status{display:none;margin-top:16px;white-space:pre-line;border-radius:16px;padding:14px;font-weight:850;line-height:1.55;}
+    .status.ok{display:block;border:1px solid rgba(34,197,94,.35);background:rgba(34,197,94,.10);color:#dcfce7;}
+    .status.warn{display:block;border:1px solid rgba(250,204,21,.35);background:rgba(250,204,21,.10);color:#fde68a;}
+    .status.bad{display:block;border:1px solid rgba(239,68,68,.35);background:rgba(239,68,68,.10);color:#fee2e2;}
+    .mini{margin-top:8px;color:var(--muted);font-size:.82rem;line-height:1.55;font-weight:700;}
+    .urlbox{width:100%;min-height:180px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(2,6,23,.72);color:#fff;padding:14px;line-height:1.6;word-break:break-all;}
+    .preview{display:flex;flex-direction:column;gap:16px;}
+    .previewCard{border:1px solid rgba(30,64,175,.50);background:radial-gradient(circle at top,rgba(15,23,42,.98),#020617);border-radius:24px;overflow:hidden;box-shadow:0 16px 40px rgba(15,23,42,.85);}
+    .previewCover{height:260px;background:#0b1220;position:relative;}
+    .previewCover img{width:100%;height:100%;object-fit:cover;display:block;}
+    .previewFade{position:absolute;inset:0;background:linear-gradient(180deg, rgba(2,6,23,.04) 0%, rgba(2,6,23,.72) 80%, rgba(2,6,23,.94) 100%);}
+    .previewTop{position:absolute;left:14px;right:14px;bottom:12px;display:flex;flex-direction:column;gap:8px;}
+    .previewName{font-size:1.6rem;line-height:1.1;font-weight:950;color:var(--gold);text-shadow:0 12px 24px rgba(0,0,0,.35);}
+    .chips{display:flex;flex-wrap:wrap;gap:8px;}
+    .chip{width:max-content;padding:6px 10px;border-radius:999px;border:1px solid rgba(148,163,184,.28);background:rgba(2,6,23,.56);color:#e5e7eb;font-size:.78rem;font-weight:900;white-space:nowrap;}
+    .chip.green{border-color:rgba(34,197,94,.45);background:rgba(34,197,94,.12);color:#dcfce7;}
+    .chip.gold{border-color:rgba(250,204,21,.45);background:rgba(250,204,21,.12);color:#fde68a;}
+    .previewBody{padding:16px;display:flex;flex-direction:column;gap:14px;}
+    .pbox{border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.03);border-radius:16px;padding:14px;}
+    .pbox .k{font-size:.78rem;color:#bbf7d0;font-weight:950;text-transform:uppercase;letter-spacing:.06em;}
+    .pbox .v{margin-top:8px;color:#f8fafc;font-weight:700;line-height:1.65;white-space:pre-wrap;word-break:break-word;}
+    .pgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    @media(max-width:760px){.pgrid{grid-template-columns:1fr}}
+    .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;}
+    .thumb{border:1px solid rgba(255,255,255,.10);border-radius:14px;overflow:hidden;background:rgba(2,6,23,.55);}
+    .thumb img{width:100%;height:100px;object-fit:cover;display:block;background:#0b1220;}
+    .thumb .cap{padding:8px;font-size:.74rem;color:#cbd5e1;font-weight:800;line-height:1.4;word-break:break-word;}
   </style>
 </head>
 <body>
@@ -458,7 +91,6 @@
         <div class="sub">100% statique • sans Supabase • 1 cover + max 5 photos galerie</div>
       </div>
     </div>
-
     <div class="top-actions">
       <button class="btn btn-secondary" id="btnLoadExample" type="button">⚡ Exemple</button>
       <button class="btn btn-primary" id="btnBuild" type="button">🔗 Générer URL</button>
@@ -466,41 +98,33 @@
   </div>
 
   <div class="banner">
-    Ici on fabrique une <b>fiche publique légère</b>.  
-    Le client lit une page statique. Pas de base, pas de requête, pas de consommation inutile.  
-    Le rail photo est simple : <b>cover</b> pour l’image principale, puis <b>p1 à p5</b> pour la galerie.
+    Ici on fabrique une <b>fiche publique légère</b>.
+    Le client lit une page statique. Pas de base, pas de requête, pas de consommation inutile.
+    <!-- ━━━ AVANT : "Le rail photo est simple" → banni ━━━ -->
+    Photos : <b>cover</b> pour l'image principale, puis <b>p1 à p5</b> pour la galerie.
   </div>
 
   <div class="grid">
     <section class="card">
       <div class="head">
         <h2>Données de la fiche</h2>
-        <p>Remplis les champs, colle les URLs images, puis génère l’URL publique complète.</p>
+        <p>Remplis les champs, colle les URLs images, puis génère l'URL publique complète.</p>
       </div>
-
       <div class="body">
         <div class="fields">
           <label>
             Base de la fiche publique
             <input id="baseUrl" type="url" placeholder="Ex : https://beauville.github.io/digiy-loc/fiche.html">
-            <div class="mini">Mets l’URL exacte de ton fichier public `fiche.html`.</div>
+            <div class="mini">Mets l'URL exacte de ton fichier public `fiche.html`.</div>
           </label>
 
           <div class="row2">
-            <label>
-              Nom du logement
-              <input id="nom" type="text" placeholder="Ex : Villa Saly">
-            </label>
-
-            <label>
-              Ville
-              <input id="ville" type="text" placeholder="Ex : Saly">
-            </label>
+            <label>Nom du logement<input id="nom" type="text" placeholder="Ex : Villa Saly"></label>
+            <label>Ville<input id="ville" type="text" placeholder="Ex : Saly"></label>
           </div>
 
           <div class="row3">
-            <label>
-              Type
+            <label>Type
               <select id="type">
                 <option value="">Choisir</option>
                 <option value="Villa">Villa</option>
@@ -510,71 +134,29 @@
                 <option value="Maison">Maison</option>
               </select>
             </label>
-
-            <label>
-              Capacité
-              <input id="cap" type="number" min="1" placeholder="Ex : 4">
-            </label>
-
-            <label>
-              room_slug
-              <input id="slug" type="text" placeholder="Ex : villa-saly">
-            </label>
+            <label>Capacité<input id="cap" type="number" min="1" placeholder="Ex : 4"></label>
+            <!-- ━━━ AVANT : label "room_slug" → "Identifiant" ━━━ -->
+            <label>Identifiant<input id="slug" type="text" placeholder="Ex : villa-saly"></label>
           </div>
 
           <div class="row3">
-            <label>
-              Prix / nuit
-              <input id="pn" type="number" min="0" placeholder="Ex : 25000">
-            </label>
-
-            <label>
-              Prix / semaine
-              <input id="ps" type="number" min="0" placeholder="Ex : 150000">
-            </label>
-
-            <label>
-              Prix / mois
-              <input id="pm" type="number" min="0" placeholder="Ex : 450000">
-            </label>
+            <label>Prix / nuit<input id="pn" type="number" min="0" placeholder="Ex : 25000"></label>
+            <label>Prix / semaine<input id="ps" type="number" min="0" placeholder="Ex : 150000"></label>
+            <label>Prix / mois<input id="pm" type="number" min="0" placeholder="Ex : 450000"></label>
           </div>
 
-          <label>
-            Description
-            <textarea id="desc" placeholder="Décris le logement simplement, clairement, humainement."></textarea>
-          </label>
-
-          <label>
-            Cover (photo principale)
-            <input id="cover" type="url" placeholder="https://.../cover.jpg">
-          </label>
+          <label>Description<textarea id="desc" placeholder="Décris le logement simplement, clairement, humainement."></textarea></label>
+          <label>Cover (photo principale)<input id="cover" type="url" placeholder="https://.../cover.jpg"></label>
 
           <div class="row2">
-            <label>
-              Galerie p1
-              <input id="p1" type="url" placeholder="https://.../1.jpg">
-            </label>
-            <label>
-              Galerie p2
-              <input id="p2" type="url" placeholder="https://.../2.jpg">
-            </label>
+            <label>Galerie p1<input id="p1" type="url" placeholder="https://.../1.jpg"></label>
+            <label>Galerie p2<input id="p2" type="url" placeholder="https://.../2.jpg"></label>
           </div>
-
           <div class="row2">
-            <label>
-              Galerie p3
-              <input id="p3" type="url" placeholder="https://.../3.jpg">
-            </label>
-            <label>
-              Galerie p4
-              <input id="p4" type="url" placeholder="https://.../4.jpg">
-            </label>
+            <label>Galerie p3<input id="p3" type="url" placeholder="https://.../3.jpg"></label>
+            <label>Galerie p4<input id="p4" type="url" placeholder="https://.../4.jpg"></label>
           </div>
-
-          <label>
-            Galerie p5
-            <input id="p5" type="url" placeholder="https://.../5.jpg">
-          </label>
+          <label>Galerie p5<input id="p5" type="url" placeholder="https://.../5.jpg"></label>
         </div>
 
         <div class="toolbar">
@@ -588,9 +170,8 @@
         <div class="status" id="statusBox"></div>
 
         <div style="margin-top:16px">
-          <label>
-            URL publique générée
-            <textarea id="resultUrl" class="urlbox" readonly placeholder="L’URL complète apparaîtra ici."></textarea>
+          <label>URL publique générée
+            <textarea id="resultUrl" class="urlbox" readonly placeholder="L'URL complète apparaîtra ici."></textarea>
           </label>
         </div>
       </div>
@@ -610,36 +191,19 @@
             </div>
           </div>
         </div>
-
         <div class="previewBody">
           <div class="pbox">
             <div class="k">Description</div>
             <div class="v" id="pvDesc">La description apparaîtra ici.</div>
           </div>
-
           <div class="pgrid">
-            <div class="pbox">
-              <div class="k">Capacité</div>
-              <div class="v" id="pvCap">—</div>
-            </div>
-            <div class="pbox">
-              <div class="k">room_slug</div>
-              <div class="v" id="pvSlug">—</div>
-            </div>
-            <div class="pbox">
-              <div class="k">Prix / Nuit</div>
-              <div class="v" id="pvPn">—</div>
-            </div>
-            <div class="pbox">
-              <div class="k">Prix / Semaine</div>
-              <div class="v" id="pvPs">—</div>
-            </div>
-            <div class="pbox" style="grid-column:1/-1">
-              <div class="k">Prix / Mois</div>
-              <div class="v" id="pvPm">—</div>
-            </div>
+            <div class="pbox"><div class="k">Capacité</div><div class="v" id="pvCap">—</div></div>
+            <!-- ━━━ AVANT : label "room_slug" → "Identifiant" ━━━ -->
+            <div class="pbox"><div class="k">Identifiant</div><div class="v" id="pvSlug">—</div></div>
+            <div class="pbox"><div class="k">Prix / Nuit</div><div class="v" id="pvPn">—</div></div>
+            <div class="pbox"><div class="k">Prix / Semaine</div><div class="v" id="pvPs">—</div></div>
+            <div class="pbox" style="grid-column:1/-1"><div class="k">Prix / Mois</div><div class="v" id="pvPm">—</div></div>
           </div>
-
           <div class="pbox">
             <div class="k">Galerie</div>
             <div class="gallery" id="pvGallery"></div>
@@ -657,287 +221,131 @@
   const FALLBACK_IMG = "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80";
 
   const els = {
-    baseUrl: document.getElementById("baseUrl"),
-    nom: document.getElementById("nom"),
-    ville: document.getElementById("ville"),
-    type: document.getElementById("type"),
-    cap: document.getElementById("cap"),
-    slug: document.getElementById("slug"),
-    pn: document.getElementById("pn"),
-    ps: document.getElementById("ps"),
-    pm: document.getElementById("pm"),
-    desc: document.getElementById("desc"),
-    cover: document.getElementById("cover"),
-    p1: document.getElementById("p1"),
-    p2: document.getElementById("p2"),
-    p3: document.getElementById("p3"),
-    p4: document.getElementById("p4"),
-    p5: document.getElementById("p5"),
-    btnBuild: document.getElementById("btnBuild"),
-    btnBuild2: document.getElementById("btnBuild2"),
-    btnCopy: document.getElementById("btnCopy"),
-    btnOpen: document.getElementById("btnOpen"),
-    btnShareWa: document.getElementById("btnShareWa"),
-    btnReset: document.getElementById("btnReset"),
-    btnLoadExample: document.getElementById("btnLoadExample"),
-    resultUrl: document.getElementById("resultUrl"),
-    statusBox: document.getElementById("statusBox"),
-    pvCover: document.getElementById("pvCover"),
-    pvNom: document.getElementById("pvNom"),
-    pvType: document.getElementById("pvType"),
-    pvVille: document.getElementById("pvVille"),
-    pvDesc: document.getElementById("pvDesc"),
-    pvCap: document.getElementById("pvCap"),
-    pvSlug: document.getElementById("pvSlug"),
-    pvPn: document.getElementById("pvPn"),
-    pvPs: document.getElementById("pvPs"),
-    pvPm: document.getElementById("pvPm"),
-    pvGallery: document.getElementById("pvGallery")
+    baseUrl:document.getElementById("baseUrl"),nom:document.getElementById("nom"),
+    ville:document.getElementById("ville"),type:document.getElementById("type"),
+    cap:document.getElementById("cap"),slug:document.getElementById("slug"),
+    pn:document.getElementById("pn"),ps:document.getElementById("ps"),pm:document.getElementById("pm"),
+    desc:document.getElementById("desc"),cover:document.getElementById("cover"),
+    p1:document.getElementById("p1"),p2:document.getElementById("p2"),p3:document.getElementById("p3"),
+    p4:document.getElementById("p4"),p5:document.getElementById("p5"),
+    btnBuild:document.getElementById("btnBuild"),btnBuild2:document.getElementById("btnBuild2"),
+    btnCopy:document.getElementById("btnCopy"),btnOpen:document.getElementById("btnOpen"),
+    btnShareWa:document.getElementById("btnShareWa"),btnReset:document.getElementById("btnReset"),
+    btnLoadExample:document.getElementById("btnLoadExample"),
+    resultUrl:document.getElementById("resultUrl"),statusBox:document.getElementById("statusBox"),
+    pvCover:document.getElementById("pvCover"),pvNom:document.getElementById("pvNom"),
+    pvType:document.getElementById("pvType"),pvVille:document.getElementById("pvVille"),
+    pvDesc:document.getElementById("pvDesc"),pvCap:document.getElementById("pvCap"),
+    pvSlug:document.getElementById("pvSlug"),pvPn:document.getElementById("pvPn"),
+    pvPs:document.getElementById("pvPs"),pvPm:document.getElementById("pvPm"),
+    pvGallery:document.getElementById("pvGallery")
   };
 
-  function safe(v){
-    return String(v ?? "").trim();
-  }
+  function safe(v){ return String(v??"").trim(); }
 
   function slugify(text){
-    return safe(text)
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "")
-      .replace(/--+/g, "-");
+    return safe(text).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase()
+      .replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").replace(/--+/g,"-");
   }
 
-  function money(v){
-    const n = Number(v);
-    if (!Number.isFinite(n) || n <= 0) return "—";
-    return n.toLocaleString("fr-FR") + " FCFA";
-  }
+  function money(v){ const n=Number(v); if(!Number.isFinite(n)||n<=0)return "—"; return n.toLocaleString("fr-FR")+" FCFA"; }
+  function safeImg(v){ return safe(v)||FALLBACK_IMG; }
 
-  function safeImg(v){
-    return safe(v) || FALLBACK_IMG;
-  }
+  function showStatus(msg,type="ok"){ els.statusBox.className="status "+type; els.statusBox.textContent=msg||""; }
+  function hideStatus(){ els.statusBox.className="status"; els.statusBox.textContent=""; }
 
-  function showStatus(msg, type="ok"){
-    els.statusBox.className = "status " + type;
-    els.statusBox.textContent = msg || "";
-  }
-
-  function hideStatus(){
-    els.statusBox.className = "status";
-    els.statusBox.textContent = "";
-  }
-
-  function computeKind(type, nom){
-    const t = safe(type).toLowerCase();
-    const n = safe(nom).toLowerCase();
-
-    if (t.includes("villa") || n.includes("villa")) return "Villa";
-    if (t.includes("studio") || n.includes("studio")) return "Studio";
-    if (t.includes("appartement") || n.includes("appart")) return "Appartement";
-    if (t.includes("chambre") || n.includes("chambre")) return "Chambre";
-    if (t.includes("maison") || n.includes("maison")) return "Maison";
+  function computeKind(type,nom){
+    const t=safe(type).toLowerCase(); const n=safe(nom).toLowerCase();
+    if(t.includes("villa")||n.includes("villa"))return "Villa";
+    if(t.includes("studio")||n.includes("studio"))return "Studio";
+    if(t.includes("appartement")||n.includes("appart"))return "Appartement";
+    if(t.includes("chambre")||n.includes("chambre"))return "Chambre";
+    if(t.includes("maison")||n.includes("maison"))return "Maison";
     return "Location";
   }
 
   function galleryUrls(){
-    return [els.p1.value, els.p2.value, els.p3.value, els.p4.value, els.p5.value]
-      .map(safe)
-      .filter(Boolean)
-      .slice(0, 5);
+    return [els.p1.value,els.p2.value,els.p3.value,els.p4.value,els.p5.value].map(safe).filter(Boolean).slice(0,5);
   }
 
   function updatePreview(){
-    const g = galleryUrls();
-    const cover = safeImg(els.cover.value);
-    const kind = computeKind(els.type.value, els.nom.value);
-
-    els.pvCover.src = cover;
-    els.pvCover.onerror = () => {
-      els.pvCover.onerror = null;
-      els.pvCover.src = FALLBACK_IMG;
-    };
-
-    els.pvNom.textContent = safe(els.nom.value) || "Nom logement";
-    els.pvType.textContent = kind;
-    els.pvVille.textContent = safe(els.ville.value) || "Ville";
-    els.pvDesc.textContent = safe(els.desc.value) || "La description apparaîtra ici.";
-    els.pvCap.textContent = safe(els.cap.value) ? `${safe(els.cap.value)} pers.` : "—";
-    els.pvSlug.textContent = safe(els.slug.value) || "—";
-    els.pvPn.textContent = money(els.pn.value);
-    els.pvPs.textContent = money(els.ps.value);
-    els.pvPm.textContent = money(els.pm.value);
-
-    els.pvGallery.innerHTML = "";
-    const gallery = g.length ? g : [cover];
-
-    gallery.forEach((url, i) => {
-      const item = document.createElement("div");
-      item.className = "thumb";
-      item.innerHTML = `
-        <img src="${safeImg(url)}" alt="Photo ${i + 1}">
-        <div class="cap">p${i + 1}</div>
-      `;
+    const g=galleryUrls(); const cover=safeImg(els.cover.value); const kind=computeKind(els.type.value,els.nom.value);
+    els.pvCover.src=cover; els.pvCover.onerror=()=>{els.pvCover.onerror=null;els.pvCover.src=FALLBACK_IMG;};
+    els.pvNom.textContent=safe(els.nom.value)||"Nom logement";
+    els.pvType.textContent=kind;
+    els.pvVille.textContent=safe(els.ville.value)||"Ville";
+    els.pvDesc.textContent=safe(els.desc.value)||"La description apparaîtra ici.";
+    els.pvCap.textContent=safe(els.cap.value)?`${safe(els.cap.value)} pers.`:"—";
+    els.pvSlug.textContent=safe(els.slug.value)||"—";
+    els.pvPn.textContent=money(els.pn.value);
+    els.pvPs.textContent=money(els.ps.value);
+    els.pvPm.textContent=money(els.pm.value);
+    els.pvGallery.innerHTML="";
+    const gallery=g.length?g:[cover];
+    gallery.forEach((url,i)=>{
+      const item=document.createElement("div"); item.className="thumb";
+      item.innerHTML=`<img src="${safeImg(url)}" alt="Photo ${i+1}"><div class="cap">p${i+1}</div>`;
       els.pvGallery.appendChild(item);
     });
   }
 
   function buildUrl(){
-    const base = safe(els.baseUrl.value);
-    if (!base) {
-      showStatus("Ajoute d’abord l’URL de base de ton fichier fiche.html.", "warn");
-      els.baseUrl.focus();
-      return "";
-    }
-
+    const base=safe(els.baseUrl.value);
+    if(!base){showStatus("Ajoute d'abord l'URL de base de ton fichier fiche.html.","warn");els.baseUrl.focus();return "";}
     let url;
-    try{
-      url = new URL(base);
-    }catch{
-      showStatus("L’URL de base n’est pas valide.", "bad");
-      els.baseUrl.focus();
-      return "";
-    }
-
-    const finalSlug = safe(els.slug.value) || slugify(els.nom.value);
-    if (finalSlug && !safe(els.slug.value)) {
-      els.slug.value = finalSlug;
-    }
-
-    const map = {
-      nom: els.nom.value,
-      ville: els.ville.value,
-      type: els.type.value,
-      cap: els.cap.value,
-      slug: finalSlug,
-      pn: els.pn.value,
-      ps: els.ps.value,
-      pm: els.pm.value,
-      desc: els.desc.value,
-      cover: els.cover.value,
-      p1: els.p1.value,
-      p2: els.p2.value,
-      p3: els.p3.value,
-      p4: els.p4.value,
-      p5: els.p5.value
-    };
-
-    Object.entries(map).forEach(([key, value]) => {
-      const v = safe(value);
-      if (v) url.searchParams.set(key, v);
-      else url.searchParams.delete(key);
-    });
-
-    const result = url.toString();
-    els.resultUrl.value = result;
-    showStatus("URL publique générée ✅", "ok");
-    return result;
+    try{url=new URL(base);}catch{showStatus("L'URL de base n'est pas valide.","bad");els.baseUrl.focus();return "";}
+    const finalSlug=safe(els.slug.value)||slugify(els.nom.value);
+    if(finalSlug&&!safe(els.slug.value))els.slug.value=finalSlug;
+    const map={nom:els.nom.value,ville:els.ville.value,type:els.type.value,cap:els.cap.value,slug:finalSlug,pn:els.pn.value,ps:els.ps.value,pm:els.pm.value,desc:els.desc.value,cover:els.cover.value,p1:els.p1.value,p2:els.p2.value,p3:els.p3.value,p4:els.p4.value,p5:els.p5.value};
+    Object.entries(map).forEach(([key,value])=>{ const v=safe(value); if(v)url.searchParams.set(key,v); else url.searchParams.delete(key); });
+    const result=url.toString(); els.resultUrl.value=result; showStatus("URL publique générée ✅","ok"); return result;
   }
 
   async function copyUrl(){
-    const url = els.resultUrl.value || buildUrl();
-    if (!url) return;
-
-    try{
-      await navigator.clipboard.writeText(url);
-      showStatus("URL copiée ✅", "ok");
-    }catch{
-      showStatus("Copie automatique impossible. Copie manuelle dans la zone URL.", "warn");
-    }
+    const url=els.resultUrl.value||buildUrl(); if(!url)return;
+    try{await navigator.clipboard.writeText(url);showStatus("URL copiée ✅","ok");}
+    catch{showStatus("Copie automatique impossible. Copie manuelle dans la zone URL.","warn");}
   }
 
-  function openUrl(){
-    const url = els.resultUrl.value || buildUrl();
-    if (!url) return;
-    window.open(url, "_blank", "noopener,noreferrer");
-  }
+  function openUrl(){ const url=els.resultUrl.value||buildUrl(); if(!url)return; window.open(url,"_blank","noopener,noreferrer"); }
 
   function shareWhatsApp(){
-    const url = els.resultUrl.value || buildUrl();
-    if (!url) return;
-
-    const nom = safe(els.nom.value) || "ce logement";
-    const ville = safe(els.ville.value) || "Sénégal";
-    const prix = money(els.pn.value);
-    const kind = computeKind(els.type.value, els.nom.value);
-
-    const msg = [
-      "Bonjour 👋",
-      "",
-      `Voici la fiche DIGIY LOC pour ${nom}.`,
-      `Type : ${kind}`,
-      `Ville : ${ville}`,
-      `Prix / nuit : ${prix}`,
-      "",
-      "Lien direct :",
-      url
-    ].join("\n");
-
-    const waUrl = `https://wa.me/?text=${encodeURIComponent(msg)}`;
-    window.open(waUrl, "_blank", "noopener,noreferrer");
-    showStatus("WhatsApp ouvert avec le lien de la fiche ✅", "ok");
+    const url=els.resultUrl.value||buildUrl(); if(!url)return;
+    const nom=safe(els.nom.value)||"ce logement"; const ville=safe(els.ville.value)||"Sénégal";
+    const prix=money(els.pn.value); const kind=computeKind(els.type.value,els.nom.value);
+    const msg=["Bonjour 👋","",`Voici la fiche DIGIY LOC pour ${nom}.`,`Type : ${kind}`,`Ville : ${ville}`,`Prix / nuit : ${prix}`,"","Lien direct :",url].join("\n");
+    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`,"_blank","noopener,noreferrer");
+    showStatus("WhatsApp ouvert avec le lien de la fiche ✅","ok");
   }
 
   function resetAll(){
-    [
-      els.baseUrl, els.nom, els.ville, els.cap, els.slug,
-      els.pn, els.ps, els.pm, els.desc, els.cover,
-      els.p1, els.p2, els.p3, els.p4, els.p5
-    ].forEach(el => el.value = "");
-    els.type.value = "";
-    els.resultUrl.value = "";
-    hideStatus();
-    updatePreview();
+    [els.baseUrl,els.nom,els.ville,els.cap,els.slug,els.pn,els.ps,els.pm,els.desc,els.cover,els.p1,els.p2,els.p3,els.p4,els.p5].forEach(el=>el.value="");
+    els.type.value=""; els.resultUrl.value=""; hideStatus(); updatePreview();
   }
 
   function loadExample(){
-    els.baseUrl.value = "https://beauville.github.io/digiy-loc/fiche.html";
-    els.nom.value = "Villa Saly";
-    els.ville.value = "Saly";
-    els.type.value = "Villa";
-    els.cap.value = "4";
-    els.slug.value = "villa-saly";
-    els.pn.value = "25000";
-    els.ps.value = "150000";
-    els.pm.value = "450000";
-    els.desc.value = "Belle villa proche plage, calme, pratique et directe propriétaire.";
-    els.cover.value = "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1400&q=80";
-    els.p1.value = "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80";
-    els.p2.value = "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1400&q=80";
-    els.p3.value = "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1400&q=80";
-    els.p4.value = "";
-    els.p5.value = "";
-    updatePreview();
-    buildUrl();
+    els.baseUrl.value="https://beauville.github.io/digiy-loc/fiche.html";
+    els.nom.value="Villa Saly"; els.ville.value="Saly"; els.type.value="Villa";
+    els.cap.value="4"; els.slug.value="villa-saly";
+    els.pn.value="25000"; els.ps.value="150000"; els.pm.value="450000";
+    els.desc.value="Belle villa proche plage, calme, pratique et directe propriétaire.";
+    els.cover.value="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1400&q=80";
+    els.p1.value="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80";
+    els.p2.value="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1400&q=80";
+    els.p3.value="https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1400&q=80";
+    els.p4.value=""; els.p5.value=""; updatePreview(); buildUrl();
   }
 
   function bind(){
-    const watched = [
-      els.baseUrl, els.nom, els.ville, els.type, els.cap, els.slug,
-      els.pn, els.ps, els.pm, els.desc, els.cover,
-      els.p1, els.p2, els.p3, els.p4, els.p5
-    ];
-
-    watched.forEach(el => {
-      const evt = el.tagName === "SELECT" ? "change" : "input";
-      el.addEventListener(evt, updatePreview);
-    });
-
-    els.btnBuild.addEventListener("click", buildUrl);
-    els.btnBuild2.addEventListener("click", buildUrl);
-    els.btnCopy.addEventListener("click", copyUrl);
-    els.btnOpen.addEventListener("click", openUrl);
-    els.btnShareWa.addEventListener("click", shareWhatsApp);
-    els.btnReset.addEventListener("click", resetAll);
-    els.btnLoadExample.addEventListener("click", loadExample);
+    const watched=[els.baseUrl,els.nom,els.ville,els.type,els.cap,els.slug,els.pn,els.ps,els.pm,els.desc,els.cover,els.p1,els.p2,els.p3,els.p4,els.p5];
+    watched.forEach(el=>{ const evt=el.tagName==="SELECT"?"change":"input"; el.addEventListener(evt,updatePreview); });
+    els.btnBuild.addEventListener("click",buildUrl); els.btnBuild2.addEventListener("click",buildUrl);
+    els.btnCopy.addEventListener("click",copyUrl); els.btnOpen.addEventListener("click",openUrl);
+    els.btnShareWa.addEventListener("click",shareWhatsApp); els.btnReset.addEventListener("click",resetAll);
+    els.btnLoadExample.addEventListener("click",loadExample);
   }
 
-  function init(){
-    bind();
-    updatePreview();
-  }
-
+  function init(){ bind(); updatePreview(); }
   init();
 })();
 </script>
