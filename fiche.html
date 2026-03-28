@@ -6,594 +6,92 @@
   <title>DIGIY LOC — Fiche logement</title>
   <meta name="theme-color" content="#020617" />
   <meta name="description" content="DIGIY LOC — Fiche logement. Direct propriétaire, 0% commission." />
-
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
   <style>
     :root{
-      --bg:#020617;
-      --bg-soft:#020818;
-      --card:#030712;
-      --accent:#facc15;
-      --accent-soft:#f97316;
-      --accent-green:#22c55e;
-      --ink:#f9fafb;
-      --muted:#cbd5f5;
+      --bg:#020617;--bg-soft:#020818;--card:#030712;
+      --accent:#facc15;--accent-soft:#f97316;--accent-green:#22c55e;
+      --ink:#f9fafb;--muted:#cbd5f5;
       --line:rgba(148,163,184,0.22);
       --shadow-soft:0 20px 45px rgba(15,23,42,0.9);
-      --wa:#22c55e;
-      --blue:#2563eb;
+      --wa:#22c55e;--blue:#2563eb;
+      /* ━━━ AVANT : -apple-system… seul → Outfit ━━━ */
+      --fontA:"Outfit",-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
     }
-
-    *{
-      box-sizing:border-box;
-      margin:0;
-      padding:0;
-      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif
-    }
-
-    body{
-      min-height:100vh;
-      background:
-        radial-gradient(circle at top,rgba(250,204,21,0.16),transparent 60%),
-        radial-gradient(circle at bottom,rgba(34,197,94,0.16),transparent 55%),
-        var(--bg);
-      color:var(--ink);
-      display:flex;
-      justify-content:center;
-      padding:10px;
-      font-size:16px;
-    }
-
-    .app{
-      width:100%;
-      max-width:1100px;
-      min-height:100vh;
-      background:linear-gradient(135deg,#020617 0%,#020818 50%,#020617 100%);
-      border-radius:24px;
-      border:1px solid rgba(148,163,184,0.25);
-      box-shadow:var(--shadow-soft);
-      padding:16px 16px 22px;
-      display:flex;
-      flex-direction:column;
-      position:relative;
-      overflow:hidden;
-    }
-
-    .app::before{
-      content:"";
-      position:absolute;
-      inset:-40%;
-      background:
-        radial-gradient(circle at 0% 0%,rgba(250,204,21,0.14),transparent 55%),
-        radial-gradient(circle at 100% 100%,rgba(34,197,94,0.14),transparent 45%);
-      opacity:0.8;
-      pointer-events:none;
-    }
-
-    header{
-      position:relative;
-      z-index:2;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-      margin-bottom:12px;
-      flex-wrap:wrap;
-    }
-
+    *{box-sizing:border-box;margin:0;padding:0;font-family:var(--fontA);}
+    body{min-height:100vh;background:radial-gradient(circle at top,rgba(250,204,21,0.16),transparent 60%),radial-gradient(circle at bottom,rgba(34,197,94,0.16),transparent 55%),var(--bg);color:var(--ink);display:flex;justify-content:center;padding:10px;font-size:16px;}
+    .app{width:100%;max-width:1100px;min-height:100vh;background:linear-gradient(135deg,#020617 0%,#020818 50%,#020617 100%);border-radius:24px;border:1px solid rgba(148,163,184,0.25);box-shadow:var(--shadow-soft);padding:16px 16px 22px;display:flex;flex-direction:column;position:relative;overflow:hidden;}
+    .app::before{content:"";position:absolute;inset:-40%;background:radial-gradient(circle at 0% 0%,rgba(250,204,21,0.14),transparent 55%),radial-gradient(circle at 100% 100%,rgba(34,197,94,0.14),transparent 45%);opacity:0.8;pointer-events:none;}
+    header{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
     .brand{display:flex;align-items:center;gap:10px}
-
-    .brand-logo{
-      width:42px;height:42px;border-radius:14px;
-      background:radial-gradient(circle at 30% 0%,#facc15,#f97316);
-      display:flex;align-items:center;justify-content:center;
-      font-size:24px;
-      box-shadow:0 12px 30px rgba(234,179,8,0.65);
-    }
-
-    .brand-text-title{
-      font-size:20px;
-      font-weight:900;
-      letter-spacing:0.09em;
-      text-transform:uppercase;
-      color:var(--accent-green);
-    }
-
-    .brand-text-sub{
-      font-size:14px;
-      color:var(--muted);
-      font-weight:650;
-    }
-
-    .back-link{
-      font-size:13px;
-      color:var(--muted);
-      text-decoration:none;
-      background:rgba(15,23,42,0.9);
-      border-radius:999px;
-      border:1px solid rgba(148,163,184,0.6);
-      padding:8px 14px;
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      font-weight:800;
-      white-space:nowrap;
-    }
-
-    .back-link:hover{
-      border-color:var(--accent);
-      color:var(--accent);
-    }
-
-    .shell{
-      position:relative;
-      z-index:2;
-      display:grid;
-      grid-template-columns:1.25fr .75fr;
-      gap:16px;
-      margin-top:10px;
-    }
-
-    @media(max-width:980px){
-      .shell{grid-template-columns:1fr}
-    }
-
-    .panel{
-      background:radial-gradient(circle at top,rgba(15,23,42,0.98),#020617);
-      border-radius:24px;
-      border:1px solid rgba(30,64,175,0.7);
-      box-shadow:0 14px 34px rgba(15,23,42,0.95);
-      overflow:hidden;
-      position:relative;
-    }
-
-    .cover{
-  width:100%;
-  height:440px;
-  background:#0b1220;
-  border-bottom:1px solid rgba(148,163,184,0.18);
-  position:relative;
-}
-
-    @media(max-width:640px){
-  .cover{height:320px}
-}
-
-    .cover img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      display:block;
-    }
-
-    .coverFade{
-      position:absolute;
-      inset:0;
-      background:
-        linear-gradient(180deg, rgba(2,6,23,.08) 0%, rgba(2,6,23,.75) 88%, rgba(2,6,23,.95) 100%);
-      pointer-events:none;
-    }
-
-    .coverTop{
-      position:absolute;
-      left:14px;
-      right:14px;
-      bottom:12px;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-    }
-
-    .title{
-      font-size:28px;
-      font-weight:950;
-      line-height:1.1;
-      color:var(--accent);
-      text-shadow:0 10px 20px rgba(0,0,0,.35);
-    }
-
-    .sub{
-      font-size:15px;
-      color:#e5e7eb;
-      font-weight:750;
-      opacity:.95;
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-    }
-
-    .chip{
-      width:max-content;
-      padding:6px 10px;
-      font-size:12px;
-      border-radius:999px;
-      border:1px solid rgba(148,163,184,.35);
-      background:rgba(2,6,23,.55);
-      color:#e5e7eb;
-      font-weight:900;
-      white-space:nowrap;
-    }
-
-    .chip.green{
-      border-color:rgba(34,197,94,.55);
-      color:#bbf7d0;
-      background:rgba(34,197,94,.10);
-    }
-
-    .chip.blue{
-      border-color:rgba(30,64,175,.60);
-      color:#c7d2fe;
-      background:rgba(30,64,175,.12);
-    }
-
-    .body{
-      padding:14px;
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-    }
-
-    .desc{
-      font-size:15px;
-      line-height:1.7;
-      color:#f3f4f6;
-      font-weight:650;
-      white-space:pre-wrap;
-    }
-
-    .galleryWrap{
-      padding:12px 14px 16px;
-      border-top:1px solid rgba(148,163,184,0.15);
-      background:rgba(2,6,23,.18);
-    }
-
-    .galleryTitle{
-      font-size:13px;
-      font-weight:950;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-      color:#bbf7d0;
-      margin-bottom:10px;
-    }
-
-    .gallery{
-      display:flex;
-      gap:10px;
-      overflow:auto;
-      padding-bottom:6px;
-      scroll-snap-type:x mandatory;
-      -webkit-overflow-scrolling:touch;
-    }
-
-    .gItem{
-      flex:0 0 auto;
-      width:220px;
-      height:150px;
-      border-radius:16px;
-      overflow:hidden;
-      border:1px solid rgba(30,64,175,0.6);
-      background:#0b1220;
-      scroll-snap-align:start;
-      position:relative;
-      cursor:pointer;
-    }
-
-    .gItem img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      display:block;
-    }
-
-    .gHint{
-      font-size:12px;
-      color:var(--muted);
-      font-weight:800;
-      margin-top:8px;
-      opacity:.95;
-    }
-
-    .side{
-      padding:14px;
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-    }
-
-    .box{
-      border:1px solid rgba(148,163,184,.18);
-      background:rgba(2,6,23,.55);
-      border-radius:18px;
-      padding:12px;
-    }
-
-    .kicker{
-      font-size:12px;
-      font-weight:950;
-      color:#bbf7d0;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-      opacity:.95;
-    }
-
-    .big{
-      margin-top:6px;
-      font-size:18px;
-      font-weight:950;
-      line-height:1.2;
-      color:#facc15;
-    }
-
-    .txt{
-      margin-top:8px;
-      font-size:14px;
-      color:#e5e7eb;
-      line-height:1.6;
-      font-weight:650;
-    }
-
-    .infoGrid{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px;
-      margin-top:10px;
-    }
-
-    @media(max-width:560px){
-      .infoGrid{grid-template-columns:1fr}
-    }
-
-    .info{
-      border:1px solid rgba(148,163,184,.18);
-      background:rgba(15,23,42,.35);
-      border-radius:16px;
-      padding:10px 12px;
-    }
-
-    .info .k{
-      font-size:12px;
-      color:var(--muted);
-      font-weight:900;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-    }
-
-    .info .v{
-      margin-top:6px;
-      font-size:18px;
-      font-weight:950;
-      color:#fff;
-      word-break:break-word;
-    }
-
-    .actions{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-
-    .btn{
-      border:none;
-      border-radius:999px;
-      padding:10px 14px;
-      font-size:14px;
-      font-weight:950;
-      cursor:pointer;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      text-decoration:none;
-      transition:transform .18s ease, opacity .18s ease;
-      flex:1;
-      min-height:44px;
-      white-space:nowrap;
-      touch-action:manipulation;
-      -webkit-tap-highlight-color:transparent;
-      user-select:none;
-    }
-
-    .btn:active{transform:scale(.99)}
-    .btn:hover{opacity:.96}
-
-    .btn-primary{
-      background:linear-gradient(135deg,#facc15,#f97316);
-      color:#111;
-      box-shadow:0 7px 18px rgba(250,204,21,0.55);
-    }
-
-    .btn-wa{
-      background:rgba(22,163,74,0.2);
-      color:#bbf7d0;
-      border:1px solid rgba(34,197,94,0.85);
-    }
-
-    .btn-email{
-      background:rgba(37,99,235,0.18);
-      color:#dbeafe;
-      border:1px solid rgba(96,165,250,0.75);
-    }
-
-    .warn{
-      border:1px solid rgba(250,204,21,.35);
-      background:rgba(250,204,21,.08);
-      color:#fde68a;
-      border-radius:18px;
-      padding:12px;
-      font-weight:850;
-      line-height:1.55;
-    }
-
-    .err{
-      border:1px solid rgba(248,113,113,.35);
-      background:rgba(248,113,113,.08);
-      color:#fecaca;
-      border-radius:18px;
-      padding:12px;
-      font-weight:900;
-      line-height:1.55;
-    }
-
-    .formGrid{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px;
-      margin-top:10px;
-    }
-
-    @media(max-width:640px){
-      .formGrid{grid-template-columns:1fr}
-    }
-
-    .field{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
-
-    .field.full{
-      grid-column:1/-1;
-    }
-
-    .field label{
-      font-size:12px;
-      font-weight:900;
-      color:var(--muted);
-      letter-spacing:.06em;
-      text-transform:uppercase;
-    }
-
-    .input, .textarea{
-      width:100%;
-      border-radius:14px;
-      border:1px solid rgba(148,163,184,.24);
-      background:rgba(15,23,42,.7);
-      color:#fff;
-      padding:12px 13px;
-      font-size:15px;
-      outline:none;
-    }
-
-    .input:focus, .textarea:focus{
-      border-color:rgba(250,204,21,.8);
-      box-shadow:0 0 0 3px rgba(250,204,21,.12);
-    }
-
-    .textarea{
-      min-height:110px;
-      resize:vertical;
-    }
-
-    .mini{
-      margin-top:8px;
-      font-size:12px;
-      color:var(--muted);
-      line-height:1.55;
-      font-weight:700;
-    }
-
-    .status{
-      display:none;
-      margin-top:10px;
-      border-radius:14px;
-      padding:10px 12px;
-      font-size:13px;
-      font-weight:850;
-      line-height:1.55;
-    }
-
-    .status.show{display:block}
-    .status.ok{
-      border:1px solid rgba(34,197,94,.35);
-      background:rgba(34,197,94,.10);
-      color:#bbf7d0;
-    }
-    .status.info{
-      border:1px solid rgba(96,165,250,.35);
-      background:rgba(59,130,246,.10);
-      color:#dbeafe;
-    }
-
-    .overlay{
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,.72);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding:14px;
-      z-index:9999;
-    }
-
+    .brand-logo{width:42px;height:42px;border-radius:14px;background:radial-gradient(circle at 30% 0%,#facc15,#f97316);display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 12px 30px rgba(234,179,8,0.65);}
+    .brand-text-title{font-size:20px;font-weight:900;letter-spacing:0.09em;text-transform:uppercase;color:var(--accent-green);}
+    .brand-text-sub{font-size:14px;color:var(--muted);font-weight:650;}
+    .back-link{font-size:13px;color:var(--muted);text-decoration:none;background:rgba(15,23,42,0.9);border-radius:999px;border:1px solid rgba(148,163,184,0.6);padding:8px 14px;display:inline-flex;align-items:center;gap:6px;font-weight:800;white-space:nowrap;}
+    .back-link:hover{border-color:var(--accent);color:var(--accent);}
+    .shell{position:relative;z-index:2;display:grid;grid-template-columns:1.25fr .75fr;gap:16px;margin-top:10px;}
+    @media(max-width:980px){.shell{grid-template-columns:1fr}}
+    .panel{background:radial-gradient(circle at top,rgba(15,23,42,0.98),#020617);border-radius:24px;border:1px solid rgba(30,64,175,0.7);box-shadow:0 14px 34px rgba(15,23,42,0.95);overflow:hidden;position:relative;}
+    .cover{width:100%;height:440px;background:#0b1220;border-bottom:1px solid rgba(148,163,184,0.18);position:relative;}
+    @media(max-width:640px){.cover{height:320px}}
+    .cover img{width:100%;height:100%;object-fit:cover;display:block;}
+    .coverFade{position:absolute;inset:0;background:linear-gradient(180deg, rgba(2,6,23,.08) 0%, rgba(2,6,23,.75) 88%, rgba(2,6,23,.95) 100%);pointer-events:none;}
+    .coverTop{position:absolute;left:14px;right:14px;bottom:12px;display:flex;flex-direction:column;gap:8px;}
+    .title{font-size:28px;font-weight:950;line-height:1.1;color:var(--accent);text-shadow:0 10px 20px rgba(0,0,0,.35);}
+    .sub{font-size:15px;color:#e5e7eb;font-weight:750;opacity:.95;display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+    .chip{width:max-content;padding:6px 10px;font-size:12px;border-radius:999px;border:1px solid rgba(148,163,184,.35);background:rgba(2,6,23,.55);color:#e5e7eb;font-weight:900;white-space:nowrap;}
+    .chip.green{border-color:rgba(34,197,94,.55);color:#bbf7d0;background:rgba(34,197,94,.10);}
+    .chip.blue{border-color:rgba(30,64,175,.60);color:#c7d2fe;background:rgba(30,64,175,.12);}
+    .body{padding:14px;display:flex;flex-direction:column;gap:12px;}
+    .desc{font-size:15px;line-height:1.7;color:#f3f4f6;font-weight:650;white-space:pre-wrap;}
+    .galleryWrap{padding:12px 14px 16px;border-top:1px solid rgba(148,163,184,0.15);background:rgba(2,6,23,.18);}
+    .galleryTitle{font-size:13px;font-weight:950;letter-spacing:.08em;text-transform:uppercase;color:#bbf7d0;margin-bottom:10px;}
+    .gallery{display:flex;gap:10px;overflow:auto;padding-bottom:6px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;}
+    .gItem{flex:0 0 auto;width:220px;height:150px;border-radius:16px;overflow:hidden;border:1px solid rgba(30,64,175,0.6);background:#0b1220;scroll-snap-align:start;position:relative;cursor:pointer;}
+    .gItem img{width:100%;height:100%;object-fit:cover;display:block;}
+    .gHint{font-size:12px;color:var(--muted);font-weight:800;margin-top:8px;opacity:.95;}
+    .side{padding:14px;display:flex;flex-direction:column;gap:12px;}
+    .box{border:1px solid rgba(148,163,184,.18);background:rgba(2,6,23,.55);border-radius:18px;padding:12px;}
+    .kicker{font-size:12px;font-weight:950;color:#bbf7d0;letter-spacing:.08em;text-transform:uppercase;opacity:.95;}
+    .big{margin-top:6px;font-size:18px;font-weight:950;line-height:1.2;color:#facc15;}
+    .txt{margin-top:8px;font-size:14px;color:#e5e7eb;line-height:1.6;font-weight:650;}
+    .infoGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+    @media(max-width:560px){.infoGrid{grid-template-columns:1fr}}
+    .info{border:1px solid rgba(148,163,184,.18);background:rgba(15,23,42,.35);border-radius:16px;padding:10px 12px;}
+    .info .k{font-size:12px;color:var(--muted);font-weight:900;letter-spacing:.08em;text-transform:uppercase;}
+    .info .v{margin-top:6px;font-size:18px;font-weight:950;color:#fff;word-break:break-word;}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;}
+    .btn{border:none;border-radius:999px;padding:10px 14px;font-size:14px;font-weight:950;cursor:pointer;display:flex;justify-content:center;align-items:center;text-decoration:none;transition:transform .18s ease, opacity .18s ease;flex:1;min-height:44px;white-space:nowrap;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;font-family:var(--fontA);}
+    .btn:active{transform:scale(.99)}.btn:hover{opacity:.96}
+    .btn-primary{background:linear-gradient(135deg,#facc15,#f97316);color:#111;box-shadow:0 7px 18px rgba(250,204,21,0.55);}
+    .btn-wa{background:rgba(22,163,74,0.2);color:#bbf7d0;border:1px solid rgba(34,197,94,0.85);}
+    .btn-email{background:rgba(37,99,235,0.18);color:#dbeafe;border:1px solid rgba(96,165,250,0.75);}
+    .warn{border:1px solid rgba(250,204,21,.35);background:rgba(250,204,21,.08);color:#fde68a;border-radius:18px;padding:12px;font-weight:850;line-height:1.55;}
+    .err{border:1px solid rgba(248,113,113,.35);background:rgba(248,113,113,.08);color:#fecaca;border-radius:18px;padding:12px;font-weight:900;line-height:1.55;}
+    .formGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+    @media(max-width:640px){.formGrid{grid-template-columns:1fr}}
+    .field{display:flex;flex-direction:column;gap:6px;}.field.full{grid-column:1/-1;}
+    .field label{font-size:12px;font-weight:900;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;}
+    .input,.textarea{width:100%;border-radius:14px;border:1px solid rgba(148,163,184,.24);background:rgba(15,23,42,.7);color:#fff;padding:12px 13px;font-size:15px;outline:none;font-family:var(--fontA);}
+    .input:focus,.textarea:focus{border-color:rgba(250,204,21,.8);box-shadow:0 0 0 3px rgba(250,204,21,.12);}
+    .textarea{min-height:110px;resize:vertical;}
+    .mini{margin-top:8px;font-size:12px;color:var(--muted);line-height:1.55;font-weight:700;}
+    .status{display:none;margin-top:10px;border-radius:14px;padding:10px 12px;font-size:13px;font-weight:850;line-height:1.55;}
+    .status.show{display:block}.status.ok{border:1px solid rgba(34,197,94,.35);background:rgba(34,197,94,.10);color:#bbf7d0;}.status.info{border:1px solid rgba(96,165,250,.35);background:rgba(59,130,246,.10);color:#dbeafe;}
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;padding:14px;z-index:9999;}
     .overlay.show{display:flex}
-
-    .lightbox{
-      width:100%;
-      max-width:980px;
-      border-radius:22px;
-      border:1px solid rgba(148,163,184,.25);
-      background:rgba(2,6,23,.92);
-      box-shadow:0 30px 80px rgba(0,0,0,.55);
-      overflow:hidden;
-      position:relative;
-    }
-
-    .lbTop{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-      padding:12px 14px;
-      border-bottom:1px solid rgba(148,163,184,.18);
-    }
-
-    .lbTitle{
-      font-weight:950;
-      color:#e5e7eb;
-      font-size:14px;
-    }
-
-    .lbClose{
-      background:rgba(15,23,42,.75);
-      border:1px solid rgba(148,163,184,.28);
-      color:#e5e7eb;
-      border-radius:999px;
-      padding:8px 12px;
-      font-weight:950;
-      cursor:pointer;
-      white-space:nowrap;
-    }
-
-    .lbImg{
-      width:100%;
-      max-height:74vh;
-      background:#0b1220;
-    }
-
-    .lbImg img{
-      width:100%;
-      height:100%;
-      max-height:74vh;
-      object-fit:contain;
-      display:block;
-    }
-
-    footer{
-      margin-top:18px;
-      font-size:12px;
-      color:var(--muted);
-      font-weight:750;
-      display:flex;
-      justify-content:space-between;
-      flex-wrap:wrap;
-      gap:6px;
-      position:relative;
-      z-index:2;
-    }
-
+    .lightbox{width:100%;max-width:980px;border-radius:22px;border:1px solid rgba(148,163,184,.25);background:rgba(2,6,23,.92);box-shadow:0 30px 80px rgba(0,0,0,.55);overflow:hidden;position:relative;}
+    .lbTop{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid rgba(148,163,184,.18);}
+    .lbTitle{font-weight:950;color:#e5e7eb;font-size:14px;}
+    .lbClose{background:rgba(15,23,42,.75);border:1px solid rgba(148,163,184,.28);color:#e5e7eb;border-radius:999px;padding:8px 12px;font-weight:950;cursor:pointer;white-space:nowrap;}
+    .lbImg{width:100%;max-height:74vh;background:#0b1220;}
+    .lbImg img{width:100%;height:100%;max-height:74vh;object-fit:contain;display:block;}
+    footer{margin-top:18px;font-size:12px;color:var(--muted);font-weight:750;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;position:relative;z-index:2;}
     footer span{color:var(--accent);font-weight:950}
   </style>
 </head>
-
 <body>
   <div class="app">
     <header>
@@ -604,10 +102,7 @@
           <div class="brand-text-sub" id="subTitle">Fiche logement</div>
         </div>
       </div>
-
-      <a class="back-link" href="./index.html">
-        <span>←</span> Retour galerie
-      </a>
+      <a class="back-link" href="./index.html"><span>←</span> Retour galerie</a>
     </header>
 
     <main class="shell">
@@ -615,28 +110,24 @@
         <div class="cover">
           <img id="coverImg" alt="Photo du logement" src="" />
           <div class="coverFade"></div>
-
           <div class="coverTop">
             <div class="title" id="titleEl">Chargement…</div>
             <div class="sub" id="subEl"></div>
           </div>
         </div>
-
         <div class="body">
           <div class="desc" id="descEl">Patiente un instant…</div>
           <div id="warnEl" class="warn" style="display:none"></div>
           <div id="errEl" class="err" style="display:none"></div>
-
           <div class="actions">
             <button class="btn btn-wa" id="btnReserveTop" type="button">📲 Envoyer ma demande</button>
             <a class="btn btn-primary" href="./index.html">👁️ Retour galerie</a>
           </div>
         </div>
-
         <div class="galleryWrap">
           <div class="galleryTitle">Photos</div>
           <div class="gallery" id="gallery"></div>
-          <div class="gHint">Astuce : clique une photo pour l’ouvrir en grand.</div>
+          <div class="gHint">Astuce : clique une photo pour l'ouvrir en grand.</div>
         </div>
       </section>
 
@@ -645,7 +136,7 @@
           <div class="box">
             <div class="kicker">Règle DIGIY</div>
             <div class="big">0% commission</div>
-            <div class="txt">Paiement direct au propriétaire. DIGIY ne touche pas l’argent.</div>
+            <div class="txt">Paiement direct au propriétaire. DIGIY ne touche pas l'argent.</div>
           </div>
 
           <div class="box">
@@ -661,89 +152,35 @@
           <div class="box">
             <div class="kicker">Infos clés</div>
             <div class="infoGrid">
-              <div class="info">
-                <div class="k">Type</div>
-                <div class="v" id="typeEl">—</div>
-              </div>
-              <div class="info">
-                <div class="k">Ville</div>
-                <div class="v" id="cityEl">—</div>
-              </div>
-              <div class="info">
-                <div class="k">Capacité</div>
-                <div class="v" id="capEl">—</div>
-              </div>
-              <div class="info">
-                <div class="k">room_slug</div>
-                <div class="v" id="slugEl">—</div>
-              </div>
-              <div class="info">
-                <div class="k">Prix / Nuit</div>
-                <div class="v" id="pnEl">—</div>
-              </div>
-              <div class="info">
-                <div class="k">Prix / Semaine</div>
-                <div class="v" id="psEl">—</div>
-              </div>
-              <div class="info" style="grid-column:1/-1">
-                <div class="k">Prix / Mois</div>
-                <div class="v" id="pmEl">—</div>
-              </div>
+              <div class="info"><div class="k">Type</div><div class="v" id="typeEl">—</div></div>
+              <div class="info"><div class="k">Ville</div><div class="v" id="cityEl">—</div></div>
+              <div class="info"><div class="k">Capacité</div><div class="v" id="capEl">—</div></div>
+              <!-- ━━━ AVANT : label "room_slug" → "Identifiant" ━━━ -->
+              <div class="info"><div class="k">Identifiant</div><div class="v" id="slugEl">—</div></div>
+              <div class="info"><div class="k">Prix / Nuit</div><div class="v" id="pnEl">—</div></div>
+              <div class="info"><div class="k">Prix / Semaine</div><div class="v" id="psEl">—</div></div>
+              <div class="info" style="grid-column:1/-1"><div class="k">Prix / Mois</div><div class="v" id="pmEl">—</div></div>
             </div>
           </div>
 
           <div class="box">
             <div class="kicker">Demande de logement</div>
-            <div class="txt">
-              Remplis ce bloc puis envoie la demande sur WhatsApp ou par email. DIGIY reçoit le message avec le logement, le room_slug et le lien de la fiche.
-            </div>
-
+            <!-- ━━━ AVANT : "le room_slug et le lien de la fiche" → banni ━━━ -->
+            <div class="txt">Remplis ce bloc puis envoie la demande sur WhatsApp ou par email. DIGIY reçoit le message avec les infos du logement et le lien de cette fiche.</div>
             <div class="formGrid">
-              <div class="field">
-                <label for="guestName">Nom</label>
-                <input id="guestName" class="input" type="text" placeholder="Ex : Awa Ndiaye" />
-              </div>
-
-              <div class="field">
-                <label for="guestPhone">Téléphone</label>
-                <input id="guestPhone" class="input" type="tel" placeholder="Ex : 221771234567" />
-              </div>
-
-              <div class="field">
-                <label for="checkIn">Arrivée</label>
-                <input id="checkIn" class="input" type="date" />
-              </div>
-
-              <div class="field">
-                <label for="checkOut">Départ</label>
-                <input id="checkOut" class="input" type="date" />
-              </div>
-
-              <div class="field">
-                <label for="guestCount">Personnes</label>
-                <input id="guestCount" class="input" type="number" min="1" step="1" placeholder="1" />
-              </div>
-
-              <div class="field">
-                <label for="guestBudget">Budget indicatif</label>
-                <input id="guestBudget" class="input" type="text" placeholder="Ex : 25000 / nuit" />
-              </div>
-
-              <div class="field full">
-                <label for="guestNote">Message</label>
-                <textarea id="guestNote" class="textarea" placeholder="Ex : Je cherche 3 nuits, proche plage, arrivée en soirée…"></textarea>
-              </div>
+              <div class="field"><label for="guestName">Nom</label><input id="guestName" class="input" type="text" placeholder="Ex : Awa Ndiaye" /></div>
+              <div class="field"><label for="guestPhone">Téléphone</label><input id="guestPhone" class="input" type="tel" placeholder="Ex : 221771234567" /></div>
+              <div class="field"><label for="checkIn">Arrivée</label><input id="checkIn" class="input" type="date" /></div>
+              <div class="field"><label for="checkOut">Départ</label><input id="checkOut" class="input" type="date" /></div>
+              <div class="field"><label for="guestCount">Personnes</label><input id="guestCount" class="input" type="number" min="1" step="1" placeholder="1" /></div>
+              <div class="field"><label for="guestBudget">Budget indicatif</label><input id="guestBudget" class="input" type="text" placeholder="Ex : 25000 / nuit" /></div>
+              <div class="field full"><label for="guestNote">Message</label><textarea id="guestNote" class="textarea" placeholder="Ex : Je cherche 3 nuits, proche plage, arrivée en soirée…"></textarea></div>
             </div>
-
             <div class="actions" style="margin-top:12px">
               <button class="btn btn-wa" id="btnReserve" type="button">📲 Envoyer sur WhatsApp</button>
               <button class="btn btn-email" id="btnEmail" type="button">✉️ Envoyer par email</button>
             </div>
-
-            <div class="mini">
-              Astuce terrain : même si la personne ne comprend pas les URLs, le message embarque automatiquement les infos du logement et le lien de cette fiche.
-            </div>
-
+            <div class="mini">Astuce terrain : le message embarque automatiquement les infos du logement et le lien de cette fiche.</div>
             <div id="statusEl" class="status info"></div>
           </div>
 
@@ -777,454 +214,180 @@
     const FALLBACK_IMG = "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80";
     const MAX_GALLERY_PHOTOS = 5;
 
-    const coverImg = document.getElementById("coverImg");
-    const titleEl = document.getElementById("titleEl");
-    const subEl = document.getElementById("subEl");
-    const subTitle = document.getElementById("subTitle");
-    const descEl = document.getElementById("descEl");
-    const warnEl = document.getElementById("warnEl");
-    const errEl = document.getElementById("errEl");
-    const galleryEl = document.getElementById("gallery");
-
-    const waEl = document.getElementById("waEl");
+    const coverImg   = document.getElementById("coverImg");
+    const titleEl    = document.getElementById("titleEl");
+    const subEl      = document.getElementById("subEl");
+    const subTitle   = document.getElementById("subTitle");
+    const descEl     = document.getElementById("descEl");
+    const warnEl     = document.getElementById("warnEl");
+    const errEl      = document.getElementById("errEl");
+    const galleryEl  = document.getElementById("gallery");
+    const waEl       = document.getElementById("waEl");
     const btnReserveTop = document.getElementById("btnReserveTop");
-    const btnReserve = document.getElementById("btnReserve");
-    const btnWaQuick = document.getElementById("btnWaQuick");
+    const btnReserve    = document.getElementById("btnReserve");
+    const btnWaQuick    = document.getElementById("btnWaQuick");
     const btnEmailQuick = document.getElementById("btnEmailQuick");
-    const btnEmail = document.getElementById("btnEmail");
-
+    const btnEmail      = document.getElementById("btnEmail");
     const typeEl = document.getElementById("typeEl");
     const cityEl = document.getElementById("cityEl");
-    const capEl = document.getElementById("capEl");
+    const capEl  = document.getElementById("capEl");
     const slugEl = document.getElementById("slugEl");
-    const pnEl = document.getElementById("pnEl");
-    const psEl = document.getElementById("psEl");
-    const pmEl = document.getElementById("pmEl");
-
-    const guestName = document.getElementById("guestName");
-    const guestPhone = document.getElementById("guestPhone");
-    const checkIn = document.getElementById("checkIn");
-    const checkOut = document.getElementById("checkOut");
-    const guestCount = document.getElementById("guestCount");
+    const pnEl   = document.getElementById("pnEl");
+    const psEl   = document.getElementById("psEl");
+    const pmEl   = document.getElementById("pmEl");
+    const guestName   = document.getElementById("guestName");
+    const guestPhone  = document.getElementById("guestPhone");
+    const checkIn     = document.getElementById("checkIn");
+    const checkOut    = document.getElementById("checkOut");
+    const guestCount  = document.getElementById("guestCount");
     const guestBudget = document.getElementById("guestBudget");
-    const guestNote = document.getElementById("guestNote");
-    const statusEl = document.getElementById("statusEl");
-
-    const lbOverlay = document.getElementById("lbOverlay");
-    const lbClose = document.getElementById("lbClose");
-    const lbImg = document.getElementById("lbImg");
-    const lbTitle = document.getElementById("lbTitle");
+    const guestNote   = document.getElementById("guestNote");
+    const statusEl    = document.getElementById("statusEl");
+    const lbOverlay   = document.getElementById("lbOverlay");
+    const lbClose     = document.getElementById("lbClose");
+    const lbImg       = document.getElementById("lbImg");
+    const lbTitle     = document.getElementById("lbTitle");
 
     let CURRENT_ROOM = null;
 
-    function escapeHtml(str){
-      return String(str ?? "")
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-    }
+    function escapeHtml(str){ return String(str??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;"); }
+    function escapeAttr(str){ return escapeHtml(str).replaceAll("`","&#096;"); }
+    function safeImg(img){ const src=String(img||"").trim(); return src?src:FALLBACK_IMG; }
+    function money(x){ const n=Number(x); if(!isFinite(n)||n<=0)return "—"; try{return n.toLocaleString("fr-FR")+" FCFA";}catch{return String(n)+" FCFA";} }
+    function waDigits(phone){ return String(phone||"").replace(/\D/g,""); }
+    function openWa(phone,message){ const digits=waDigits(phone); if(!digits)return; window.open("https://wa.me/"+digits+"?text="+encodeURIComponent(message||""),"_blank","noopener,noreferrer"); }
+    function openMail(to,subject,body){ window.location.href="mailto:"+encodeURIComponent(to)+"?subject="+encodeURIComponent(subject||"")+"&body="+encodeURIComponent(body||""); }
+    function getParams(){ return new URL(window.location.href).searchParams; }
+    function getParam(name){ return String(getParams().get(name)||"").trim(); }
 
-    function escapeAttr(str){
-      return escapeHtml(str).replaceAll("`","&#096;");
-    }
-
-    function safeImg(img){
-      const src = String(img || "").trim();
-      return src ? src : FALLBACK_IMG;
-    }
-
-    function money(x){
-      const n = Number(x);
-      if (!isFinite(n) || n <= 0) return "—";
-      try { return n.toLocaleString("fr-FR") + " FCFA"; }
-      catch { return String(n) + " FCFA"; }
-    }
-
-    function waDigits(phone){
-      return String(phone || "").replace(/\D/g, "");
-    }
-
-    function openWa(phone, message){
-      const digits = waDigits(phone);
-      if (!digits) return;
-      const url = "https://wa.me/" + digits + "?text=" + encodeURIComponent(message || "");
-      window.open(url, "_blank", "noopener,noreferrer");
-    }
-
-    function openMail(to, subject, body){
-      const href =
-        "mailto:" + encodeURIComponent(to) +
-        "?subject=" + encodeURIComponent(subject || "") +
-        "&body=" + encodeURIComponent(body || "");
-      window.location.href = href;
-    }
-
-    function getParams(){
-      return new URL(window.location.href).searchParams;
-    }
-
-    function getParam(name){
-      return String(getParams().get(name) || "").trim();
-    }
-
-    function computeKindFromType(type, nom){
-      const t = String(type || "").toLowerCase();
-      const n = String(nom || "").toLowerCase();
-
-      if (t.includes("villa") || n.includes("villa")) return "Villa • Direct propriétaire";
-      if (t.includes("studio") || n.includes("studio")) return "Studio • Direct propriétaire";
-      if (t.includes("appartement") || n.includes("appart")) return "Appartement • Direct propriétaire";
-      if (t.includes("chambre") || n.includes("chambre")) return "Chambre • Direct propriétaire";
-      if (t.includes("maison") || n.includes("maison")) return "Maison • Direct propriétaire";
-
+    function computeKindFromType(type,nom){
+      const t=String(type||"").toLowerCase(); const n=String(nom||"").toLowerCase();
+      if(t.includes("villa")||n.includes("villa"))return "Villa • Direct propriétaire";
+      if(t.includes("studio")||n.includes("studio"))return "Studio • Direct propriétaire";
+      if(t.includes("appartement")||n.includes("appart"))return "Appartement • Direct propriétaire";
+      if(t.includes("chambre")||n.includes("chambre"))return "Chambre • Direct propriétaire";
+      if(t.includes("maison")||n.includes("maison"))return "Maison • Direct propriétaire";
       return "Location • Direct propriétaire";
     }
 
-    function setMetaTitle(name){
-      document.title = "DIGIY LOC — " + (name || "Fiche logement");
-      subTitle.textContent = name ? ("Fiche — " + name) : "Fiche logement";
-    }
+    function setMetaTitle(name){ document.title="DIGIY LOC — "+(name||"Fiche logement"); subTitle.textContent=name?("Fiche — "+name):"Fiche logement"; }
+    function showError(msg){ errEl.style.display="block"; errEl.innerHTML="❌ "+escapeHtml(msg||"Erreur inconnue"); }
+    function showWarn(msg){ warnEl.style.display="block"; warnEl.innerHTML="⚠️ "+escapeHtml(msg||""); }
+    function hideError(){ errEl.style.display="none"; errEl.innerHTML=""; }
+    function hideWarn(){ warnEl.style.display="none"; warnEl.innerHTML=""; }
+    function showStatus(msg,mode="info"){ statusEl.className="status show "+mode; statusEl.textContent=msg||""; }
+    function hideStatus(){ statusEl.className="status info"; statusEl.textContent=""; }
 
-    function showError(msg){
-      errEl.style.display = "block";
-      errEl.innerHTML = "❌ " + escapeHtml(msg || "Erreur inconnue");
-    }
+    function openLightbox(url,title,n,total){ lbTitle.textContent=(title||"Photo")+(total?` • ${n}/${total}`:""); lbImg.src=safeImg(url); lbOverlay.classList.add("show"); lbOverlay.setAttribute("aria-hidden","false"); }
+    function closeLightbox(){ lbOverlay.classList.remove("show"); lbOverlay.setAttribute("aria-hidden","true"); lbImg.src=""; }
 
-    function showWarn(msg){
-      warnEl.style.display = "block";
-      warnEl.innerHTML = "⚠️ " + escapeHtml(msg || "");
-    }
-
-    function hideError(){
-      errEl.style.display = "none";
-      errEl.innerHTML = "";
-    }
-
-    function hideWarn(){
-      warnEl.style.display = "none";
-      warnEl.innerHTML = "";
-    }
-
-    function showStatus(msg, mode="info"){
-      statusEl.className = "status show " + mode;
-      statusEl.textContent = msg || "";
-    }
-
-    function hideStatus(){
-      statusEl.className = "status info";
-      statusEl.textContent = "";
-    }
-
-    function openLightbox(url, title, n, total){
-      lbTitle.textContent = (title || "Photo") + (total ? ` • ${n}/${total}` : "");
-      lbImg.src = safeImg(url);
-      lbOverlay.classList.add("show");
-      lbOverlay.setAttribute("aria-hidden","false");
-    }
-
-    function closeLightbox(){
-      lbOverlay.classList.remove("show");
-      lbOverlay.setAttribute("aria-hidden","true");
-      lbImg.src = "";
-    }
-
-    lbClose.addEventListener("click", closeLightbox);
-    lbOverlay.addEventListener("click", (e)=>{ if (e.target === lbOverlay) closeLightbox(); });
-    document.addEventListener("keydown",(e)=>{ if (e.key === "Escape") closeLightbox(); });
+    lbClose.addEventListener("click",closeLightbox);
+    lbOverlay.addEventListener("click",(e)=>{ if(e.target===lbOverlay)closeLightbox(); });
+    document.addEventListener("keydown",(e)=>{ if(e.key==="Escape")closeLightbox(); });
 
     function buildGalleryPhotos(){
-      const raw = [];
-      for (let i = 1; i <= MAX_GALLERY_PHOTOS; i += 1) {
-        const v = getParam("p" + i);
-        if (v) raw.push(v);
-      }
-
-      const unique = [];
-      const seen = new Set();
-      raw.forEach((url) => {
-        const clean = String(url || "").trim();
-        if (!clean || seen.has(clean)) return;
-        seen.add(clean);
-        unique.push(clean);
-      });
-
-      const cover = safeImg(getParam("cover"));
-
-      if (!unique.length) {
-        unique.push(cover);
-      }
-
-      return unique.slice(0, MAX_GALLERY_PHOTOS);
+      const raw=[]; for(let i=1;i<=MAX_GALLERY_PHOTOS;i++){const v=getParam("p"+i);if(v)raw.push(v);}
+      const unique=[]; const seen=new Set();
+      raw.forEach(url=>{ const clean=String(url||"").trim(); if(!clean||seen.has(clean))return; seen.add(clean); unique.push(clean); });
+      const cover=safeImg(getParam("cover")); if(!unique.length)unique.push(cover);
+      return unique.slice(0,MAX_GALLERY_PHOTOS);
     }
 
-    function renderGallery(urls, title){
-      galleryEl.innerHTML = "";
-      const list = Array.isArray(urls) && urls.length ? urls : [FALLBACK_IMG];
-      const total = list.length;
-
-      list.forEach((url, index) => {
-        const finalUrl = safeImg(url);
-        const item = document.createElement("div");
-        item.className = "gItem";
-        item.innerHTML = `
-          <img
-            loading="lazy"
-            alt="${escapeAttr((title || "Photo") + " " + (index + 1))}"
-            src="${escapeAttr(finalUrl)}"
-            onerror="this.onerror=null;this.src='${escapeAttr(FALLBACK_IMG)}';">
-        `;
-        item.addEventListener("click", ()=> openLightbox(finalUrl, title, index + 1, total));
+    function renderGallery(urls,title){
+      galleryEl.innerHTML="";
+      const list=Array.isArray(urls)&&urls.length?urls:[FALLBACK_IMG]; const total=list.length;
+      list.forEach((url,index)=>{
+        const finalUrl=safeImg(url); const item=document.createElement("div"); item.className="gItem";
+        item.innerHTML=`<img loading="lazy" alt="${escapeAttr((title||"Photo")+" "+(index+1))}" src="${escapeAttr(finalUrl)}" onerror="this.onerror=null;this.src='${escapeAttr(FALLBACK_IMG)}';">`;
+        item.addEventListener("click",()=>openLightbox(finalUrl,title,index+1,total));
         galleryEl.appendChild(item);
       });
     }
 
-    function focusDemandBox(){
-      const box = document.getElementById("guestName");
-      if (!box) return;
-      box.scrollIntoView({ behavior:"smooth", block:"center" });
-      setTimeout(()=> box.focus(), 250);
-    }
-
-    function formatDateFr(yyyyMmDd){
-      const v = String(yyyyMmDd || "").trim();
-      if (!v) return "—";
-      const parts = v.split("-");
-      if (parts.length !== 3) return v;
-      return `${parts[2]}/${parts[1]}/${parts[0]}`;
-    }
+    function focusDemandBox(){ const box=document.getElementById("guestName"); if(!box)return; box.scrollIntoView({behavior:"smooth",block:"center"}); setTimeout(()=>box.focus(),250); }
+    function formatDateFr(yyyyMmDd){ const v=String(yyyyMmDd||"").trim(); if(!v)return "—"; const p=v.split("-"); if(p.length!==3)return v; return `${p[2]}/${p[1]}/${p[0]}`; }
 
     function buildInquiryPayload(){
-      const room = CURRENT_ROOM || {};
-      const title = room.title || "Logement";
-      const city = room.city || "—";
-      const roomSlug = room.roomSlug || "—";
-      const priceNight = room.priceNight || "—";
-      const priceWeek = room.priceWeek || "—";
-      const priceMonth = room.priceMonth || "—";
-      const url = window.location.href;
-
-      const name = String(guestName.value || "").trim();
-      const phone = String(guestPhone.value || "").trim();
-      const arrival = String(checkIn.value || "").trim();
-      const departure = String(checkOut.value || "").trim();
-      const people = String(guestCount.value || "").trim();
-      const budget = String(guestBudget.value || "").trim();
-      const note = String(guestNote.value || "").trim();
-
-      const subject = `DIGIY LOC — Demande logement — ${title}`;
-
-      const bodyLines = [
-        "Bonjour DIGIY 👋",
-        "",
-        "Nouvelle demande logement depuis la fiche publique.",
-        "",
-        "LOGEMENT",
-        `Nom : ${title}`,
-        `Ville : ${city}`,
-        `room_slug : ${roomSlug}`,
-        `Prix / nuit : ${priceNight}`,
-        `Prix / semaine : ${priceWeek}`,
-        `Prix / mois : ${priceMonth}`,
-        "",
-        "CLIENT",
-        `Nom : ${name || "—"}`,
-        `Téléphone : ${phone || "—"}`,
-        `Arrivée : ${formatDateFr(arrival)}`,
-        `Départ : ${formatDateFr(departure)}`,
-        `Personnes : ${people || "—"}`,
-        `Budget : ${budget || "—"}`,
-        "",
-        "MESSAGE",
-        note || "—",
-        "",
-        "LIEN FICHE",
-        url
-      ];
-
-      return {
-        subject,
-        body: bodyLines.join("\n"),
-        name,
-        phone
-      };
+      const room=CURRENT_ROOM||{};
+      const title=room.title||"Logement"; const city=room.city||"—"; const roomSlug=room.roomSlug||"—";
+      const priceNight=room.priceNight||"—"; const priceWeek=room.priceWeek||"—"; const priceMonth=room.priceMonth||"—";
+      const url=window.location.href;
+      const name=String(guestName.value||"").trim(); const phone=String(guestPhone.value||"").trim();
+      const arrival=String(checkIn.value||"").trim(); const departure=String(checkOut.value||"").trim();
+      const people=String(guestCount.value||"").trim(); const budget=String(guestBudget.value||"").trim();
+      const note=String(guestNote.value||"").trim();
+      const subject=`DIGIY LOC — Demande logement — ${title}`;
+      /* ━━━ AVANT : "room_slug : ${roomSlug}" → "Identifiant : ${roomSlug}" ━━━ */
+      const bodyLines=["Bonjour DIGIY 👋","","Nouvelle demande logement depuis la fiche publique.","","LOGEMENT",`Nom : ${title}`,`Ville : ${city}`,`Identifiant : ${roomSlug}`,`Prix / nuit : ${priceNight}`,`Prix / semaine : ${priceWeek}`,`Prix / mois : ${priceMonth}`,"","CLIENT",`Nom : ${name||"—"}`,`Téléphone : ${phone||"—"}`,`Arrivée : ${formatDateFr(arrival)}`,`Départ : ${formatDateFr(departure)}`,`Personnes : ${people||"—"}`,`Budget : ${budget||"—"}`,"","MESSAGE",note||"—","","LIEN FICHE",url];
+      return{subject,body:bodyLines.join("\n"),name,phone};
     }
 
     function validateInquiry(){
-      const payload = buildInquiryPayload();
-
-      if (!payload.name) {
-        showStatus("Ajoute au moins le nom du client pour envoyer une demande propre.", "info");
-        guestName.focus();
-        return false;
-      }
-
-      if (!payload.phone) {
-        showStatus("Ajoute au moins un téléphone pour que DIGIY puisse rappeler.", "info");
-        guestPhone.focus();
-        return false;
-      }
-
-      hideStatus();
-      return true;
+      const p=buildInquiryPayload();
+      if(!p.name){showStatus("Ajoute au moins le nom du client pour envoyer une demande propre.","info");guestName.focus();return false;}
+      if(!p.phone){showStatus("Ajoute au moins un téléphone pour que DIGIY puisse rappeler.","info");guestPhone.focus();return false;}
+      hideStatus(); return true;
     }
 
-    function sendInquiryWhatsApp(){
-      if (!validateInquiry()) return;
-      const payload = buildInquiryPayload();
-      openWa(TEAM_WA, payload.body);
-      showStatus("WhatsApp DIGIY ouvert avec la demande préremplie.", "ok");
-    }
-
-    function sendInquiryEmail(){
-      if (!validateInquiry()) return;
-      const payload = buildInquiryPayload();
-      openMail(TEAM_EMAIL, payload.subject, payload.body);
-      showStatus("Email DIGIY préparé avec la demande préremplie.", "ok");
-    }
-
-    function quickContactWhatsApp(){
-      if (CURRENT_ROOM) {
-        sendInquiryWhatsApp();
-        return;
-      }
-      openWa(TEAM_WA, "Bonjour DIGIY 👋 Je veux des informations sur un logement.");
-    }
-
-    function quickContactEmail(){
-      if (CURRENT_ROOM) {
-        sendInquiryEmail();
-        return;
-      }
-      openMail(TEAM_EMAIL, "DIGIY LOC — Demande logement", "Bonjour DIGIY,\n\nJe veux des informations sur un logement.\n");
-    }
+    function sendInquiryWhatsApp(){ if(!validateInquiry())return; const p=buildInquiryPayload(); openWa(TEAM_WA,p.body); showStatus("WhatsApp DIGIY ouvert avec la demande préremplie.","ok"); }
+    function sendInquiryEmail(){ if(!validateInquiry())return; const p=buildInquiryPayload(); openMail(TEAM_EMAIL,p.subject,p.body); showStatus("Email DIGIY préparé avec la demande préremplie.","ok"); }
+    function quickContactWhatsApp(){ if(CURRENT_ROOM){sendInquiryWhatsApp();return;} openWa(TEAM_WA,"Bonjour DIGIY 👋 Je veux des informations sur un logement."); }
+    function quickContactEmail(){ if(CURRENT_ROOM){sendInquiryEmail();return;} openMail(TEAM_EMAIL,"DIGIY LOC — Demande logement","Bonjour DIGIY,\n\nJe veux des informations sur un logement.\n"); }
 
     function renderNotFound(roomSlug){
-      CURRENT_ROOM = {
-        title:"Logement introuvable",
-        city:"—",
-        roomSlug: roomSlug || "—",
-        priceNight:"—",
-        priceWeek:"—",
-        priceMonth:"—",
-        cover:FALLBACK_IMG,
-        gallery:[FALLBACK_IMG]
-      };
-
+      CURRENT_ROOM={title:"Logement introuvable",city:"—",roomSlug:roomSlug||"—",priceNight:"—",priceWeek:"—",priceMonth:"—",cover:FALLBACK_IMG,gallery:[FALLBACK_IMG]};
       setMetaTitle("Introuvable");
-      titleEl.textContent = "Logement introuvable";
-      descEl.textContent = "Ce lien n’existe pas ou le logement n’est plus public. Retourne à la galerie ou envoie une demande à DIGIY.";
-      coverImg.src = FALLBACK_IMG;
-      coverImg.onerror = () => { coverImg.onerror = null; coverImg.src = FALLBACK_IMG; };
-
-      subEl.innerHTML = "";
-      renderGallery([FALLBACK_IMG], "Photo");
-      hideError();
-
-      typeEl.textContent = "—";
-      cityEl.textContent = "—";
-      capEl.textContent = "—";
-      slugEl.textContent = roomSlug || "—";
-      pnEl.textContent = "—";
-      psEl.textContent = "—";
-      pmEl.textContent = "—";
-
-      if (roomSlug) {
-        showWarn("room_slug demandé : " + roomSlug);
-      } else {
-        showWarn("Aucun room_slug dans l’URL. Exemple : fiche.html?slug=mon-logement-saly");
-      }
-
-      waEl.textContent = TEAM_WA;
-      hideStatus();
+      titleEl.textContent="Logement introuvable";
+      descEl.textContent="Ce lien n'existe pas ou le logement n'est plus public. Retourne à la galerie ou envoie une demande à DIGIY.";
+      coverImg.src=FALLBACK_IMG; coverImg.onerror=()=>{coverImg.onerror=null;coverImg.src=FALLBACK_IMG;};
+      subEl.innerHTML=""; renderGallery([FALLBACK_IMG],"Photo"); hideError();
+      typeEl.textContent="—"; cityEl.textContent="—"; capEl.textContent="—"; slugEl.textContent=roomSlug||"—";
+      pnEl.textContent="—"; psEl.textContent="—"; pmEl.textContent="—";
+      /* ━━━ AVANT : "room_slug demandé :" / "Aucun room_slug dans l'URL" → bannis ━━━ */
+      if(roomSlug){showWarn("Identifiant demandé : "+roomSlug);}
+      else{showWarn("Aucun identifiant dans l'URL. Exemple : fiche.html?slug=mon-logement-saly");}
+      waEl.textContent=TEAM_WA; hideStatus();
     }
 
     function main(){
-      const title = getParam("nom");
-      const city = getParam("ville");
-      const type = getParam("type");
-      const roomSlug = getParam("slug") || getParam("room_slug");
-      const cap = getParam("cap");
-      const pn = getParam("pn");
-      const ps = getParam("ps");
-      const pm = getParam("pm");
-      const desc = getParam("desc");
-      const cover = safeImg(getParam("cover"));
-      const galleryPhotos = buildGalleryPhotos();
-      const kind = computeKindFromType(type, title);
+      const title=getParam("nom"); const city=getParam("ville"); const type=getParam("type");
+      const roomSlug=getParam("slug")||getParam("room_slug");
+      const cap=getParam("cap"); const pn=getParam("pn"); const ps=getParam("ps"); const pm=getParam("pm");
+      const desc=getParam("desc"); const cover=safeImg(getParam("cover"));
+      const galleryPhotos=buildGalleryPhotos(); const kind=computeKindFromType(type,title);
 
-      if (!title && !roomSlug) {
-        renderNotFound("");
-        return;
-      }
+      if(!title&&!roomSlug){renderNotFound("");return;}
 
-      CURRENT_ROOM = {
-        title: title || "Logement",
-        city: city || "Sénégal",
-        roomSlug: roomSlug || "—",
-        kind,
-        priceNight: money(pn),
-        priceWeek: money(ps),
-        priceMonth: money(pm),
-        cover,
-        gallery: galleryPhotos
-      };
+      CURRENT_ROOM={title:title||"Logement",city:city||"Sénégal",roomSlug:roomSlug||"—",kind,priceNight:money(pn),priceWeek:money(ps),priceMonth:money(pm),cover,gallery:galleryPhotos};
 
       setMetaTitle(CURRENT_ROOM.title);
+      titleEl.textContent=CURRENT_ROOM.title;
+      descEl.textContent=desc||"Contact direct propriétaire. Paiement direct. 0% commission.";
 
-      titleEl.textContent = CURRENT_ROOM.title;
-      descEl.textContent = desc || "Contact direct propriétaire. Paiement direct. 0% commission.";
+      subEl.innerHTML="";
+      const c1=document.createElement("span"); c1.className="chip blue"; c1.textContent=kind;
+      const c2=document.createElement("span"); c2.className="chip"; c2.textContent=CURRENT_ROOM.city;
+      const c3=document.createElement("span"); c3.className="chip green"; c3.textContent="0% commission";
+      subEl.appendChild(c1); subEl.appendChild(c2); subEl.appendChild(c3);
 
-      subEl.innerHTML = "";
-      const c1 = document.createElement("span");
-      c1.className = "chip blue";
-      c1.textContent = kind;
-      const c2 = document.createElement("span");
-      c2.className = "chip";
-      c2.textContent = CURRENT_ROOM.city;
-      const c3 = document.createElement("span");
-      c3.className = "chip green";
-      c3.textContent = "0% commission";
-      subEl.appendChild(c1);
-      subEl.appendChild(c2);
-      subEl.appendChild(c3);
+      coverImg.src=cover; coverImg.onerror=()=>{coverImg.onerror=null;coverImg.src=FALLBACK_IMG;};
+      renderGallery(galleryPhotos,CURRENT_ROOM.title);
 
-      coverImg.src = cover;
-      coverImg.onerror = () => {
-        coverImg.onerror = null;
-        coverImg.src = FALLBACK_IMG;
-      };
+      waEl.textContent=TEAM_WA;
+      typeEl.textContent=kind; cityEl.textContent=CURRENT_ROOM.city;
+      capEl.textContent=cap?`${cap} pers.`:"—"; slugEl.textContent=CURRENT_ROOM.roomSlug||"—";
+      pnEl.textContent=money(pn); psEl.textContent=money(ps); pmEl.textContent=money(pm);
 
-      renderGallery(galleryPhotos, CURRENT_ROOM.title);
-
-      waEl.textContent = TEAM_WA;
-      typeEl.textContent = kind;
-      cityEl.textContent = CURRENT_ROOM.city;
-      capEl.textContent = cap ? `${cap} pers.` : "—";
-      slugEl.textContent = CURRENT_ROOM.roomSlug || "—";
-      pnEl.textContent = money(pn);
-      psEl.textContent = money(ps);
-      pmEl.textContent = money(pm);
-
-      hideWarn();
-      hideError();
-      hideStatus();
+      hideWarn(); hideError(); hideStatus();
     }
 
-    btnReserveTop.addEventListener("click", focusDemandBox);
-    btnReserve.addEventListener("click", sendInquiryWhatsApp);
-    btnWaQuick.addEventListener("click", quickContactWhatsApp);
-    btnEmailQuick.addEventListener("click", quickContactEmail);
-    btnEmail.addEventListener("click", sendInquiryEmail);
+    btnReserveTop.addEventListener("click",focusDemandBox);
+    btnReserve.addEventListener("click",sendInquiryWhatsApp);
+    btnWaQuick.addEventListener("click",quickContactWhatsApp);
+    btnEmailQuick.addEventListener("click",quickContactEmail);
+    btnEmail.addEventListener("click",sendInquiryEmail);
 
-    try {
-      main();
-    } catch (e) {
-      console.error(e);
-      renderNotFound(getParam("slug") || getParam("room_slug"));
-      showError("Erreur inattendue: " + (e?.message || e));
-    }
+    try{main();}catch(e){console.error(e);renderNotFound(getParam("slug")||getParam("room_slug"));showError("Erreur inattendue: "+(e?.message||e));}
   </script>
 </body>
 </html>
