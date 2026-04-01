@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <title>DIGIY LOC — Galerie des logements partenaires</title>
+  <title>Je cherche un logement</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="description" content="DIGIY LOC — Locations direct propriétaire, paiement direct, 0% commission.">
   <meta name="theme-color" content="#020617">
@@ -140,7 +140,7 @@
         <div class="brand-logo">🏠</div>
         <div>
           <div class="brand-text-title">DIGIY LOC</div>
-          <div class="brand-text-sub">Galerie des logements partenaires</div>
+          <div class="brand-text-sub">Trouver un logement simplement</div>
         </div>
       </div>
       <a href="https://beauville.github.io/digiy-hub/" class="back-link"><span>←</span> Retour DIGIY HUB</a>
@@ -148,7 +148,7 @@
 
     <main>
       <section class="hero">
-        <div class="hero-title">Locations direct propriétaire <span>0% commission</span></div>
+        <div class="hero-title">Trouver un logement en direct <span>0% commission</span></div>
         <div class="hero-sub">
           Paiement direct (Wave/espèces selon le logement). DIGIY ne touche pas l'argent : <b>0% commission</b>.
           <br><br>
@@ -158,7 +158,7 @@
           <div class="hero-tag"><strong>Direct propriétaire</strong> — pas d'intermédiaire</div>
           <div class="hero-tag">Saly • Dakar • Mbour • Thiès</div>
           <div class="hero-tag">WhatsApp en 1 clic</div>
-          <div class="hero-tag"><strong>Live</strong> : dispo du jour</div>
+          <div class="hero-tag"><strong>Dispo du jour</strong> : lecture rapide</div>
           <div class="hero-tag"><strong>NDIMBAL</strong> : nuits offertes (Lun-Jeu)</div>
         </div>
       </section>
@@ -183,7 +183,7 @@
           <label>Dates (arrivée / départ)<input name="dates" type="text" placeholder="Ex: 12/03 - 18/03" required></label>
           <label>Nombre de personnes<input name="people" type="number" min="1" placeholder="Ex: 2" required></label>
           <label>Budget (facultatif)<input name="budget" type="text" placeholder="Ex: 25 000 FCFA / nuit"></label>
-          <button type="submit">Ouvrir WhatsApp (au bon propriétaire)</button>
+          <button type="submit">Écrire au bon propriétaire sur WhatsApp</button>
           <small>Message prêt — vous n'avez qu'à envoyer.</small>
         </form>
       </section>
@@ -199,7 +199,7 @@
           <option value="maison">Maison</option>
         </select>
         <button id="btnSearch">🔎 Chercher</button>
-        <button id="btnReset" class="ghost" type="button">↩︎ Reset</button>
+        <button id="btnReset" class="ghost" type="button">↩︎ Effacer</button>
       </section>
 
       <section class="section-title">
@@ -507,7 +507,7 @@
       const filteredLive=applyFilters(livePins);
       const filteredOpening=applyFilters(OPENING_ZONES);
       if(!filteredLive.length){
-        grid.innerHTML=livePins.length>0?`<div class="bigmsg">Aucun résultat sur les logements publiés. Clique <b>Reset</b>.</div>`:`<div class="bigmsg">Aucun logement réel publié pour l'instant. Les zones en ouverture restent visibles plus bas.</div>`;
+        grid.innerHTML=livePins.length>0?`<div class="bigmsg">Aucun résultat sur les logements publiés. Clique <b>Effacer</b>.</div>`:`<div class="bigmsg">Aucun logement réel publié pour l'instant. Les zones en ouverture restent visibles plus bas.</div>`;
       }else{
         grid.innerHTML=filteredLive.map(p=>cardTemplate(p,occMap)).join("");
       }

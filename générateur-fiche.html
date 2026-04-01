@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <title>DIGIY LOC — Générateur fiche publique</title>
+  <title>Préparer une fiche publique</title>
   <meta name="theme-color" content="#07140f">
-  <meta name="description" content="Générateur statique DIGIY LOC pour fabriquer une URL de fiche publique sans Supabase.">
+  <meta name="description" content="Préparer un lien de fiche publique DIGIY LOC, en statique, sans base distante.">
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
@@ -87,13 +87,13 @@
     <div class="brand">
       <div class="logo">🏠</div>
       <div>
-        <h1>DIGIY LOC — Générateur fiche publique</h1>
-        <div class="sub">100% statique • sans Supabase • 1 cover + max 5 photos galerie</div>
+        <h1>Préparer une fiche publique</h1>
+        <div class="sub">100% statique • sans base distante • 1 photo principale + jusqu’à 5 photos</div>
       </div>
     </div>
     <div class="top-actions">
       <button class="btn btn-secondary" id="btnLoadExample" type="button">⚡ Exemple</button>
-      <button class="btn btn-primary" id="btnBuild" type="button">🔗 Générer URL</button>
+      <button class="btn btn-primary" id="btnBuild" type="button">🔗 Préparer le lien</button>
     </div>
   </div>
 
@@ -108,14 +108,14 @@
     <section class="card">
       <div class="head">
         <h2>Données de la fiche</h2>
-        <p>Remplis les champs, colle les URLs images, puis génère l'URL publique complète.</p>
+        <p>Remplis les champs, colle les liens photo, puis prépare le lien public complet.</p>
       </div>
       <div class="body">
         <div class="fields">
           <label>
             Base de la fiche publique
             <input id="baseUrl" type="url" placeholder="Ex : https://beauville.github.io/digiy-loc/fiche.html">
-            <div class="mini">Mets l'URL exacte de ton fichier public `fiche.html`.</div>
+            <div class="mini">Mets le lien exact de ton fichier public `fiche.html`.</div>
           </label>
 
           <div class="row2">
@@ -160,8 +160,8 @@
         </div>
 
         <div class="toolbar">
-          <button class="btn btn-primary" id="btnBuild2" type="button">🔗 Générer URL</button>
-          <button class="btn btn-green" id="btnCopy" type="button">📋 Copier URL</button>
+          <button class="btn btn-primary" id="btnBuild2" type="button">🔗 Préparer le lien</button>
+          <button class="btn btn-green" id="btnCopy" type="button">📋 Copier le lien</button>
           <button class="btn btn-blue" id="btnOpen" type="button">🌍 Ouvrir fiche</button>
           <button class="btn btn-green" id="btnShareWa" type="button">📲 Partager sur WhatsApp</button>
           <button class="btn btn-danger" id="btnReset" type="button">🗑️ Vider</button>
@@ -170,8 +170,8 @@
         <div class="status" id="statusBox"></div>
 
         <div style="margin-top:16px">
-          <label>URL publique générée
-            <textarea id="resultUrl" class="urlbox" readonly placeholder="L'URL complète apparaîtra ici."></textarea>
+          <label>Lien public préparé
+            <textarea id="resultUrl" class="urlbox" readonly placeholder="Le lien complet apparaîtra ici."></textarea>
           </label>
         </div>
       </div>
@@ -291,20 +291,20 @@
 
   function buildUrl(){
     const base=safe(els.baseUrl.value);
-    if(!base){showStatus("Ajoute d'abord l'URL de base de ton fichier fiche.html.","warn");els.baseUrl.focus();return "";}
+    if(!base){showStatus("Ajoute d'abord le lien de base de ton fichier fiche.html.","warn");els.baseUrl.focus();return "";}
     let url;
-    try{url=new URL(base);}catch{showStatus("L'URL de base n'est pas valide.","bad");els.baseUrl.focus();return "";}
+    try{url=new URL(base);}catch{showStatus("Le lien de base n'est pas valide.","bad");els.baseUrl.focus();return "";}
     const finalSlug=safe(els.slug.value)||slugify(els.nom.value);
     if(finalSlug&&!safe(els.slug.value))els.slug.value=finalSlug;
     const map={nom:els.nom.value,ville:els.ville.value,type:els.type.value,cap:els.cap.value,slug:finalSlug,pn:els.pn.value,ps:els.ps.value,pm:els.pm.value,desc:els.desc.value,cover:els.cover.value,p1:els.p1.value,p2:els.p2.value,p3:els.p3.value,p4:els.p4.value,p5:els.p5.value};
     Object.entries(map).forEach(([key,value])=>{ const v=safe(value); if(v)url.searchParams.set(key,v); else url.searchParams.delete(key); });
-    const result=url.toString(); els.resultUrl.value=result; showStatus("URL publique générée ✅","ok"); return result;
+    const result=url.toString(); els.resultUrl.value=result; showStatus("Lien public prêt ✅","ok"); return result;
   }
 
   async function copyUrl(){
     const url=els.resultUrl.value||buildUrl(); if(!url)return;
-    try{await navigator.clipboard.writeText(url);showStatus("URL copiée ✅","ok");}
-    catch{showStatus("Copie automatique impossible. Copie manuelle dans la zone URL.","warn");}
+    try{await navigator.clipboard.writeText(url);showStatus("Lien copié ✅","ok");}
+    catch{showStatus("Copie automatique impossible. Copie manuelle dans la zone du lien.","warn");}
   }
 
   function openUrl(){ const url=els.resultUrl.value||buildUrl(); if(!url)return; window.open(url,"_blank","noopener,noreferrer"); }
