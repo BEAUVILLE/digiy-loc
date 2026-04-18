@@ -284,31 +284,44 @@
   </div>
 
   <script>
+    let __sb = null;
+    let __renderRetryTimer = null;
+
     function getSb(){
+      if (__sb) return __sb;
+
       try{
-        if(!window.supabase || typeof window.supabase.createClient !== "function"){
+        if (!window.supabase || typeof window.supabase.createClient !== "function"){
           console.warn("[DIGIY LOC] Supabase CDN indisponible au chargement.");
           return null;
         }
 
-        return window.supabase.createClient(
+        __sb = window.supabase.createClient(
           window.DIGIY_SUPABASE_URL,
           window.DIGIY_SUPABASE_ANON_KEY,
           {
-            auth:{
-              persistSession:false,
-              autoRefreshToken:false,
-              detectSessionInUrl:false
+            auth: {
+              persistSession: false,
+              autoRefreshToken: false,
+              detectSessionInUrl: false,
+              storage: {
+                getItem: () => null,
+                setItem: () => {},
+                removeItem: () => {}
+              }
+            },
+            global: {
+              fetch: (...args) => fetch(...args)
             }
           }
         );
+
+        return __sb;
       }catch(e){
         console.warn("[DIGIY LOC] createClient impossible:", e?.message || e);
         return null;
       }
     }
-
-    const sb = getSb();
 
     const grid = document.getElementById("grid");
     const openingGrid = document.getElementById("openingGrid");
@@ -348,7 +361,7 @@
     function openWa(phone, message){
       const txt = encodeURIComponent(message || "");
       const digits = String(phone || "").replace(/\D/g, "");
-      if(!digits) return;
+      if (!digits) return;
       window.open("https://wa.me/" + digits + (txt ? "?text=" + txt : ""), "_blank", "noopener,noreferrer");
     }
 
@@ -443,18 +456,18 @@
 
     function computeKind(row){
       const type = norm(row.type_logement || "");
-      if(type.includes("villa")) return "Villa • Direct propriétaire";
-      if(type.includes("studio")) return "Studio • Direct propriétaire";
-      if(type.includes("appartement")) return "Appartement • Direct propriétaire";
-      if(type.includes("chambre")) return "Chambre • Direct propriétaire";
-      if(type.includes("maison")) return "Maison • Direct propriétaire";
+      if (type.includes("villa")) return "Villa • Direct propriétaire";
+      if (type.includes("studio")) return "Studio • Direct propriétaire";
+      if (type.includes("appartement")) return "Appartement • Direct propriétaire";
+      if (type.includes("chambre")) return "Chambre • Direct propriétaire";
+      if (type.includes("maison")) return "Maison • Direct propriétaire";
 
       const t = norm(row.title || row.nom || "");
-      if(t.includes("villa")) return "Villa • Direct propriétaire";
-      if(t.includes("studio")) return "Studio • Direct propriétaire";
-      if(t.includes("appart")) return "Appartement • Direct propriétaire";
-      if(t.includes("chambre")) return "Chambre • Direct propriétaire";
-      if(t.includes("maison")) return "Maison • Direct propriétaire";
+      if (t.includes("villa")) return "Villa • Direct propriétaire";
+      if (t.includes("studio")) return "Studio • Direct propriétaire";
+      if (t.includes("appart")) return "Appartement • Direct propriétaire";
+      if (t.includes("chambre")) return "Chambre • Direct propriétaire";
+      if (t.includes("maison")) return "Maison • Direct propriétaire";
 
       return "Location • Direct propriétaire";
     }
@@ -462,7 +475,7 @@
     function pickWhatsApp(row){
       const wa = row.whatsapp || row.phone || "";
       const digits = String(wa).replace(/\D/g, "");
-      if(digits.length >= 9) return wa;
+      if (digits.length >= 9) return wa;
       return TEAM_WA;
     }
 
@@ -472,7 +485,7 @@
 
     function ficheLinkFor(p){
       const direct = String(p?.public_url || "").trim();
-      if(direct) return direct;
+      if (direct) return direct;
       return "https://beauville.github.io/digiy-loc/fiche.html?room_slug=" + encodeURIComponent(canonicalRoomSlug(p));
     }
 
@@ -488,24 +501,23 @@
       ndOverlay.setAttribute("aria-hidden", "true");
     }
 
-    window.openNdimbal = openNdimbal;
-    window.closeNdimbal = closeNdimbal;
-
     document.getElementById("btnNdOpenTop").addEventListener("click", openNdimbal);
     document.getElementById("ndClose").addEventListener("click", closeNdimbal);
     document.getElementById("ndClose2").addEventListener("click", closeNdimbal);
     ndOverlay.addEventListener("click", (e) => {
-      if(e.target === ndOverlay) closeNdimbal();
+      if (e.target === ndOverlay) closeNdimbal();
     });
     document.addEventListener("keydown", (e) => {
-      if(e.key === "Escape") closeNdimbal();
+      if (e.key === "Escape") closeNdimbal();
     });
     document.getElementById("ndTalk").addEventListener("click", () => {
       openWa(TEAM_WA, `Bonjour DIGIY 👋\nJe veux en savoir plus sur NDIMBAL (${NDIMBAL_RULE}).`);
     });
 
     async function logReservationIntent(pin){
-      if(!sb) return;
+      const sb = getSb();
+      if (!sb) return;
+
       try{
         await sb.from("loc_reservation_requests").insert({
           pin_slug: canonicalRoomSlug(pin) || canonicalLegacySlug(pin) || null,
@@ -578,18 +590,19 @@
     });
 
     async function fetchOccupancyToday(){
-      if(!sb) return new Map();
+      const sb = getSb();
+      if (!sb) return new Map();
 
       try{
         const { data, error } = await sb
           .from(OCCUPANCY_VIEW)
           .select("pin_slug,is_occupied_today");
 
-        if(error) return new Map();
+        if (error) return new Map();
 
         const m = new Map();
         (data || []).forEach(r => {
-          if(r && r.pin_slug){
+          if (r && r.pin_slug){
             m.set(String(r.pin_slug), !!r.is_occupied_today);
           }
         });
@@ -600,7 +613,8 @@
     }
 
     async function fetchLocPins(){
-      if(!sb){
+      const sb = getSb();
+      if (!sb){
         return { ok:false, rows:[], error:"supabase_unavailable" };
       }
 
@@ -612,7 +626,7 @@
           .in("status", ["active", "actif"])
           .order("created_at", { ascending:false });
 
-        if(error){
+        if (error){
           console.warn("[DIGIY LOC] Supabase error:", error.message);
           return { ok:false, rows:[], error:error.message };
         }
@@ -656,9 +670,9 @@
       out.push(BAPTISTE_PIN);
       seen.add(norm(canonicalRoomSlug(BAPTISTE_PIN)));
 
-      for(const p of (list || [])){
+      for (const p of (list || [])){
         const s = norm(canonicalRoomSlug(p));
-        if(!s || seen.has(s)) continue;
+        if (!s || seen.has(s)) continue;
         out.push(p);
         seen.add(s);
       }
@@ -676,8 +690,8 @@
         const k = norm(p.kind || computeKind(p));
         const roomSlug = norm(canonicalRoomSlug(p));
 
-        if(q && !(title.includes(q) || city.includes(q) || roomSlug.includes(q))) return false;
-        if(kind && !k.includes(kind)) return false;
+        if (q && !(title.includes(q) || city.includes(q) || roomSlug.includes(q))) return false;
+        if (kind && !k.includes(kind)) return false;
         return true;
       });
     }
@@ -706,9 +720,9 @@
         ? `<div class="badge busy">⛔ OCCUPÉ aujourd'hui</div>`
         : `<div class="badge free">✅ DISPONIBLE</div>`
       );
-      if(isPinned) badges.push(`<div class="badge gold">⭐ Partenaire vedette</div>`);
-      if(p.type_logement) badges.push(`<div class="badge">${escapeHtml(p.type_logement)}</div>`);
-      if(roomSlug) badges.push(`<div class="badge soft">Identifiant : ${escapeHtml(roomSlug)}</div>`);
+      if (isPinned) badges.push(`<div class="badge gold">⭐ Partenaire vedette</div>`);
+      if (p.type_logement) badges.push(`<div class="badge">${escapeHtml(p.type_logement)}</div>`);
+      if (roomSlug) badges.push(`<div class="badge soft">Identifiant : ${escapeHtml(roomSlug)}</div>`);
 
       const ficheUrl = ficheLinkFor(p);
       const cardKey = setCardData("live", p);
@@ -788,6 +802,14 @@
       `;
     }
 
+    function scheduleRenderRetry(){
+      if (__renderRetryTimer) return;
+      __renderRetryTimer = setTimeout(() => {
+        __renderRetryTimer = null;
+        render();
+      }, 1200);
+    }
+
     async function render(){
       CARD_STORE.clear();
 
@@ -796,13 +818,18 @@
       openingGrid.style.display = "none";
       openingTitle.style.display = "none";
 
+      const sbReadyNow = !!getSb();
+      if (!sbReadyNow){
+        scheduleRenderRetry();
+      }
+
       const [pinsRes, occMap] = await Promise.all([
         fetchLocPins(),
         fetchOccupancyToday()
       ]);
 
       let dbPins = [];
-      if(pinsRes.ok){
+      if (pinsRes.ok){
         dbPins = (pinsRes.rows || []).map(p => ({ ...p, kind: computeKind(p) }));
       }
 
@@ -810,15 +837,19 @@
       const filteredLive = applyFilters(livePins);
       const filteredOpening = applyFilters(OPENING_ZONES);
 
-      if(!filteredLive.length){
-        grid.innerHTML = livePins.length > 0
-          ? `<div class="bigmsg">Aucun résultat sur les logements publiés. Clique <b>Effacer</b>.</div>`
-          : `<div class="bigmsg">Aucun logement réel publié pour l'instant. Les zones en ouverture restent visibles plus bas.</div>`;
-      }else{
+      if (!filteredLive.length){
+        if (livePins.length > 0){
+          grid.innerHTML = `<div class="bigmsg">Aucun résultat sur les logements publiés. Clique <b>Effacer</b>.</div>`;
+        } else if (pinsRes.error === "supabase_unavailable"){
+          grid.innerHTML = `<div class="bigmsg">Chargement du service logement… <b>réessai automatique</b> en cours.</div>`;
+        } else {
+          grid.innerHTML = `<div class="bigmsg">Aucun logement réel publié pour l'instant. Les zones en ouverture restent visibles plus bas.</div>`;
+        }
+      } else {
         grid.innerHTML = filteredLive.map(p => cardTemplate(p, occMap)).join("");
       }
 
-      if(filteredOpening.length){
+      if (filteredOpening.length){
         openingTitle.style.display = "flex";
         openingGrid.style.display = "grid";
         openingGrid.innerHTML = filteredOpening.map(p => openingCardTemplate(p)).join("");
@@ -827,26 +858,26 @@
 
     async function handleCardActionClick(event){
       const btn = event.target.closest("[data-action]");
-      if(!btn) return;
+      if (!btn) return;
 
       const action = btn.getAttribute("data-action");
-      if(action === "ndimbal"){
+      if (action === "ndimbal"){
         openNdimbal();
         return;
       }
 
       const key = btn.getAttribute("data-card-key");
-      if(!key) return;
+      if (!key) return;
 
       const pin = CARD_STORE.get(key);
-      if(!pin) return;
+      if (!pin) return;
 
-      if(action === "choose"){
+      if (action === "choose"){
         pickLocForWhatsApp(pin);
         return;
       }
 
-      if(action === "reserve"){
+      if (action === "reserve"){
         await reserveNow(pin);
       }
     }
@@ -861,7 +892,7 @@
       render();
     });
     document.getElementById("q").addEventListener("keydown", (e) => {
-      if(e.key === "Enter") render();
+      if (e.key === "Enter") render();
     });
     document.getElementById("kind").addEventListener("change", render);
 
