@@ -2131,15 +2131,15 @@ window.DIGIY_AUDIO_CONFIG = {
   label: "Écouter logement",
   stopLabel: "Arrêter",
   text: "Bienvenue. Ici, tu peux découvrir un logement, regarder les informations utiles et contacter directement le propriétaire. Pas de commission. Pas d’intermédiaire. Tu vois le lieu, tu échanges simplement, et tu avances. Direct. Clair. Humain. DIGIYLYFE.",
-  buttonBg: "#111827",
-  buttonColor: "#ffffff",
+  buttonBg: "linear-gradient(135deg,#d4af37,#b78b34)",
+  buttonColor: "#111827",
   bottom: "24px",
   left: "24px",
   rate: 0.82,
   pitch: 1,
   volume: 1,
   zIndex: 99999,
-  shadow: "0 8px 28px rgba(0,0,0,.24)"
+  shadow: "0 10px 30px rgba(0,0,0,.26)"
 };
 </script>
 
@@ -2148,14 +2148,15 @@ window.DIGIY_AUDIO_CONFIG = {
 position:fixed;
 display:inline-flex;
 align-items:center;
-gap:10px;
-padding:13px 22px;
+gap:12px;
+padding:16px 26px;
 border:none;
 border-radius:999px;
 cursor:pointer;
 font-family:'Outfit',Inter,sans-serif;
 font-weight:900;
-font-size:15px;
+font-size:17px;
+line-height:1;
 -webkit-tap-highlight-color:transparent;
 user-select:none;
 transition:transform .18s ease,box-shadow .18s ease,opacity .18s ease;
@@ -2171,7 +2172,7 @@ opacity:.65;
 cursor:not-allowed;
 }
 #digiy-audio-btn .digiy-audio-ico{
-font-size:16px;
+font-size:18px;
 line-height:1;
 }
 #digiy-audio-progress-wrap{
@@ -2191,8 +2192,12 @@ transition:width .18s linear;
 }
 @media (max-width:600px){
 #digiy-audio-btn{
-font-size:14px;
-padding:12px 18px;
+font-size:16px;
+padding:15px 22px;
+gap:11px;
+}
+#digiy-audio-btn .digiy-audio-ico{
+font-size:17px;
 }
 }
 </style>
