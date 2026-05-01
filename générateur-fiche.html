@@ -257,6 +257,47 @@
       padding:14px;
     }
 
+
+    .sectionAnchor{scroll-margin-top:88px;}
+
+    .mobileNav{
+      position:fixed;
+      left:0;right:0;bottom:0;
+      z-index:70;
+      display:none;
+      padding:8px 10px calc(8px + var(--safe-bottom));
+      background:linear-gradient(180deg, rgba(7,20,15,0), rgba(7,20,15,.92) 20%, rgba(7,20,15,.98));
+      backdrop-filter:blur(12px);
+    }
+    .mobileNavInner{
+      max-width:var(--max);
+      margin:0 auto;
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:8px;
+      background:rgba(2,6,23,.72);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:20px;
+      padding:8px;
+      box-shadow:var(--shadow);
+    }
+    .mobileNav a{
+      min-height:54px;
+      border-radius:16px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:4px;
+      text-align:center;
+      font-size:.74rem;
+      font-weight:900;
+      color:#ecfff4;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.06);
+    }
+    .mobileNav a span{font-size:1rem;line-height:1}
+
     .sticky{
       position:fixed;
       left:0;right:0;bottom:0;
@@ -279,8 +320,44 @@
       .top-actions{width:100%}
       .top-actions .btn{flex:1}
       .toolbar .btn{width:100%}
-      .stickyInner{grid-template-columns:1fr 1fr}
-      .sticky .btn{font-size:.88rem;padding:10px}
+      .sticky{display:none}
+      .mobileNav{display:block}
+      .mobileNav a{font-size:.7rem}
+    }
+
+    
+    .audioDock{
+      position:fixed;
+      right:12px;
+      bottom:88px;
+      z-index:61;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .audioFab{
+      min-height:52px;
+      min-width:52px;
+      padding:0 14px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:linear-gradient(135deg,#facc15,#f97316);
+      color:#111;
+      box-shadow:0 14px 30px rgba(0,0,0,.28);
+      font-weight:950;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+    }
+    .audioFab.stop{
+      background:rgba(255,255,255,.08);
+      color:#ecfff4;
+      border-color:rgba(255,255,255,.16);
+    }
+    @media(max-width:640px){
+      .audioDock{right:10px;bottom:96px}
+      .audioFab{min-height:48px;padding:0 12px;font-size:.86rem}
     }
 
     @media (prefers-reduced-motion:reduce){
@@ -292,7 +369,7 @@
 <body>
 <div class="wrap">
 
-  <div class="hero">
+  <div class="hero sectionAnchor" id="intro">
     <div class="brand">
       <div class="logo">🏠</div>
       <div>
@@ -324,7 +401,7 @@
   </div>
 
   <div class="grid">
-    <section class="card">
+    <section class="card sectionAnchor" id="infos">
       <div class="head">
         <h2>Données du logement</h2>
         <p>Remplis simplement. Le lien généré ouvre la fiche publique avec photos, prix, infos clés et demande WhatsApp.</p>
@@ -402,7 +479,7 @@
 
         <div class="status" id="statusBox"></div>
 
-        <div style="margin-top:16px">
+        <div style="margin-top:16px" class="sectionAnchor" id="lien">
           <label>Lien public préparé
             <textarea id="resultUrl" class="urlbox" readonly placeholder="Le lien complet apparaîtra ici."></textarea>
           </label>
@@ -418,7 +495,7 @@
       </div>
     </section>
 
-    <aside class="preview">
+    <aside class="preview sectionAnchor" id="apercu">
       <div class="previewCard">
         <div class="previewCover">
           <img id="pvCover" alt="Cover" src="">
@@ -464,6 +541,22 @@
   </div>
 </div>
 
+
+<div class="audioDock">
+  <button class="audioFab" id="btnAudioFloat" type="button">🎧 Écouter</button>
+  <button class="audioFab stop" id="btnAudioStop" type="button">⏹ Stop</button>
+</div>
+
+
+<div class="mobileNav">
+  <div class="mobileNavInner">
+    <a href="#intro"><span>🏠</span>Intro</a>
+    <a href="#infos"><span>📝</span>Infos</a>
+    <a href="#apercu"><span>👁️</span>Aperçu</a>
+    <a href="#lien"><span>🔗</span>Lien</a>
+  </div>
+</div>
+
 <div class="sticky">
   <div class="stickyInner">
     <button class="btn btn-primary" id="btnBuildSticky" type="button">🔗 Préparer</button>
@@ -505,6 +598,8 @@
     btnReset:document.getElementById("btnReset"),
     btnSpeak:document.getElementById("btnSpeak"),
     btnSpeak2:document.getElementById("btnSpeak2"),
+    btnAudioFloat:document.getElementById("btnAudioFloat"),
+    btnAudioStop:document.getElementById("btnAudioStop"),
     resultUrl:document.getElementById("resultUrl"),
     statusBox:document.getElementById("statusBox"),
     pvCover:document.getElementById("pvCover"),
@@ -746,6 +841,10 @@
     buildUrl();
   }
 
+  function stopSpeak(){
+    try{ if("speechSynthesis" in window) window.speechSynthesis.cancel(); }catch(_){ }
+  }
+
   function speakHelp(){
     const text = [
       "DIGIY LOC prépare une fiche publique simple.",
@@ -760,7 +859,7 @@
         showStatus("La lecture vocale n'est pas disponible sur ce navigateur.","warn");
         return;
       }
-      window.speechSynthesis.cancel();
+      stopSpeak();
       const u = new SpeechSynthesisUtterance(text);
       u.lang = "fr-FR";
       u.rate = 0.86;
@@ -792,6 +891,8 @@
     els.btnReset.addEventListener("click", resetAll);
     els.btnSpeak.addEventListener("click", speakHelp);
     els.btnSpeak2.addEventListener("click", speakHelp);
+    els.btnAudioFloat.addEventListener("click", speakHelp);
+    els.btnAudioStop.addEventListener("click", stopSpeak);
 
     document.querySelectorAll("[data-desc]").forEach(btn => {
       btn.addEventListener("click", () => applyDesc(btn.getAttribute("data-desc")));
@@ -809,4 +910,5 @@
 </script>
 </body>
 </html>
+
 
