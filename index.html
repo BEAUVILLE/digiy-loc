@@ -495,6 +495,156 @@
       flex-wrap:wrap;
     }
 
+    .quick-note-card{
+      margin-top:14px;
+      padding:16px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.03)),
+        radial-gradient(circle at top left, rgba(238,200,126,.10), transparent 38%);
+      border:1px solid rgba(238,200,126,.16);
+      border-radius:24px;
+      box-shadow:var(--shadow-2);
+    }
+
+    .quick-note-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:14px;
+      flex-wrap:wrap;
+      margin-bottom:12px;
+    }
+
+    .quick-note-title{
+      font-size:24px;
+      line-height:1.05;
+      font-weight:900;
+      letter-spacing:-.02em;
+    }
+
+    .quick-note-sub{
+      margin-top:7px;
+      color:var(--muted);
+      line-height:1.6;
+      font-weight:600;
+      max-width:60ch;
+    }
+
+    .quick-note-badge{
+      min-height:36px;
+      padding:0 12px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border:1px solid rgba(34,197,94,.34);
+      background:rgba(34,197,94,.10);
+      color:var(--green);
+      font-size:12px;
+      font-weight:900;
+      white-space:nowrap;
+    }
+
+    .quick-note-grid{
+      display:grid;
+      grid-template-columns:.9fr .8fr .7fr 1fr;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .quick-note-field{
+      display:grid;
+      gap:6px;
+    }
+
+    .quick-note-field label{
+      font-size:13px;
+      color:var(--muted);
+      font-weight:850;
+    }
+
+    .quick-note-input,
+    .quick-note-textarea{
+      width:100%;
+      min-height:50px;
+      border-radius:14px;
+      border:1px solid var(--line-2);
+      background:rgba(2,6,23,.72);
+      color:var(--text);
+      padding:0 14px;
+      font-weight:800;
+    }
+
+    .quick-note-textarea{
+      min-height:104px;
+      resize:vertical;
+      padding:12px 14px;
+      line-height:1.55;
+      grid-column:1/-1;
+    }
+
+    .quick-note-input:focus,
+    .quick-note-textarea:focus{
+      border-color:rgba(238,200,126,.58);
+      box-shadow:0 0 0 4px rgba(238,200,126,.10);
+    }
+
+    .quick-note-examples{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+
+    .quick-note-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin-top:12px;
+    }
+
+    .quick-note-status{
+      display:none;
+      margin-top:10px;
+      border-radius:16px;
+      padding:10px 12px;
+      border:1px solid rgba(34,197,94,.28);
+      background:rgba(34,197,94,.10);
+      color:var(--green);
+      font-weight:800;
+      line-height:1.5;
+    }
+
+    .quick-note-status.show{display:block}
+
+    .owner-callout{
+      margin-top:14px;
+      padding:14px;
+      border-radius:20px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.045);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .owner-callout-title{
+      font-size:18px;
+      font-weight:900;
+      letter-spacing:-.01em;
+    }
+
+    .owner-callout-text{
+      margin-top:5px;
+      color:var(--muted);
+      line-height:1.55;
+      font-weight:600;
+      max-width:58ch;
+    }
+
     .contact-card{
       margin-top:14px;
       padding:16px;
@@ -1109,6 +1259,7 @@
       .lead-form{grid-template-columns:1fr}
       .filter-grid{grid-template-columns:1fr}
       .filters-card{top:76px}
+      .quick-note-grid{grid-template-columns:1fr}
       .top-actions .pill-btn:last-child{display:none}
       .actions.three{grid-template-columns:1fr 1fr}
       .actions.three .btn-fiche{grid-column:1/-1}
@@ -1237,6 +1388,75 @@
       </div>
     </section>
 
+    <section class="section" id="note-rapide">
+      <div class="quick-note-card">
+        <div class="quick-note-top">
+          <div>
+            <div class="quick-note-title">Note rapide logement</div>
+            <div class="quick-note-sub">
+              Tu ne trouves pas encore ton logement ? Écris ce que tu cherches.
+              DIGIY reçoit ta demande sur WhatsApp et peut te répondre dès qu’un lieu correspond.
+            </div>
+          </div>
+          <div class="quick-note-badge">Même jeune, la demande ne se perd pas</div>
+        </div>
+
+        <div class="quick-note-grid">
+          <div class="quick-note-field">
+            <label for="quickZone">Zone souhaitée</label>
+            <input id="quickZone" class="quick-note-input" type="text" placeholder="Ex : Saly, Ngaparou, Mbour" autocomplete="off">
+          </div>
+
+          <div class="quick-note-field">
+            <label for="quickDates">Dates / nuits</label>
+            <input id="quickDates" class="quick-note-input" type="text" placeholder="Ex : 2 nuits, ce week-end">
+          </div>
+
+          <div class="quick-note-field">
+            <label for="quickPeople">Personnes</label>
+            <input id="quickPeople" class="quick-note-input" type="text" placeholder="Ex : 2 personnes">
+          </div>
+
+          <div class="quick-note-field">
+            <label for="quickBudget">Budget / jour</label>
+            <input id="quickBudget" class="quick-note-input" type="text" placeholder="Ex : 25 000 / 30 000 FCFA">
+          </div>
+
+          <div class="quick-note-field" style="grid-column:1/-1">
+            <label for="quickMessage">Message libre</label>
+            <textarea id="quickMessage" class="quick-note-textarea" placeholder="Ex : Je cherche 2 nuits à Saly pour 2 personnes, budget 25 000 / 30 000 FCFA par jour. Coin calme proche plage si possible."></textarea>
+          </div>
+        </div>
+
+        <div class="quick-note-examples" aria-label="Exemples de notes rapides">
+          <button class="mini-btn gold" type="button" data-note-example="Je cherche 2 nuits à Saly pour 2 personnes, budget 25 000 / 30 000 FCFA par jour.">2 nuits à Saly</button>
+          <button class="mini-btn" type="button" data-note-example="Je cherche une chambre simple ce soir à Mbour, budget 15 000 FCFA.">Ce soir à Mbour</button>
+          <button class="mini-btn" type="button" data-note-example="Je cherche un studio à Ngaparou pour une semaine, budget à discuter.">Studio à Ngaparou</button>
+          <button class="mini-btn" type="button" data-note-example="Je connais un logement disponible à proposer sur DIGIY LOC.">Je connais un logement</button>
+        </div>
+
+        <div class="quick-note-actions">
+          <button class="btn btn-primary" id="btnQuickNoteWa" type="button">📲 Envoyer ma demande à DIGIY</button>
+          <a class="btn btn-secondary" href="#results">Voir les logements visibles</a>
+        </div>
+
+        <div class="quick-note-status" id="quickNoteStatus">Demande préparée.</div>
+
+        <div class="owner-callout">
+          <div>
+            <div class="owner-callout-title">Tu as un logement à proposer ?</div>
+            <div class="owner-callout-text">
+              Des visiteurs cherchent déjà où dormir. Publie ton logement et reçois les demandes directement, sans commission DIGIY.
+            </div>
+          </div>
+          <div class="whatsapp-help-actions">
+            <a class="btn btn-ghost" href="https://commencer-a-payer.digiylyfe.com/" target="_blank" rel="noopener noreferrer">Publier mon logement</a>
+            <a class="btn btn-secondary" href="https://wa.me/221771342889?text=Bonjour%20DIGIY,%20j%27ai%20un%20logement%20%C3%A0%20proposer%20sur%20DIGIY%20LOC." target="_blank" rel="noopener noreferrer">Parler à DIGIY</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="section">
       <div class="filters-card">
         <div class="chip-row" id="zoneChips">
@@ -1355,11 +1575,9 @@
       <a class="sticky-btn secondary" href="#results">Voir les lieux</a>
       <a
         class="sticky-btn primary"
-        href="https://wa.me/221771342889?text=Bonjour%20DIGIY,%20je%20cherche%20un%20lieu%20pour%20dormir%20sur%20la%20Petite%20C%C3%B4te."
-        target="_blank"
-        rel="noopener noreferrer"
+        href="#note-rapide"
       >
-        WhatsApp direct
+        Note rapide
       </a>
     </div>
   </div>
@@ -1488,6 +1706,48 @@
       const digits = String(phone || "").replace(/\D/g, "");
       if (!digits) return;
       window.open("https://wa.me/" + digits + (txt ? "?text=" + txt : ""), "_blank", "noopener,noreferrer");
+    }
+
+    function fillQuickNoteExample(text){
+      const quickMessage = document.getElementById("quickMessage");
+      if (!quickMessage) return;
+      quickMessage.value = String(text || "").trim();
+      quickMessage.focus();
+    }
+
+    function showQuickNoteStatus(message){
+      const box = document.getElementById("quickNoteStatus");
+      if (!box) return;
+      box.textContent = message || "Demande préparée.";
+      box.classList.add("show");
+    }
+
+    function buildQuickLocMessage(){
+      const zone = document.getElementById("quickZone")?.value?.trim() || "à préciser";
+      const dates = document.getElementById("quickDates")?.value?.trim() || "à préciser";
+      const people = document.getElementById("quickPeople")?.value?.trim() || "à préciser";
+      const budget = document.getElementById("quickBudget")?.value?.trim() || "à préciser";
+      const free = document.getElementById("quickMessage")?.value?.trim() || "";
+
+      const baseLine = `Je cherche ${dates} à ${zone} pour ${people}, budget environ ${budget} / jour.`;
+      return [
+        "Bonjour DIGIY 👋",
+        "Je cherche un logement.",
+        "",
+        "Ma demande rapide :",
+        baseLine,
+        free ? "" : null,
+        free ? "Message libre :" : null,
+        free || null,
+        "",
+        "Merci de m’aider si un lieu correspond."
+      ].filter(Boolean).join("\n");
+    }
+
+    function sendQuickLocNote(){
+      const message = buildQuickLocMessage();
+      openWa(TEAM_WA, message);
+      showQuickNoteStatus("Demande ouverte dans WhatsApp. Même si la galerie est jeune, ta recherche ne se perd pas.");
     }
 
     function buildCardKey(source, p){
@@ -1641,6 +1901,12 @@
     document.getElementById("ndTalk").addEventListener("click", () => {
       openWa(TEAM_WA, `Bonjour DIGIY 👋\nJe veux en savoir plus sur NDIMBAL (${NDIMBAL_RULE}).`);
     });
+
+    document.querySelectorAll("[data-note-example]").forEach(btn => {
+      btn.addEventListener("click", () => fillQuickNoteExample(btn.getAttribute("data-note-example")));
+    });
+
+    document.getElementById("btnQuickNoteWa")?.addEventListener("click", sendQuickLocNote);
 
     async function logReservationIntent(pin){
       const sb = getSb();
