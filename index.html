@@ -1270,6 +1270,410 @@
       *{scroll-behavior:auto}
       .btn,.btn-card,.chip,.mini-btn{transition:none}
     }
+  
+    /* DIGIY LOC — mobile lisible + menu bas */
+    .intent-wrap{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:12px;
+    }
+
+    .intent-card{
+      border-radius:24px;
+      border:1px solid rgba(255,255,255,.10);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.03)),
+        radial-gradient(circle at top left, rgba(238,200,126,.10), transparent 42%);
+      box-shadow:var(--shadow-2);
+      padding:15px;
+      min-height:168px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      gap:12px;
+    }
+
+    .intent-visual{
+      width:58px;
+      height:58px;
+      border-radius:20px;
+      display:grid;
+      place-items:center;
+      font-size:30px;
+      background:rgba(238,200,126,.11);
+      border:1px solid rgba(238,200,126,.22);
+    }
+
+    .intent-card h2{
+      font-size:21px;
+      line-height:1.08;
+      letter-spacing:-.02em;
+      font-weight:900;
+      margin:0 0 6px;
+    }
+
+    .intent-card p{
+      color:var(--muted);
+      line-height:1.55;
+      font-size:14px;
+      font-weight:600;
+    }
+
+    .intent-card .mini-btn{
+      width:100%;
+      min-height:44px;
+    }
+
+    .mobile-dock{
+      display:none;
+    }
+
+    @media(max-width:760px){
+      body{
+        font-size:17px;
+      }
+
+      .app{
+        padding:0 10px 112px;
+      }
+
+      .topbar-inner{
+        min-height:68px;
+      }
+
+      .brand-logo{
+        width:48px;
+        height:48px;
+        border-radius:17px;
+      }
+
+      .brand-kicker{
+        font-size:11px;
+      }
+
+      .brand-title{
+        font-size:17px;
+      }
+
+      .top-actions{
+        display:none;
+      }
+
+      .hero{
+        padding:12px 0 10px;
+      }
+
+      .hero-card{
+        min-height:390px;
+        border-radius:26px;
+      }
+
+      .hero-content{
+        padding:22px 16px 18px;
+      }
+
+      .hero-eyebrow{
+        font-size:12px;
+      }
+
+      .hero-title{
+        font-size:clamp(38px, 12vw, 52px);
+        line-height:.96;
+        max-width:10ch;
+      }
+
+      .hero-sub{
+        font-size:17px;
+        line-height:1.58;
+      }
+
+      .hero-actions{
+        display:grid;
+        grid-template-columns:1fr;
+      }
+
+      .hero-actions .btn{
+        width:100%;
+        min-height:58px;
+        font-size:16px;
+        border-radius:18px;
+      }
+
+      .hero-notes{
+        display:grid;
+        grid-template-columns:1fr;
+      }
+
+      .note{
+        min-height:40px;
+        font-size:13px;
+      }
+
+      .intent-wrap{
+        grid-template-columns:1fr;
+      }
+
+      .intent-card{
+        min-height:auto;
+        display:grid;
+        grid-template-columns:70px 1fr;
+        align-items:center;
+        gap:12px;
+        padding:15px;
+      }
+
+      .intent-visual{
+        width:70px;
+        height:70px;
+        font-size:34px;
+        grid-row:1 / span 2;
+      }
+
+      .intent-card h2{
+        font-size:22px;
+      }
+
+      .intent-card p{
+        font-size:15px;
+      }
+
+      .intent-card .mini-btn{
+        grid-column:1/-1;
+        min-height:52px;
+        border-radius:18px;
+        font-size:15px;
+      }
+
+      .section{
+        padding:10px 0;
+      }
+
+      .section-title,
+      .quick-note-title,
+      .whatsapp-help-title,
+      .contact-title{
+        font-size:clamp(25px, 7vw, 34px);
+        line-height:1.04;
+      }
+
+      .section-text,
+      .quick-note-sub,
+      .whatsapp-help-text,
+      .contact-sub,
+      .owner-callout-text{
+        font-size:16px;
+        line-height:1.6;
+      }
+
+      .examples-wrap,
+      .whatsapp-help,
+      .quick-note-card,
+      .contact-card,
+      .filters-card,
+      .proof-card-wrap,
+      .message-card{
+        border-radius:22px;
+        padding:16px;
+      }
+
+      .examples-grid{
+        grid-template-columns:1fr;
+      }
+
+      .example-card{
+        min-height:auto;
+        border-radius:20px;
+      }
+
+      .example-title{
+        font-size:22px;
+      }
+
+      .example-text{
+        font-size:15px;
+      }
+
+      .example-actions,
+      .whatsapp-help-actions,
+      .quick-note-actions{
+        display:grid;
+        grid-template-columns:1fr;
+      }
+
+      .mini-btn,
+      .btn{
+        min-height:52px;
+        border-radius:18px;
+        font-size:15px;
+      }
+
+      .quick-note-grid{
+        grid-template-columns:1fr;
+        gap:12px;
+      }
+
+      .quick-note-input,
+      .quick-note-textarea,
+      .control,
+      .field input{
+        min-height:54px;
+        font-size:16px;
+        border-radius:16px;
+      }
+
+      .quick-note-textarea{
+        min-height:118px;
+      }
+
+      .quick-note-examples{
+        display:grid;
+        grid-template-columns:1fr;
+      }
+
+      .owner-callout{
+        border-radius:20px;
+      }
+
+      .owner-callout-title{
+        font-size:21px;
+      }
+
+      .filters-card{
+        position:relative;
+        top:auto;
+      }
+
+      .chip-row{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+      }
+
+      .chip{
+        min-height:46px;
+        font-size:14px;
+      }
+
+      .filter-grid{
+        grid-template-columns:1fr;
+      }
+
+      .search-btn{
+        min-height:54px;
+        font-size:15px;
+        border-radius:16px;
+      }
+
+      .lead-form{
+        grid-template-columns:1fr;
+      }
+
+      .grid{
+        grid-template-columns:1fr;
+      }
+
+      .name{
+        font-size:26px;
+      }
+
+      .price{
+        font-size:21px;
+      }
+
+      .desc{
+        font-size:15px;
+      }
+
+      .contact-box .v{
+        font-size:18px;
+      }
+
+      .btn-card{
+        min-height:52px;
+        border-radius:18px;
+        font-size:15px;
+      }
+
+      .sticky-cta{
+        display:none;
+      }
+
+      footer{
+        padding-bottom:95px;
+      }
+
+      .mobile-dock{
+        position:fixed;
+        left:0;
+        right:0;
+        bottom:0;
+        z-index:100000;
+        display:block;
+        padding:8px 10px calc(8px + var(--safe-bottom));
+        background:linear-gradient(180deg, rgba(7,17,27,0), rgba(7,17,27,.94) 24%, rgba(7,17,27,.99));
+        backdrop-filter:blur(12px);
+      }
+
+      .mobile-dock-inner{
+        width:min(100%, var(--max));
+        margin:0 auto;
+        display:grid;
+        grid-template-columns:repeat(3,1fr);
+        gap:7px;
+        border:1px solid rgba(255,255,255,.12);
+        background:rgba(8,18,28,.94);
+        border-radius:22px;
+        padding:7px;
+        box-shadow:0 16px 44px rgba(0,0,0,.38);
+      }
+
+      .mobile-dock a{
+        min-height:56px;
+        border-radius:16px;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:center;
+        gap:3px;
+        color:rgba(243,247,251,.84);
+        font-size:11px;
+        font-weight:950;
+        border:1px solid rgba(255,255,255,.07);
+        text-align:center;
+        background:rgba(255,255,255,.04);
+      }
+
+      .mobile-dock a.primary{
+        color:#102132;
+        background:linear-gradient(180deg, var(--brand-2), var(--brand));
+      }
+
+      .mobile-dock strong{
+        font-size:19px;
+        line-height:1;
+      }
+    }
+
+    @media(max-width:430px){
+      .hero-title{
+        font-size:38px;
+      }
+
+      .intent-card{
+        grid-template-columns:62px 1fr;
+      }
+
+      .intent-visual{
+        width:62px;
+        height:62px;
+        font-size:30px;
+      }
+
+      .chip-row{
+        grid-template-columns:1fr;
+      }
+    }
+
   </style>
 </head>
 
@@ -1321,6 +1725,38 @@
             <span class="note">📲 WhatsApp : +221 77 134 28 89</span>
           </div>
         </div>
+      </div>
+    </section>
+
+
+    <section class="section" id="choix">
+      <div class="intent-wrap">
+        <article class="intent-card">
+          <div class="intent-visual">🏠</div>
+          <div>
+            <h2>Demander un logement</h2>
+            <p>Tu écris zone, dates, personnes et budget. DIGIY reçoit ta demande sur WhatsApp.</p>
+          </div>
+          <a class="mini-btn gold" href="#note-rapide">Faire ma demande</a>
+        </article>
+
+        <article class="intent-card">
+          <div class="intent-visual">🛏️</div>
+          <div>
+            <h2>Voir les logements</h2>
+            <p>Tu regardes les lieux visibles maintenant, puis tu écris au bon contact.</p>
+          </div>
+          <a class="mini-btn" href="#results">Voir les lieux</a>
+        </article>
+
+        <article class="intent-card">
+          <div class="intent-visual">➕</div>
+          <div>
+            <h2>Proposer un logement</h2>
+            <p>Tu as un lieu ? Publie-le et reçois les demandes directement, sans commission.</p>
+          </div>
+          <a class="mini-btn" href="https://commencer-a-payer.digiylyfe.com/" target="_blank" rel="noopener noreferrer">Publier</a>
+        </article>
       </div>
     </section>
 
@@ -1569,6 +2005,15 @@
       <div>0% commission • Paiement direct • Pont court vers le réel</div>
     </footer>
   </div>
+
+
+  <nav class="mobile-dock" aria-label="Navigation rapide LOC">
+    <div class="mobile-dock-inner">
+      <a class="primary" href="#note-rapide"><strong>🏠</strong><span>Demander</span></a>
+      <a href="#results"><strong>🛏️</strong><span>Logements</span></a>
+      <a href="https://commencer-a-payer.digiylyfe.com/" target="_blank" rel="noopener noreferrer"><strong>➕</strong><span>Proposer</span></a>
+    </div>
+  </nav>
 
   <div class="sticky-cta">
     <div class="sticky-cta-inner">
@@ -2677,3 +3122,4 @@ font-size:17px;
   
 </body>
 </html>
+
