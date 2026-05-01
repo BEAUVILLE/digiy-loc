@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Je regarde un logement</title>
+  <title>Demander ce logement — DIGIY LOC</title>
   <meta name="theme-color" content="#020617" />
-  <meta name="description" content="DIGIY LOC — Fiche logement. Direct propriétaire, 0% commission." />
+  <meta name="description" content="DIGIY LOC — Fiche logement. Demande rapide, contact direct, 0% commission." />
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
@@ -80,6 +80,12 @@
     .mini{margin-top:8px;font-size:12px;color:var(--muted);line-height:1.55;font-weight:700;}
     .status{display:none;margin-top:10px;border-radius:14px;padding:10px 12px;font-size:13px;font-weight:850;line-height:1.55;}
     .status.show{display:block}.status.ok{border:1px solid rgba(34,197,94,.35);background:rgba(34,197,94,.10);color:#bbf7d0;}.status.info{border:1px solid rgba(96,165,250,.35);background:rgba(59,130,246,.10);color:#dbeafe;}
+
+    .quickExamples{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+    .quickExample{border:1px solid rgba(250,204,21,.28);background:rgba(250,204,21,.08);color:#fde68a;border-radius:999px;padding:8px 10px;font-size:12px;font-weight:900;cursor:pointer;}
+    .quickExample:active{transform:scale(.99)}
+    .quickIntro{border:1px solid rgba(34,197,94,.30);background:rgba(34,197,94,.08);border-radius:16px;padding:11px 12px;color:#dcfce7;font-size:13px;font-weight:800;line-height:1.55;margin-top:10px;}
+    .softLine{height:1px;background:rgba(148,163,184,.18);margin:12px 0;}
     .overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;padding:14px;z-index:9999;}
     .overlay.show{display:flex}
     .lightbox{width:100%;max-width:980px;border-radius:22px;border:1px solid rgba(148,163,184,.25);background:rgba(2,6,23,.92);box-shadow:0 30px 80px rgba(0,0,0,.55);overflow:hidden;position:relative;}
@@ -98,8 +104,8 @@
       <div class="brand">
         <div class="brand-logo">🏠</div>
         <div>
-          <div class="brand-text-title">DIGIY LOC</div>
-          <div class="brand-text-sub" id="subTitle">Fiche logement</div>
+          <div class="brand-text-title">Je loue</div>
+          <div class="brand-text-sub" id="subTitle">Demander ce logement</div>
         </div>
       </div>
       <a class="back-link" href="./index.html"><span>←</span> Retour galerie</a>
@@ -120,7 +126,7 @@
           <div id="warnEl" class="warn" style="display:none"></div>
           <div id="errEl" class="err" style="display:none"></div>
           <div class="actions">
-            <button class="btn btn-wa" id="btnReserveTop" type="button">📲 Envoyer ma demande</button>
+            <button class="btn btn-wa" id="btnReserveTop" type="button">📲 Demander ce logement</button>
             <a class="btn btn-primary" href="./index.html">👁️ Retour galerie</a>
           </div>
         </div>
@@ -136,13 +142,13 @@
           <div class="box">
             <div class="kicker">Règle DIGIY</div>
             <div class="big">0% commission</div>
-            <div class="txt">Paiement direct au propriétaire. DIGIY ne touche pas l'argent.</div>
+            <div class="txt">Paiement direct au propriétaire. DIGIY ne garde pas l’argent. Tu demandes, on relie au terrain.</div>
           </div>
 
           <div class="box">
             <div class="kicker">Contact DIGIY</div>
             <div class="big" id="waEl">+221771342889</div>
-            <div class="txt">La demande part vers DIGIY par WhatsApp ou email. Aucun enregistrement obligatoire.</div>
+            <div class="txt">La demande part vers WhatsApp DIGIY au début. Comme ça, même si la galerie est encore jeune, ta recherche ne se perd pas.</div>
             <div class="actions" style="margin-top:10px">
               <button class="btn btn-wa" id="btnWaQuick" type="button">📲 Parler à DIGIY</button>
               <button class="btn btn-email" id="btnEmailQuick" type="button">✉️ Écrire à DIGIY</button>
@@ -163,25 +169,45 @@
             </div>
           </div>
 
-          <div class="box">
-            <div class="kicker">Demande de logement</div>
-            <!-- ━━━ AVANT : "le room_slug et le lien de la fiche" → banni ━━━ -->
-            <div class="txt">Remplis ce bloc puis envoie la demande sur WhatsApp ou par email. DIGIY reçoit le message avec les infos du logement et le lien de cette fiche.</div>
+          <div class="box" id="quickDemandBox">
+            <div class="kicker">Note rapide logement</div>
+            <div class="big">Je suis intéressé par ce logement</div>
+            <div class="txt">Écris simple. DIGIY prépare le message et l’ouvre dans WhatsApp. Tu gardes le contact humain, sans compte compliqué.</div>
+
+            <div class="quickIntro">Même quand la galerie est encore jeune, la demande ne doit pas se perdre.</div>
+
+            <div class="quickExamples" aria-label="Exemples rapides">
+              <button class="quickExample" type="button" data-fill="2|Saly|2|25 000 / 30 000 FCFA par jour|Je cherche 2 nuits à Saly pour 2 personnes, budget 25 000 / 30 000 FCFA par jour.">2 nuits à Saly</button>
+              <button class="quickExample" type="button" data-fill="1|Mbour|1|15 000 FCFA par jour|Je cherche une chambre simple ce soir à Mbour.">Ce soir à Mbour</button>
+              <button class="quickExample" type="button" data-fill="7|Ngaparou|2|à discuter|Je cherche un studio calme à Ngaparou pour une semaine.">Studio semaine</button>
+            </div>
+
+            <div class="softLine"></div>
+
             <div class="formGrid">
               <div class="field"><label for="guestName">Nom</label><input id="guestName" class="input" type="text" placeholder="Ex : Awa Ndiaye" /></div>
-              <div class="field"><label for="guestPhone">Téléphone</label><input id="guestPhone" class="input" type="tel" placeholder="Ex : 221771234567" /></div>
+              <div class="field"><label for="guestPhone">WhatsApp</label><input id="guestPhone" class="input" type="tel" placeholder="Ex : 221771234567" /></div>
               <div class="field"><label for="checkIn">Arrivée</label><input id="checkIn" class="input" type="date" /></div>
               <div class="field"><label for="checkOut">Départ</label><input id="checkOut" class="input" type="date" /></div>
-              <div class="field"><label for="guestCount">Personnes</label><input id="guestCount" class="input" type="number" min="1" step="1" placeholder="1" /></div>
-              <div class="field"><label for="guestBudget">Budget indicatif</label><input id="guestBudget" class="input" type="text" placeholder="Ex : 25000 / nuit" /></div>
-              <div class="field full"><label for="guestNote">Message</label><textarea id="guestNote" class="textarea" placeholder="Ex : Je cherche 3 nuits, proche plage, arrivée en soirée…"></textarea></div>
+              <div class="field"><label for="guestCount">Personnes</label><input id="guestCount" class="input" type="number" min="1" step="1" placeholder="Ex : 2" /></div>
+              <div class="field"><label for="guestBudget">Budget / jour</label><input id="guestBudget" class="input" type="text" placeholder="Ex : 25 000 / 30 000 FCFA" /></div>
+              <div class="field full"><label for="guestNote">Message libre</label><textarea id="guestNote" class="textarea" placeholder="Ex : Je cherche 2 nuits à Saly pour 2 personnes, budget 25 000 / 30 000 FCFA par jour."></textarea></div>
             </div>
             <div class="actions" style="margin-top:12px">
-              <button class="btn btn-wa" id="btnReserve" type="button">📲 Envoyer sur WhatsApp</button>
+              <button class="btn btn-wa" id="btnReserve" type="button">📲 Envoyer ma demande à DIGIY</button>
               <button class="btn btn-email" id="btnEmail" type="button">✉️ Envoyer par email</button>
             </div>
-            <div class="mini">Astuce terrain : le message embarque automatiquement les infos du logement et le lien de cette fiche.</div>
+            <div class="mini">Astuce terrain : le message embarque automatiquement ce logement, ton besoin, ton budget et le lien de cette fiche.</div>
             <div id="statusEl" class="status info"></div>
+          </div>
+
+          <div class="box">
+            <div class="kicker">Pas exactement ce qu’il te faut ?</div>
+            <div class="big">DIGIY peut chercher avec toi</div>
+            <div class="txt">Dis ta zone, tes dates et ton budget. WhatsApp sert de première messagerie, simple et directe.</div>
+            <div class="actions" style="margin-top:10px">
+              <button class="btn btn-wa" id="btnOtherNeed" type="button">📲 Chercher autre chose</button>
+            </div>
           </div>
 
           <div class="box">
@@ -193,8 +219,8 @@
     </main>
 
     <footer>
-      <div>DIGIY LOC • <span>Super App DIGIYLYFE</span> — Sénégal → Afrique</div>
-      <div>Direct propriétaire • Paiement direct • Galerie évolutive</div>
+      <div>DIGIY LOC • <span>façade publique</span> — Sénégal → Afrique</div>
+      <div>Note rapide • WhatsApp direct • 0% commission</div>
     </footer>
   </div>
 
@@ -228,6 +254,7 @@
     const btnWaQuick    = document.getElementById("btnWaQuick");
     const btnEmailQuick = document.getElementById("btnEmailQuick");
     const btnEmail      = document.getElementById("btnEmail");
+    const btnOtherNeed  = document.getElementById("btnOtherNeed");
     const typeEl = document.getElementById("typeEl");
     const cityEl = document.getElementById("cityEl");
     const capEl  = document.getElementById("capEl");
@@ -304,7 +331,7 @@
       });
     }
 
-    function focusDemandBox(){ const box=document.getElementById("guestName"); if(!box)return; box.scrollIntoView({behavior:"smooth",block:"center"}); setTimeout(()=>box.focus(),250); }
+    function focusDemandBox(){ const box=document.getElementById("quickDemandBox") || document.getElementById("guestName"); if(!box)return; box.scrollIntoView({behavior:"smooth",block:"center"}); setTimeout(()=>box.focus(),250); }
     function formatDateFr(yyyyMmDd){ const v=String(yyyyMmDd||"").trim(); if(!v)return "—"; const p=v.split("-"); if(p.length!==3)return v; return `${p[2]}/${p[1]}/${p[0]}`; }
 
     function buildInquiryPayload(){
@@ -318,18 +345,83 @@
       const note=String(guestNote.value||"").trim();
       const subject=`DIGIY LOC — Demande logement — ${title}`;
       /* ━━━ AVANT : "room_slug : ${roomSlug}" → "Identifiant : ${roomSlug}" ━━━ */
-      const bodyLines=["Bonjour DIGIY 👋","","Nouvelle demande logement depuis la fiche publique.","","LOGEMENT",`Nom : ${title}`,`Ville : ${city}`,`Identifiant : ${roomSlug}`,`Prix / nuit : ${priceNight}`,`Prix / semaine : ${priceWeek}`,`Prix / mois : ${priceMonth}`,"","CLIENT",`Nom : ${name||"—"}`,`Téléphone : ${phone||"—"}`,`Arrivée : ${formatDateFr(arrival)}`,`Départ : ${formatDateFr(departure)}`,`Personnes : ${people||"—"}`,`Budget : ${budget||"—"}`,"","MESSAGE",note||"—","","LIEN FICHE",url];
+      const quickLine = note || [
+        people ? `Je cherche pour ${people} personne(s)` : "Je suis intéressé par ce logement",
+        arrival ? `à partir du ${formatDateFr(arrival)}` : "",
+        departure ? `jusqu’au ${formatDateFr(departure)}` : "",
+        budget ? `avec un budget d’environ ${budget} / jour` : ""
+      ].filter(Boolean).join(" ");
+      const bodyLines=[
+        "Bonjour DIGIY 👋",
+        "",
+        "Je suis intéressé par ce logement.",
+        "",
+        "NOTE RAPIDE",
+        quickLine || "—",
+        "",
+        "LOGEMENT",
+        `Nom : ${title}`,
+        `Ville : ${city}`,
+        `Identifiant : ${roomSlug}`,
+        `Prix / nuit : ${priceNight}`,
+        `Prix / semaine : ${priceWeek}`,
+        `Prix / mois : ${priceMonth}`,
+        "",
+        "CLIENT",
+        `Nom : ${name||"—"}`,
+        `WhatsApp : ${phone||"—"}`,
+        `Arrivée : ${formatDateFr(arrival)}`,
+        `Départ : ${formatDateFr(departure)}`,
+        `Personnes : ${people||"—"}`,
+        `Budget / jour : ${budget||"—"}`,
+        "",
+        "LIEN FICHE",
+        url
+      ];
       return{subject,body:bodyLines.join("\n"),name,phone};
+    }
+
+
+    function fillQuickExample(payload){
+      const parts=String(payload||"").split("|");
+      const nights=parts[0]||"";
+      const zone=parts[1]||"";
+      const people=parts[2]||"";
+      const budget=parts[3]||"";
+      const note=parts[4]||"";
+      if(people) guestCount.value=people;
+      if(budget) guestBudget.value=budget;
+      if(note) guestNote.value=note;
+      if(zone && !guestNote.value.toLowerCase().includes(zone.toLowerCase())){
+        guestNote.value = `Je cherche ${nights||""} nuit(s) à ${zone} pour ${people||"—"} personne(s), budget ${budget||"à préciser"}.`.replace(/\s+/g," ").trim();
+      }
+      showStatus("Exemple rempli. Ajoute ton nom et ton WhatsApp, puis envoie.","ok");
+      guestName.scrollIntoView({behavior:"smooth",block:"center"});
+    }
+
+    function askOtherNeed(){
+      const room=CURRENT_ROOM||{};
+      const msg=[
+        "Bonjour DIGIY 👋",
+        "Je regarde une fiche logement, mais je cherche peut-être autre chose.",
+        room.title ? `Fiche vue : ${room.title}` : "",
+        "Zone souhaitée : ",
+        "Dates : ",
+        "Personnes : ",
+        "Budget / jour : ",
+        "Besoin : "
+      ].filter(Boolean).join("\n");
+      openWa(TEAM_WA,msg);
     }
 
     function validateInquiry(){
       const p=buildInquiryPayload();
-      if(!p.name){showStatus("Ajoute au moins le nom du client pour envoyer une demande propre.","info");guestName.focus();return false;}
-      if(!p.phone){showStatus("Ajoute au moins un téléphone pour que DIGIY puisse rappeler.","info");guestPhone.focus();return false;}
+      if(!p.name){showStatus("Ajoute au moins ton nom pour que DIGIY te reconnaisse.","info");guestName.focus();return false;}
+      if(!p.phone){showStatus("Ajoute ton WhatsApp pour que DIGIY puisse te répondre.","info");guestPhone.focus();return false;}
       hideStatus(); return true;
     }
 
-    function sendInquiryWhatsApp(){ if(!validateInquiry())return; const p=buildInquiryPayload(); openWa(TEAM_WA,p.body); showStatus("WhatsApp DIGIY ouvert avec la demande préremplie.","ok"); }
+    function sendInquiryWhatsApp(){ if(!validateInquiry())return; const p=buildInquiryPayload(); openWa(TEAM_WA,p.body); showStatus("WhatsApp DIGIY ouvert avec ta note logement préremplie.","ok"); }
     function sendInquiryEmail(){ if(!validateInquiry())return; const p=buildInquiryPayload(); openMail(TEAM_EMAIL,p.subject,p.body); showStatus("Email DIGIY préparé avec la demande préremplie.","ok"); }
     function quickContactWhatsApp(){ if(CURRENT_ROOM){sendInquiryWhatsApp();return;} openWa(TEAM_WA,"Bonjour DIGIY 👋 Je veux des informations sur un logement."); }
     function quickContactEmail(){ if(CURRENT_ROOM){sendInquiryEmail();return;} openMail(TEAM_EMAIL,"DIGIY LOC — Demande logement","Bonjour DIGIY,\n\nJe veux des informations sur un logement.\n"); }
@@ -362,7 +454,7 @@
 
       setMetaTitle(CURRENT_ROOM.title);
       titleEl.textContent=CURRENT_ROOM.title;
-      descEl.textContent=desc||"Contact direct propriétaire. Paiement direct. 0% commission.";
+      descEl.textContent=desc||"Contact direct propriétaire. Paiement direct. 0% commission. Si ce logement te parle, laisse une note rapide et DIGIY prépare le contact.";
 
       subEl.innerHTML="";
       const c1=document.createElement("span"); c1.className="chip blue"; c1.textContent=kind;
@@ -386,6 +478,8 @@
     btnWaQuick.addEventListener("click",quickContactWhatsApp);
     btnEmailQuick.addEventListener("click",quickContactEmail);
     btnEmail.addEventListener("click",sendInquiryEmail);
+    if(btnOtherNeed) btnOtherNeed.addEventListener("click",askOtherNeed);
+    document.querySelectorAll(".quickExample").forEach(btn=>btn.addEventListener("click",()=>fillQuickExample(btn.dataset.fill||"")));
 
     try{main();}catch(e){console.error(e);renderNotFound(getParam("slug")||getParam("room_slug"));showError("Erreur inattendue: "+(e?.message||e));}
   </script>
