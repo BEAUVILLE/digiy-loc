@@ -3,62 +3,231 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <title>Préparer une fiche publique</title>
+  <title>Préparer une fiche logement — DIGIY LOC</title>
   <meta name="theme-color" content="#07140f">
-  <meta name="description" content="Préparer un lien de fiche publique DIGIY LOC, en statique, sans base distante.">
+  <meta name="description" content="Préparer une fiche publique DIGIY LOC simple, directe et compatible avec la note rapide logement.">
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
   <style>
     :root{
-      --bg:#07140f;--bg2:#0b1d16;--card:rgba(255,255,255,.05);--line:rgba(255,255,255,.10);
-      --text:#ecfff4;--muted:rgba(236,255,244,.72);--gold:#facc15;--green:#22c55e;--blue:#60a5fa;
-      --shadow:0 20px 60px rgba(0,0,0,.38);--r:22px;--max:1200px;
-      /* ━━━ AVANT : system-ui seul → Outfit ━━━ */
+      --bg:#07140f;
+      --bg2:#0b1d16;
+      --card:rgba(255,255,255,.05);
+      --card2:rgba(255,255,255,.075);
+      --line:rgba(255,255,255,.10);
+      --text:#ecfff4;
+      --muted:rgba(236,255,244,.72);
+      --gold:#facc15;
+      --gold2:#f97316;
+      --green:#22c55e;
+      --blue:#60a5fa;
+      --danger:#ef4444;
+      --shadow:0 20px 60px rgba(0,0,0,.38);
+      --r:22px;
+      --max:1200px;
+      --safe-bottom:env(safe-area-inset-bottom,0px);
       --fontA:"Outfit",system-ui,-apple-system,sans-serif;
     }
+
     *{box-sizing:border-box}
     html,body{margin:0;padding:0;min-height:100%}
-    body{font-family:var(--fontA);color:var(--text);background:radial-gradient(circle at top left, rgba(250,204,21,.10), transparent 25%),radial-gradient(circle at bottom right, rgba(34,197,94,.10), transparent 25%),linear-gradient(135deg,var(--bg),var(--bg2));}
+    body{
+      font-family:var(--fontA);
+      color:var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(250,204,21,.12), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(34,197,94,.12), transparent 28%),
+        linear-gradient(135deg,var(--bg),var(--bg2));
+      padding-bottom:calc(82px + var(--safe-bottom));
+    }
+
+    button,input,select,textarea{font-family:var(--fontA)}
+    button{cursor:pointer}
+    a{color:inherit;text-decoration:none}
     .wrap{max-width:var(--max);margin:0 auto;padding:16px;}
-    .hero{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);border-radius:24px;padding:18px;box-shadow:var(--shadow);margin-bottom:16px;}
-    .brand{display:flex;align-items:center;gap:12px;}
-    .logo{width:48px;height:48px;border-radius:16px;display:grid;place-items:center;background:radial-gradient(circle at 30% 0%,#facc15,#f97316);color:#111;font-size:24px;font-weight:1000;box-shadow:0 12px 30px rgba(250,204,21,.28);}
-    h1{margin:0;font-size:1.3rem;line-height:1.1;color:#d1fae5;}
-    .sub{margin-top:4px;color:var(--muted);font-weight:700;font-size:.92rem;}
-    .top-actions{display:flex;gap:10px;flex-wrap:wrap;}
-    .btn{border:none;border-radius:12px;padding:12px 14px;min-height:44px;cursor:pointer;font-weight:900;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;line-height:1;transition:transform .15s ease, opacity .15s ease;font-family:var(--fontA);}
+
+    .hero{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(250,204,21,.13), transparent 42%),
+        var(--card);
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:18px;
+      box-shadow:var(--shadow);
+      margin-bottom:16px;
+    }
+
+    .brand{display:flex;align-items:center;gap:12px;min-width:0}
+    .logo{
+      width:48px;height:48px;border-radius:16px;
+      display:grid;place-items:center;
+      background:radial-gradient(circle at 30% 0%,#facc15,#f97316);
+      color:#111;font-size:24px;font-weight:1000;
+      box-shadow:0 12px 30px rgba(250,204,21,.28);
+      flex:0 0 auto;
+    }
+    h1{margin:0;font-size:1.38rem;line-height:1.08;color:#d1fae5;font-weight:950;letter-spacing:-.02em}
+    .sub{margin-top:4px;color:var(--muted);font-weight:750;font-size:.92rem;line-height:1.45}
+    .top-actions{display:flex;gap:10px;flex-wrap:wrap}
+
+    .btn{
+      border:none;
+      border-radius:14px;
+      padding:12px 14px;
+      min-height:44px;
+      cursor:pointer;
+      font-weight:950;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      line-height:1;
+      transition:transform .15s ease, opacity .15s ease;
+      touch-action:manipulation;
+      -webkit-tap-highlight-color:transparent;
+    }
     .btn:active{transform:translateY(1px)}
     .btn-primary{background:linear-gradient(135deg,#facc15,#f97316);color:#111;}
     .btn-secondary{background:rgba(255,255,255,.08);color:var(--text);border:1px solid var(--line);}
     .btn-green{background:rgba(34,197,94,.18);color:#dcfce7;border:1px solid rgba(34,197,94,.35);}
     .btn-blue{background:rgba(96,165,250,.16);color:#dbeafe;border:1px solid rgba(96,165,250,.35);}
     .btn-danger{background:rgba(239,68,68,.18);color:#fee2e2;border:1px solid rgba(239,68,68,.35);}
-    .banner{margin-bottom:16px;border-radius:18px;padding:14px 16px;border:1px solid rgba(250,204,21,.25);background:rgba(250,204,21,.08);color:#fde68a;font-weight:800;line-height:1.6;box-shadow:var(--shadow);}
+
+    .banner{
+      margin-bottom:16px;
+      border-radius:18px;
+      padding:14px 16px;
+      border:1px solid rgba(250,204,21,.25);
+      background:rgba(250,204,21,.08);
+      color:#fde68a;
+      font-weight:850;
+      line-height:1.65;
+      box-shadow:var(--shadow);
+    }
+
+    .voiceBox{
+      margin-bottom:16px;
+      border-radius:20px;
+      padding:14px 16px;
+      border:1px solid rgba(34,197,94,.25);
+      background:
+        radial-gradient(circle at top left, rgba(34,197,94,.13), transparent 48%),
+        rgba(2,6,23,.42);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      box-shadow:var(--shadow);
+    }
+    .voiceTitle{font-weight:950;color:#bbf7d0;font-size:1rem}
+    .voiceText{margin-top:4px;color:var(--muted);font-weight:750;line-height:1.55;font-size:.9rem;max-width:68ch}
+
     .grid{display:grid;grid-template-columns:1.05fr .95fr;gap:16px;}
     @media(max-width:980px){.grid{grid-template-columns:1fr}}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);overflow:hidden;}
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:22px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
     .head{padding:16px 18px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.03);}
-    .head h2{margin:0;font-size:1.04rem;color:var(--gold);}
-    .head p{margin:6px 0 0;color:var(--muted);font-weight:700;line-height:1.5;font-size:.92rem;}
+    .head h2{margin:0;font-size:1.05rem;color:var(--gold);font-weight:950}
+    .head p{margin:6px 0 0;color:var(--muted);font-weight:750;line-height:1.5;font-size:.92rem;}
     .body{padding:18px;}
+
     .fields{display:grid;gap:14px;}
     .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
     .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
     @media(max-width:760px){.row2,.row3{grid-template-columns:1fr}}
+
     label{display:grid;gap:7px;font-size:.92rem;font-weight:900;color:#f3f4f6;}
-    input,select,textarea{width:100%;border-radius:14px;border:1px solid rgba(255,255,255,.10);background:rgba(2,6,23,.72);color:#fff;padding:12px 13px;outline:none;font-family:var(--fontA);font-size:inherit;}
-    textarea{min-height:120px;resize:vertical;}
-    input:focus,select:focus,textarea:focus{border-color:rgba(250,204,21,.45);box-shadow:0 0 0 3px rgba(250,204,21,.10);}
+    input,select,textarea{
+      width:100%;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(2,6,23,.72);
+      color:#fff;
+      padding:12px 13px;
+      outline:none;
+      font-size:inherit;
+      font-weight:750;
+    }
+    textarea{min-height:120px;resize:vertical;line-height:1.55}
+    input:focus,select:focus,textarea:focus{
+      border-color:rgba(250,204,21,.45);
+      box-shadow:0 0 0 3px rgba(250,204,21,.10);
+    }
+
+    .quickDesc{
+      border:1px solid rgba(96,165,250,.22);
+      background:rgba(96,165,250,.08);
+      border-radius:18px;
+      padding:12px;
+      display:grid;
+      gap:10px;
+    }
+    .quickDescTitle{font-size:.82rem;letter-spacing:.08em;text-transform:uppercase;font-weight:950;color:#dbeafe}
+    .quickButtons{display:flex;gap:8px;flex-wrap:wrap}
+    .miniBtn{
+      min-height:38px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.06);
+      color:#ecfff4;
+      font-weight:900;
+      padding:8px 11px;
+      font-size:.82rem;
+    }
+    .miniBtn.gold{border-color:rgba(250,204,21,.35);background:rgba(250,204,21,.10);color:#fde68a}
+
     .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
     .status{display:none;margin-top:16px;white-space:pre-line;border-radius:16px;padding:14px;font-weight:850;line-height:1.55;}
     .status.ok{display:block;border:1px solid rgba(34,197,94,.35);background:rgba(34,197,94,.10);color:#dcfce7;}
     .status.warn{display:block;border:1px solid rgba(250,204,21,.35);background:rgba(250,204,21,.10);color:#fde68a;}
     .status.bad{display:block;border:1px solid rgba(239,68,68,.35);background:rgba(239,68,68,.10);color:#fee2e2;}
-    .mini{margin-top:8px;color:var(--muted);font-size:.82rem;line-height:1.55;font-weight:700;}
-    .urlbox{width:100%;min-height:180px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(2,6,23,.72);color:#fff;padding:14px;line-height:1.6;word-break:break-all;}
+
+    .mini{margin-top:8px;color:var(--muted);font-size:.82rem;line-height:1.55;font-weight:750;}
+    .urlbox{
+      width:100%;
+      min-height:170px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(2,6,23,.72);
+      color:#fff;
+      padding:14px;
+      line-height:1.6;
+      word-break:break-all;
+      font-weight:750;
+    }
+
+    .ownerBox{
+      margin-top:16px;
+      border-radius:18px;
+      padding:14px;
+      border:1px solid rgba(34,197,94,.30);
+      background:rgba(34,197,94,.09);
+    }
+    .ownerBox .title{font-weight:950;color:#bbf7d0}
+    .ownerBox .text{margin-top:6px;color:#e5e7eb;line-height:1.6;font-weight:750;font-size:.92rem}
+
     .preview{display:flex;flex-direction:column;gap:16px;}
-    .previewCard{border:1px solid rgba(30,64,175,.50);background:radial-gradient(circle at top,rgba(15,23,42,.98),#020617);border-radius:24px;overflow:hidden;box-shadow:0 16px 40px rgba(15,23,42,.85);}
+    .previewCard{
+      border:1px solid rgba(30,64,175,.50);
+      background:radial-gradient(circle at top,rgba(15,23,42,.98),#020617);
+      border-radius:24px;
+      overflow:hidden;
+      box-shadow:0 16px 40px rgba(15,23,42,.85);
+    }
     .previewCover{height:260px;background:#0b1220;position:relative;}
     .previewCover img{width:100%;height:100%;object-fit:cover;display:block;}
     .previewFade{position:absolute;inset:0;background:linear-gradient(180deg, rgba(2,6,23,.04) 0%, rgba(2,6,23,.72) 80%, rgba(2,6,23,.94) 100%);}
@@ -68,18 +237,58 @@
     .chip{width:max-content;padding:6px 10px;border-radius:999px;border:1px solid rgba(148,163,184,.28);background:rgba(2,6,23,.56);color:#e5e7eb;font-size:.78rem;font-weight:900;white-space:nowrap;}
     .chip.green{border-color:rgba(34,197,94,.45);background:rgba(34,197,94,.12);color:#dcfce7;}
     .chip.gold{border-color:rgba(250,204,21,.45);background:rgba(250,204,21,.12);color:#fde68a;}
+
     .previewBody{padding:16px;display:flex;flex-direction:column;gap:14px;}
     .pbox{border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.03);border-radius:16px;padding:14px;}
     .pbox .k{font-size:.78rem;color:#bbf7d0;font-weight:950;text-transform:uppercase;letter-spacing:.06em;}
-    .pbox .v{margin-top:8px;color:#f8fafc;font-weight:700;line-height:1.65;white-space:pre-wrap;word-break:break-word;}
+    .pbox .v{margin-top:8px;color:#f8fafc;font-weight:750;line-height:1.65;white-space:pre-wrap;word-break:break-word;}
     .pgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
     @media(max-width:760px){.pgrid{grid-template-columns:1fr}}
+
     .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;}
     .thumb{border:1px solid rgba(255,255,255,.10);border-radius:14px;overflow:hidden;background:rgba(2,6,23,.55);}
     .thumb img{width:100%;height:100px;object-fit:cover;display:block;background:#0b1220;}
     .thumb .cap{padding:8px;font-size:.74rem;color:#cbd5e1;font-weight:800;line-height:1.4;word-break:break-word;}
+
+    .messagePreview{
+      border:1px solid rgba(250,204,21,.24);
+      background:rgba(250,204,21,.07);
+      border-radius:18px;
+      padding:14px;
+    }
+
+    .sticky{
+      position:fixed;
+      left:0;right:0;bottom:0;
+      z-index:60;
+      padding:10px 12px calc(10px + var(--safe-bottom));
+      background:linear-gradient(180deg, rgba(7,20,15,0), rgba(7,20,15,.94) 18%, rgba(7,20,15,.98));
+      backdrop-filter:blur(10px);
+    }
+    .stickyInner{
+      max-width:var(--max);
+      margin:0 auto;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+    .sticky .btn{min-height:54px;border-radius:18px}
+    @media(max-width:640px){
+      .wrap{padding:12px}
+      .hero{padding:15px}
+      .top-actions{width:100%}
+      .top-actions .btn{flex:1}
+      .toolbar .btn{width:100%}
+      .stickyInner{grid-template-columns:1fr 1fr}
+      .sticky .btn{font-size:.88rem;padding:10px}
+    }
+
+    @media (prefers-reduced-motion:reduce){
+      *{scroll-behavior:auto;transition:none!important}
+    }
   </style>
 </head>
+
 <body>
 <div class="wrap">
 
@@ -87,40 +296,51 @@
     <div class="brand">
       <div class="logo">🏠</div>
       <div>
-        <h1>Préparer une fiche publique</h1>
-        <div class="sub">100% statique • sans base distante • 1 photo principale + jusqu’à 5 photos</div>
+        <h1>Préparer une fiche logement</h1>
+        <div class="sub">DIGIY écrit clair, prépare le lien, et aide le client à demander ce logement sans friction.</div>
       </div>
     </div>
     <div class="top-actions">
-      <button class="btn btn-secondary" id="btnLoadExample" type="button">⚡ Exemple</button>
+      <button class="btn btn-secondary" id="btnSpeak" type="button">🎧 Écouter l’aide</button>
       <button class="btn btn-primary" id="btnBuild" type="button">🔗 Préparer le lien</button>
     </div>
   </div>
 
   <div class="banner">
     Ici on fabrique une <b>fiche publique légère</b>.
-    Le client lit une page statique. Pas de base, pas de requête, pas de consommation inutile.
-    <!-- ━━━ AVANT : "Le rail photo est simple" → banni ━━━ -->
-    Photos : <b>cover</b> pour l'image principale, puis <b>p1 à p5</b> pour la galerie.
+    Le client voit le logement, lit l’essentiel, puis peut écrire une <b>note rapide logement</b> sur la fiche.
+    Le propriétaire garde la main, le contact reste direct, et DIGIY ne prend pas de commission.
+  </div>
+
+  <div class="voiceBox">
+    <div>
+      <div class="voiceTitle">DIGIY parle et écrit pour simplifier</div>
+      <div class="voiceText">
+        Tu poses les informations du logement. DIGIY prépare une page lisible, un lien partageable et un message WhatsApp propre.
+        Objectif : moins d’explication, plus de confiance.
+      </div>
+    </div>
+    <button class="btn btn-green" id="btnSpeak2" type="button">🔊 Lire la vision</button>
   </div>
 
   <div class="grid">
     <section class="card">
       <div class="head">
-        <h2>Données de la fiche</h2>
-        <p>Remplis les champs, colle les liens photo, puis prépare le lien public complet.</p>
+        <h2>Données du logement</h2>
+        <p>Remplis simplement. Le lien généré ouvre la fiche publique avec photos, prix, infos clés et demande WhatsApp.</p>
       </div>
+
       <div class="body">
         <div class="fields">
           <label>
             Base de la fiche publique
             <input id="baseUrl" type="url" placeholder="Ex : https://beauville.github.io/digiy-loc/fiche.html">
-            <div class="mini">Mets le lien exact de ton fichier public `fiche.html`.</div>
+            <div class="mini">Mets le lien exact de ton fichier public <b>fiche.html</b>.</div>
           </label>
 
           <div class="row2">
-            <label>Nom du logement<input id="nom" type="text" placeholder="Ex : Villa Saly"></label>
-            <label>Ville<input id="ville" type="text" placeholder="Ex : Saly"></label>
+            <label>Nom du logement<input id="nom" type="text" placeholder="Ex : Villa Saly calme proche plage"></label>
+            <label>Ville / zone<input id="ville" type="text" placeholder="Ex : Saly, Ngaparou, Mbour"></label>
           </div>
 
           <div class="row3">
@@ -135,8 +355,7 @@
               </select>
             </label>
             <label>Capacité<input id="cap" type="number" min="1" placeholder="Ex : 4"></label>
-            <!-- ━━━ AVANT : label "room_slug" → "Identifiant" ━━━ -->
-            <label>Identifiant<input id="slug" type="text" placeholder="Ex : villa-saly"></label>
+            <label>Identifiant<input id="slug" type="text" placeholder="Ex : villa-saly-calme"></label>
           </div>
 
           <div class="row3">
@@ -145,18 +364,32 @@
             <label>Prix / mois<input id="pm" type="number" min="0" placeholder="Ex : 450000"></label>
           </div>
 
-          <label>Description<textarea id="desc" placeholder="Décris le logement simplement, clairement, humainement."></textarea></label>
-          <label>Cover (photo principale)<input id="cover" type="url" placeholder="https://.../cover.jpg"></label>
+          <div class="quickDesc">
+            <div class="quickDescTitle">Aide description</div>
+            <div class="quickButtons">
+              <button class="miniBtn gold" type="button" data-desc="calme">Calme proche plage</button>
+              <button class="miniBtn gold" type="button" data-desc="famille">Famille / week-end</button>
+              <button class="miniBtn gold" type="button" data-desc="simple">Simple et propre</button>
+            </div>
+            <div class="mini">Clique un exemple, puis adapte avec tes mots. DIGIY écrit, mais le terrain reste vrai.</div>
+          </div>
+
+          <label>
+            Description
+            <textarea id="desc" placeholder="Ex : Logement propre et calme à Saly, pratique pour quelques nuits ou un week-end. Contact direct propriétaire, paiement direct, 0% commission DIGIY."></textarea>
+          </label>
+
+          <label>Photo principale<input id="cover" type="url" placeholder="https://.../cover.jpg"></label>
 
           <div class="row2">
-            <label>Galerie p1<input id="p1" type="url" placeholder="https://.../1.jpg"></label>
-            <label>Galerie p2<input id="p2" type="url" placeholder="https://.../2.jpg"></label>
+            <label>Photo galerie 1<input id="p1" type="url" placeholder="https://.../1.jpg"></label>
+            <label>Photo galerie 2<input id="p2" type="url" placeholder="https://.../2.jpg"></label>
           </div>
           <div class="row2">
-            <label>Galerie p3<input id="p3" type="url" placeholder="https://.../3.jpg"></label>
-            <label>Galerie p4<input id="p4" type="url" placeholder="https://.../4.jpg"></label>
+            <label>Photo galerie 3<input id="p3" type="url" placeholder="https://.../3.jpg"></label>
+            <label>Photo galerie 4<input id="p4" type="url" placeholder="https://.../4.jpg"></label>
           </div>
-          <label>Galerie p5<input id="p5" type="url" placeholder="https://.../5.jpg"></label>
+          <label>Photo galerie 5<input id="p5" type="url" placeholder="https://.../5.jpg"></label>
         </div>
 
         <div class="toolbar">
@@ -173,6 +406,14 @@
           <label>Lien public préparé
             <textarea id="resultUrl" class="urlbox" readonly placeholder="Le lien complet apparaîtra ici."></textarea>
           </label>
+        </div>
+
+        <div class="ownerBox">
+          <div class="title">Tu as un logement à proposer ?</div>
+          <div class="text">
+            Prépare ta fiche, partage le lien, puis laisse les visiteurs demander directement.
+            DIGIY transforme une simple fiche en porte d’entrée terrain.
+          </div>
         </div>
       </div>
     </section>
@@ -191,19 +432,28 @@
             </div>
           </div>
         </div>
+
         <div class="previewBody">
           <div class="pbox">
             <div class="k">Description</div>
             <div class="v" id="pvDesc">La description apparaîtra ici.</div>
           </div>
+
           <div class="pgrid">
             <div class="pbox"><div class="k">Capacité</div><div class="v" id="pvCap">—</div></div>
-            <!-- ━━━ AVANT : label "room_slug" → "Identifiant" ━━━ -->
             <div class="pbox"><div class="k">Identifiant</div><div class="v" id="pvSlug">—</div></div>
             <div class="pbox"><div class="k">Prix / Nuit</div><div class="v" id="pvPn">—</div></div>
             <div class="pbox"><div class="k">Prix / Semaine</div><div class="v" id="pvPs">—</div></div>
             <div class="pbox" style="grid-column:1/-1"><div class="k">Prix / Mois</div><div class="v" id="pvPm">—</div></div>
           </div>
+
+          <div class="messagePreview">
+            <div class="pbox" style="background:transparent;border:none;padding:0">
+              <div class="k">Message WhatsApp préparé</div>
+              <div class="v" id="pvMessage">Le message de partage apparaîtra ici.</div>
+            </div>
+          </div>
+
           <div class="pbox">
             <div class="k">Galerie</div>
             <div class="gallery" id="pvGallery"></div>
@@ -214,140 +464,349 @@
   </div>
 </div>
 
+<div class="sticky">
+  <div class="stickyInner">
+    <button class="btn btn-primary" id="btnBuildSticky" type="button">🔗 Préparer</button>
+    <button class="btn btn-green" id="btnCopySticky" type="button">📋 Copier</button>
+  </div>
+</div>
+
 <script>
 (() => {
   "use strict";
 
   const FALLBACK_IMG = "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80";
+  const DEFAULT_BASE = "https://beauville.github.io/digiy-loc/fiche.html";
 
   const els = {
-    baseUrl:document.getElementById("baseUrl"),nom:document.getElementById("nom"),
-    ville:document.getElementById("ville"),type:document.getElementById("type"),
-    cap:document.getElementById("cap"),slug:document.getElementById("slug"),
-    pn:document.getElementById("pn"),ps:document.getElementById("ps"),pm:document.getElementById("pm"),
-    desc:document.getElementById("desc"),cover:document.getElementById("cover"),
-    p1:document.getElementById("p1"),p2:document.getElementById("p2"),p3:document.getElementById("p3"),
-    p4:document.getElementById("p4"),p5:document.getElementById("p5"),
-    btnBuild:document.getElementById("btnBuild"),btnBuild2:document.getElementById("btnBuild2"),
-    btnCopy:document.getElementById("btnCopy"),btnOpen:document.getElementById("btnOpen"),
-    btnShareWa:document.getElementById("btnShareWa"),btnReset:document.getElementById("btnReset"),
-    btnLoadExample:document.getElementById("btnLoadExample"),
-    resultUrl:document.getElementById("resultUrl"),statusBox:document.getElementById("statusBox"),
-    pvCover:document.getElementById("pvCover"),pvNom:document.getElementById("pvNom"),
-    pvType:document.getElementById("pvType"),pvVille:document.getElementById("pvVille"),
-    pvDesc:document.getElementById("pvDesc"),pvCap:document.getElementById("pvCap"),
-    pvSlug:document.getElementById("pvSlug"),pvPn:document.getElementById("pvPn"),
-    pvPs:document.getElementById("pvPs"),pvPm:document.getElementById("pvPm"),
+    baseUrl:document.getElementById("baseUrl"),
+    nom:document.getElementById("nom"),
+    ville:document.getElementById("ville"),
+    type:document.getElementById("type"),
+    cap:document.getElementById("cap"),
+    slug:document.getElementById("slug"),
+    pn:document.getElementById("pn"),
+    ps:document.getElementById("ps"),
+    pm:document.getElementById("pm"),
+    desc:document.getElementById("desc"),
+    cover:document.getElementById("cover"),
+    p1:document.getElementById("p1"),
+    p2:document.getElementById("p2"),
+    p3:document.getElementById("p3"),
+    p4:document.getElementById("p4"),
+    p5:document.getElementById("p5"),
+    btnBuild:document.getElementById("btnBuild"),
+    btnBuild2:document.getElementById("btnBuild2"),
+    btnBuildSticky:document.getElementById("btnBuildSticky"),
+    btnCopy:document.getElementById("btnCopy"),
+    btnCopySticky:document.getElementById("btnCopySticky"),
+    btnOpen:document.getElementById("btnOpen"),
+    btnShareWa:document.getElementById("btnShareWa"),
+    btnReset:document.getElementById("btnReset"),
+    btnSpeak:document.getElementById("btnSpeak"),
+    btnSpeak2:document.getElementById("btnSpeak2"),
+    resultUrl:document.getElementById("resultUrl"),
+    statusBox:document.getElementById("statusBox"),
+    pvCover:document.getElementById("pvCover"),
+    pvNom:document.getElementById("pvNom"),
+    pvType:document.getElementById("pvType"),
+    pvVille:document.getElementById("pvVille"),
+    pvDesc:document.getElementById("pvDesc"),
+    pvCap:document.getElementById("pvCap"),
+    pvSlug:document.getElementById("pvSlug"),
+    pvPn:document.getElementById("pvPn"),
+    pvPs:document.getElementById("pvPs"),
+    pvPm:document.getElementById("pvPm"),
+    pvMessage:document.getElementById("pvMessage"),
     pvGallery:document.getElementById("pvGallery")
   };
 
-  function safe(v){ return String(v??"").trim(); }
+  function safe(v){ return String(v ?? "").trim(); }
 
   function slugify(text){
-    return safe(text).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase()
-      .replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").replace(/--+/g,"-");
+    return safe(text)
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g,"")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g,"-")
+      .replace(/^-+|-+$/g,"")
+      .replace(/--+/g,"-");
   }
 
-  function money(v){ const n=Number(v); if(!Number.isFinite(n)||n<=0)return "—"; return n.toLocaleString("fr-FR")+" FCFA"; }
-  function safeImg(v){ return safe(v)||FALLBACK_IMG; }
+  function money(v){
+    const n = Number(v);
+    if(!Number.isFinite(n) || n <= 0) return "—";
+    return n.toLocaleString("fr-FR") + " FCFA";
+  }
 
-  function showStatus(msg,type="ok"){ els.statusBox.className="status "+type; els.statusBox.textContent=msg||""; }
-  function hideStatus(){ els.statusBox.className="status"; els.statusBox.textContent=""; }
+  function safeImg(v){ return safe(v) || FALLBACK_IMG; }
+
+  function showStatus(msg,type="ok"){
+    els.statusBox.className = "status " + type;
+    els.statusBox.textContent = msg || "";
+  }
+
+  function hideStatus(){
+    els.statusBox.className = "status";
+    els.statusBox.textContent = "";
+  }
 
   function computeKind(type,nom){
-    const t=safe(type).toLowerCase(); const n=safe(nom).toLowerCase();
-    if(t.includes("villa")||n.includes("villa"))return "Villa";
-    if(t.includes("studio")||n.includes("studio"))return "Studio";
-    if(t.includes("appartement")||n.includes("appart"))return "Appartement";
-    if(t.includes("chambre")||n.includes("chambre"))return "Chambre";
-    if(t.includes("maison")||n.includes("maison"))return "Maison";
+    const t = safe(type).toLowerCase();
+    const n = safe(nom).toLowerCase();
+    if(t.includes("villa") || n.includes("villa")) return "Villa";
+    if(t.includes("studio") || n.includes("studio")) return "Studio";
+    if(t.includes("appartement") || n.includes("appart")) return "Appartement";
+    if(t.includes("chambre") || n.includes("chambre")) return "Chambre";
+    if(t.includes("maison") || n.includes("maison")) return "Maison";
     return "Location";
   }
 
   function galleryUrls(){
-    return [els.p1.value,els.p2.value,els.p3.value,els.p4.value,els.p5.value].map(safe).filter(Boolean).slice(0,5);
+    return [els.p1.value,els.p2.value,els.p3.value,els.p4.value,els.p5.value]
+      .map(safe)
+      .filter(Boolean)
+      .slice(0,5);
+  }
+
+  function buildShareMessage(url){
+    const nom = safe(els.nom.value) || "ce logement";
+    const ville = safe(els.ville.value) || "Sénégal";
+    const prix = money(els.pn.value);
+    const kind = computeKind(els.type.value, els.nom.value);
+
+    return [
+      "Bonjour 👋",
+      "",
+      `Voici une fiche DIGIY LOC pour ${nom}.`,
+      `Type : ${kind}`,
+      `Zone : ${ville}`,
+      `Prix / nuit : ${prix}`,
+      "Contact direct. Paiement direct. 0% commission.",
+      "",
+      "Le client peut ouvrir la fiche et demander ce logement par WhatsApp.",
+      "",
+      "Lien direct :",
+      url || "Lien à préparer"
+    ].join("\n");
   }
 
   function updatePreview(){
-    const g=galleryUrls(); const cover=safeImg(els.cover.value); const kind=computeKind(els.type.value,els.nom.value);
-    els.pvCover.src=cover; els.pvCover.onerror=()=>{els.pvCover.onerror=null;els.pvCover.src=FALLBACK_IMG;};
-    els.pvNom.textContent=safe(els.nom.value)||"Nom logement";
-    els.pvType.textContent=kind;
-    els.pvVille.textContent=safe(els.ville.value)||"Ville";
-    els.pvDesc.textContent=safe(els.desc.value)||"La description apparaîtra ici.";
-    els.pvCap.textContent=safe(els.cap.value)?`${safe(els.cap.value)} pers.`:"—";
-    els.pvSlug.textContent=safe(els.slug.value)||"—";
-    els.pvPn.textContent=money(els.pn.value);
-    els.pvPs.textContent=money(els.ps.value);
-    els.pvPm.textContent=money(els.pm.value);
-    els.pvGallery.innerHTML="";
-    const gallery=g.length?g:[cover];
-    gallery.forEach((url,i)=>{
-      const item=document.createElement("div"); item.className="thumb";
-      item.innerHTML=`<img src="${safeImg(url)}" alt="Photo ${i+1}"><div class="cap">p${i+1}</div>`;
+    const g = galleryUrls();
+    const cover = safeImg(els.cover.value);
+    const kind = computeKind(els.type.value, els.nom.value);
+
+    els.pvCover.src = cover;
+    els.pvCover.onerror = () => {
+      els.pvCover.onerror = null;
+      els.pvCover.src = FALLBACK_IMG;
+    };
+
+    els.pvNom.textContent = safe(els.nom.value) || "Nom logement";
+    els.pvType.textContent = kind;
+    els.pvVille.textContent = safe(els.ville.value) || "Ville";
+    els.pvDesc.textContent = safe(els.desc.value) || "La description apparaîtra ici.";
+    els.pvCap.textContent = safe(els.cap.value) ? `${safe(els.cap.value)} pers.` : "—";
+    els.pvSlug.textContent = safe(els.slug.value) || (safe(els.nom.value) ? slugify(els.nom.value) : "—");
+    els.pvPn.textContent = money(els.pn.value);
+    els.pvPs.textContent = money(els.ps.value);
+    els.pvPm.textContent = money(els.pm.value);
+    els.pvMessage.textContent = buildShareMessage(els.resultUrl.value || "");
+
+    els.pvGallery.innerHTML = "";
+    const gallery = g.length ? g : [cover];
+    gallery.forEach((url,i) => {
+      const item = document.createElement("div");
+      item.className = "thumb";
+      item.innerHTML = `<img src="${safeImg(url)}" alt="Photo ${i+1}"><div class="cap">Photo ${i+1}</div>`;
       els.pvGallery.appendChild(item);
     });
   }
 
+  function ensureBase(){
+    if(!safe(els.baseUrl.value)){
+      els.baseUrl.value = DEFAULT_BASE;
+    }
+  }
+
   function buildUrl(){
-    const base=safe(els.baseUrl.value);
-    if(!base){showStatus("Ajoute d'abord le lien de base de ton fichier fiche.html.","warn");els.baseUrl.focus();return "";}
+    ensureBase();
+    const base = safe(els.baseUrl.value);
+
     let url;
-    try{url=new URL(base);}catch{showStatus("Le lien de base n'est pas valide.","bad");els.baseUrl.focus();return "";}
-    const finalSlug=safe(els.slug.value)||slugify(els.nom.value);
-    if(finalSlug&&!safe(els.slug.value))els.slug.value=finalSlug;
-    const map={nom:els.nom.value,ville:els.ville.value,type:els.type.value,cap:els.cap.value,slug:finalSlug,pn:els.pn.value,ps:els.ps.value,pm:els.pm.value,desc:els.desc.value,cover:els.cover.value,p1:els.p1.value,p2:els.p2.value,p3:els.p3.value,p4:els.p4.value,p5:els.p5.value};
-    Object.entries(map).forEach(([key,value])=>{ const v=safe(value); if(v)url.searchParams.set(key,v); else url.searchParams.delete(key); });
-    const result=url.toString(); els.resultUrl.value=result; showStatus("Lien public prêt ✅","ok"); return result;
+    try{
+      url = new URL(base);
+    }catch{
+      showStatus("Le lien de base n'est pas valide. Vérifie l'adresse de fiche.html.","bad");
+      els.baseUrl.focus();
+      return "";
+    }
+
+    const finalSlug = safe(els.slug.value) || slugify(els.nom.value);
+    if(finalSlug && !safe(els.slug.value)) els.slug.value = finalSlug;
+
+    const map = {
+      nom:els.nom.value,
+      ville:els.ville.value,
+      type:els.type.value,
+      cap:els.cap.value,
+      slug:finalSlug,
+      pn:els.pn.value,
+      ps:els.ps.value,
+      pm:els.pm.value,
+      desc:els.desc.value,
+      cover:els.cover.value,
+      p1:els.p1.value,
+      p2:els.p2.value,
+      p3:els.p3.value,
+      p4:els.p4.value,
+      p5:els.p5.value
+    };
+
+    Object.entries(map).forEach(([key,value]) => {
+      const v = safe(value);
+      if(v) url.searchParams.set(key,v);
+      else url.searchParams.delete(key);
+    });
+
+    const result = url.toString();
+    els.resultUrl.value = result;
+    updatePreview();
+    showStatus("Lien public prêt ✅\nLa fiche pourra recevoir une demande logement par WhatsApp.","ok");
+    return result;
   }
 
   async function copyUrl(){
-    const url=els.resultUrl.value||buildUrl(); if(!url)return;
-    try{await navigator.clipboard.writeText(url);showStatus("Lien copié ✅","ok");}
-    catch{showStatus("Copie automatique impossible. Copie manuelle dans la zone du lien.","warn");}
+    const url = els.resultUrl.value || buildUrl();
+    if(!url) return;
+
+    try{
+      await navigator.clipboard.writeText(url);
+      showStatus("Lien copié ✅\nTu peux le coller sur WhatsApp, une affiche, une page ou un QR.","ok");
+    }catch{
+      els.resultUrl.focus();
+      els.resultUrl.select();
+      showStatus("Copie automatique impossible. Copie manuelle dans la zone du lien.","warn");
+    }
   }
 
-  function openUrl(){ const url=els.resultUrl.value||buildUrl(); if(!url)return; window.open(url,"_blank","noopener,noreferrer"); }
+  function openUrl(){
+    const url = els.resultUrl.value || buildUrl();
+    if(!url) return;
+    window.open(url,"_blank","noopener,noreferrer");
+  }
 
   function shareWhatsApp(){
-    const url=els.resultUrl.value||buildUrl(); if(!url)return;
-    const nom=safe(els.nom.value)||"ce logement"; const ville=safe(els.ville.value)||"Sénégal";
-    const prix=money(els.pn.value); const kind=computeKind(els.type.value,els.nom.value);
-    const msg=["Bonjour 👋","",`Voici la fiche DIGIY LOC pour ${nom}.`,`Type : ${kind}`,`Ville : ${ville}`,`Prix / nuit : ${prix}`,"","Lien direct :",url].join("\n");
+    const url = els.resultUrl.value || buildUrl();
+    if(!url) return;
+    const msg = buildShareMessage(url);
     window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`,"_blank","noopener,noreferrer");
     showStatus("WhatsApp ouvert avec le lien de la fiche ✅","ok");
   }
 
   function resetAll(){
-    [els.baseUrl,els.nom,els.ville,els.cap,els.slug,els.pn,els.ps,els.pm,els.desc,els.cover,els.p1,els.p2,els.p3,els.p4,els.p5].forEach(el=>el.value="");
-    els.type.value=""; els.resultUrl.value=""; hideStatus(); updatePreview();
+    [
+      els.baseUrl,els.nom,els.ville,els.cap,els.slug,els.pn,els.ps,els.pm,els.desc,
+      els.cover,els.p1,els.p2,els.p3,els.p4,els.p5
+    ].forEach(el => el.value = "");
+    els.type.value = "";
+    els.resultUrl.value = "";
+    hideStatus();
+    updatePreview();
+  }
+
+  function applyDesc(kind){
+    const base = {
+      calme:"Logement propre et calme, pratique pour quelques nuits à Saly. Idéal pour se reposer, rester proche des zones utiles et contacter directement le propriétaire.",
+      famille:"Logement adapté pour un couple, une famille ou un petit week-end. Le client peut demander ses dates, son budget et ses besoins directement sur WhatsApp.",
+      simple:"Logement simple, propre et direct. L’essentiel est clair : photos, prix indicatif, contact direct propriétaire, paiement direct, 0% commission DIGIY."
+    };
+    els.desc.value = base[kind] || "";
+    updatePreview();
   }
 
   function loadExample(){
-    els.baseUrl.value="https://beauville.github.io/digiy-loc/fiche.html";
-    els.nom.value="Villa Saly"; els.ville.value="Saly"; els.type.value="Villa";
-    els.cap.value="4"; els.slug.value="villa-saly";
-    els.pn.value="25000"; els.ps.value="150000"; els.pm.value="450000";
-    els.desc.value="Belle villa proche plage, calme, pratique et directe propriétaire.";
-    els.cover.value="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1400&q=80";
-    els.p1.value="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80";
-    els.p2.value="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1400&q=80";
-    els.p3.value="https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1400&q=80";
-    els.p4.value=""; els.p5.value=""; updatePreview(); buildUrl();
+    els.baseUrl.value = DEFAULT_BASE;
+    els.nom.value = "Villa Saly calme proche plage";
+    els.ville.value = "Saly";
+    els.type.value = "Villa";
+    els.cap.value = "4";
+    els.slug.value = "villa-saly-calme";
+    els.pn.value = "25000";
+    els.ps.value = "150000";
+    els.pm.value = "450000";
+    els.desc.value = "Logement propre et calme à Saly, pratique pour quelques nuits ou un week-end. Le client peut demander ses dates, son budget et ses besoins directement sur WhatsApp. Contact direct propriétaire, paiement direct, 0% commission DIGIY.";
+    els.cover.value = "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1400&q=80";
+    els.p1.value = "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80";
+    els.p2.value = "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1400&q=80";
+    els.p3.value = "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1400&q=80";
+    els.p4.value = "";
+    els.p5.value = "";
+    updatePreview();
+    buildUrl();
+  }
+
+  function speakHelp(){
+    const text = [
+      "DIGIY LOC prépare une fiche publique simple.",
+      "Tu poses le nom du logement, la zone, le prix, les photos et une description claire.",
+      "DIGIY prépare ensuite un lien partageable.",
+      "Le client peut ouvrir la fiche et envoyer une demande par WhatsApp.",
+      "Le contact reste direct, le paiement reste direct, et DIGIY ne prend pas de commission."
+    ].join(" ");
+
+    try{
+      if(!("speechSynthesis" in window)){
+        showStatus("La lecture vocale n'est pas disponible sur ce navigateur.","warn");
+        return;
+      }
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = "fr-FR";
+      u.rate = 0.86;
+      u.pitch = 0.95;
+      window.speechSynthesis.speak(u);
+    }catch(e){
+      showStatus("Lecture vocale impossible pour le moment.","warn");
+    }
   }
 
   function bind(){
-    const watched=[els.baseUrl,els.nom,els.ville,els.type,els.cap,els.slug,els.pn,els.ps,els.pm,els.desc,els.cover,els.p1,els.p2,els.p3,els.p4,els.p5];
-    watched.forEach(el=>{ const evt=el.tagName==="SELECT"?"change":"input"; el.addEventListener(evt,updatePreview); });
-    els.btnBuild.addEventListener("click",buildUrl); els.btnBuild2.addEventListener("click",buildUrl);
-    els.btnCopy.addEventListener("click",copyUrl); els.btnOpen.addEventListener("click",openUrl);
-    els.btnShareWa.addEventListener("click",shareWhatsApp); els.btnReset.addEventListener("click",resetAll);
-    els.btnLoadExample.addEventListener("click",loadExample);
+    const watched = [
+      els.baseUrl,els.nom,els.ville,els.type,els.cap,els.slug,els.pn,els.ps,els.pm,
+      els.desc,els.cover,els.p1,els.p2,els.p3,els.p4,els.p5
+    ];
+
+    watched.forEach(el => {
+      const evt = el.tagName === "SELECT" ? "change" : "input";
+      el.addEventListener(evt, updatePreview);
+    });
+
+    els.btnBuild.addEventListener("click", buildUrl);
+    els.btnBuild2.addEventListener("click", buildUrl);
+    els.btnBuildSticky.addEventListener("click", buildUrl);
+    els.btnCopy.addEventListener("click", copyUrl);
+    els.btnCopySticky.addEventListener("click", copyUrl);
+    els.btnOpen.addEventListener("click", openUrl);
+    els.btnShareWa.addEventListener("click", shareWhatsApp);
+    els.btnReset.addEventListener("click", resetAll);
+    els.btnSpeak.addEventListener("click", speakHelp);
+    els.btnSpeak2.addEventListener("click", speakHelp);
+
+    document.querySelectorAll("[data-desc]").forEach(btn => {
+      btn.addEventListener("click", () => applyDesc(btn.getAttribute("data-desc")));
+    });
   }
 
-  function init(){ bind(); updatePreview(); }
+  function init(){
+    ensureBase();
+    bind();
+    loadExample();
+  }
+
   init();
 })();
 </script>
 </body>
 </html>
+
