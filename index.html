@@ -1618,7 +1618,7 @@
         width:min(100%, var(--max));
         margin:0 auto;
         display:grid;
-        grid-template-columns:repeat(3,1fr);
+        grid-template-columns:repeat(5,1fr);
         gap:7px;
         border:1px solid rgba(255,255,255,.12);
         background:rgba(8,18,28,.94);
@@ -1651,6 +1651,21 @@
       .mobile-dock strong{
         font-size:19px;
         line-height:1;
+      }
+
+      @media(max-width:430px){
+        .mobile-dock-inner{
+          gap:5px;
+          padding:6px;
+        }
+        .mobile-dock a{
+          min-height:54px;
+          font-size:10px;
+          border-radius:14px;
+        }
+        .mobile-dock strong{
+          font-size:18px;
+        }
       }
     }
 
@@ -1694,6 +1709,9 @@
       </a>
 
       <div class="top-actions">
+        <a class="pill-btn" href="https://digiylyfe.com/">🌍 Site DIGIYLYFE</a>
+        <a class="pill-btn" href="https://digiy-hub.digiylyfe.com/">🧭 HUB DIGIY</a>
+        <a class="pill-btn" href="https://tarifs.digiylyfe.com/" target="_blank" rel="noopener noreferrer">📦 Tarifs</a>
         <a class="pill-btn" href="#results">Voir les lieux</a>
         <a class="pill-btn" href="https://wa.me/221771342889" target="_blank" rel="noopener noreferrer">WhatsApp</a>
       </div>
@@ -2000,6 +2018,23 @@
 
     <section id="openingGrid" class="grid" style="display:none"></section>
 
+
+    <section class="section" id="retours-digiy">
+      <div class="whatsapp-help">
+        <div>
+          <div class="whatsapp-help-title">Revenir dans la maison DIGIY</div>
+          <div class="whatsapp-help-text">
+            Cette page montre les logements. Pour comprendre DIGIYLYFE ou choisir un outil, utilise les deux portes ci-dessous.
+          </div>
+        </div>
+        <div class="whatsapp-help-actions">
+          <a class="btn btn-secondary" href="https://digiylyfe.com/">🌍 Site DIGIYLYFE</a>
+          <a class="btn btn-primary" href="https://digiy-hub.digiylyfe.com/">🧭 HUB DIGIY</a>
+          <a class="btn btn-ghost" href="https://tarifs.digiylyfe.com/" target="_blank" rel="noopener noreferrer">📦 Tarifs</a>
+        </div>
+      </div>
+    </section>
+
     <footer>
       <div>DIGIY LOC • <span>façade publique</span> — Sénégal → Afrique</div>
       <div>0% commission • Paiement direct • Pont court vers le réel</div>
@@ -2009,6 +2044,8 @@
 
   <nav class="mobile-dock" aria-label="Navigation rapide LOC">
     <div class="mobile-dock-inner">
+      <a href="https://digiylyfe.com/"><strong>🌍</strong><span>Site</span></a>
+      <a href="https://digiy-hub.digiylyfe.com/"><strong>🧭</strong><span>HUB</span></a>
       <a class="primary" href="#note-rapide"><strong>🏠</strong><span>Demander</span></a>
       <a href="#results"><strong>🛏️</strong><span>Logements</span></a>
       <a href="https://commencer-a-payer.digiylyfe.com/" target="_blank" rel="noopener noreferrer"><strong>➕</strong><span>Proposer</span></a>
@@ -3101,6 +3138,27 @@ font-size:17px;
     }, 700);
   }
 
+  btn.addEventListener("click", function(){
+    if (playing) stop();
+    else play();
+  });
+
+  window.addEventListener("beforeunload", stop);
+
+  document.addEventListener("visibilitychange", function(){
+    if (document.hidden && playing) stop();
+  });
+
+  setIdle();
+})();
+</script>
+
+<!-- ============================================================
+     FIN DIGIY AUDIO — LOGEMENT
+     ============================================================ -->
+  
+</body>
+</html>
   btn.addEventListener("click", function(){
     if (playing) stop();
     else play();
