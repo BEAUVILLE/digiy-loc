@@ -97,6 +97,13 @@
     footer{margin-top:18px;font-size:12px;color:var(--muted);font-weight:750;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;position:relative;z-index:2;}
     footer span{color:var(--accent);font-weight:950}
   </style>
+
+  <script>
+    window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
+    window.DIGIY_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 </head>
 <body>
   <div class="app">
@@ -108,7 +115,7 @@
           <div class="brand-text-sub" id="subTitle">Demander ce logement</div>
         </div>
       </div>
-      <a class="back-link" href="./index.html"><span>←</span> Retour galerie</a>
+      <a class="back-link" href="https://loc.digiylyfe.com/#results"><span>←</span> Retour galerie</a>
     </header>
 
     <main class="shell">
@@ -127,7 +134,7 @@
           <div id="errEl" class="err" style="display:none"></div>
           <div class="actions">
             <button class="btn btn-wa" id="btnReserveTop" type="button">📲 Demander ce logement</button>
-            <a class="btn btn-primary" href="./index.html">👁️ Retour galerie</a>
+            <a class="btn btn-primary" href="https://loc.digiylyfe.com/#results">👁️ Retour galerie</a>
           </div>
         </div>
         <div class="galleryWrap">
@@ -239,6 +246,7 @@
     const TEAM_EMAIL = "digiylyfe@gmail.com";
     const FALLBACK_IMG = "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80";
     const MAX_GALLERY_PHOTOS = 5;
+    const OFFICIAL_GALLERY_URL = "https://loc.digiylyfe.com/#results";
 
     const coverImg   = document.getElementById("coverImg");
     const titleEl    = document.getElementById("titleEl");
@@ -276,16 +284,129 @@
     const lbTitle     = document.getElementById("lbTitle");
 
     let CURRENT_ROOM = null;
+    let CURRENT_CONTACT_WA = TEAM_WA;
+    let __sb = null;
 
     function escapeHtml(str){ return String(str??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;"); }
     function escapeAttr(str){ return escapeHtml(str).replaceAll("`","&#096;"); }
     function safeImg(img){ const src=String(img||"").trim(); return src?src:FALLBACK_IMG; }
     function money(x){ const n=Number(x); if(!isFinite(n)||n<=0)return "—"; try{return n.toLocaleString("fr-FR")+" FCFA";}catch{return String(n)+" FCFA";} }
     function waDigits(phone){ return String(phone||"").replace(/\D/g,""); }
-    function openWa(phone,message){ const digits=waDigits(phone); if(!digits)return; window.open("https://wa.me/"+digits+"?text="+encodeURIComponent(message||""),"_blank","noopener,noreferrer"); }
+    function openWa(phone,message){ const digits=waDigits(phone || TEAM_WA); if(!digits)return; window.open("https://wa.me/"+digits+"?text="+encodeURIComponent(message||""),"_blank","noopener,noreferrer"); }
     function openMail(to,subject,body){ window.location.href="mailto:"+encodeURIComponent(to)+"?subject="+encodeURIComponent(subject||"")+"&body="+encodeURIComponent(body||""); }
     function getParams(){ return new URL(window.location.href).searchParams; }
     function getParam(name){ return String(getParams().get(name)||"").trim(); }
+
+    function getSb(){
+      if(__sb) return __sb;
+
+      try{
+        if(!window.supabase || typeof window.supabase.createClient !== "function"){
+          return null;
+        }
+
+        __sb = window.supabase.createClient(
+          window.DIGIY_SUPABASE_URL,
+          window.DIGIY_SUPABASE_ANON_KEY,
+          {
+            auth:{
+              persistSession:false,
+              autoRefreshToken:false,
+              detectSessionInUrl:false
+            }
+          }
+        );
+
+        return __sb;
+      }catch(e){
+        console.warn("[DIGIY LOC fiche] Supabase indisponible:", e?.message || e);
+        return null;
+      }
+    }
+
+    function cleanPublicUrl(){
+      try{
+        const u = new URL(location.href);
+        let changed = false;
+
+        ["phone","tel","wa","owner_phone"].forEach((key) => {
+          if(u.searchParams.has(key)){
+            u.searchParams.delete(key);
+            changed = true;
+          }
+        });
+
+        if(u.searchParams.has("identifiant")){
+          u.searchParams.delete("identifiant");
+          changed = true;
+        }
+
+        if(changed){
+          history.replaceState({}, "", u.pathname + u.search + u.hash);
+        }
+      }catch(_){}
+    }
+
+    function sameUrl(a,b){
+      try{
+        const ua = new URL(a, location.href);
+        const ub = new URL(b, location.href);
+        ua.hash = "";
+        ub.hash = "";
+        return ua.href === ub.href;
+      }catch(_){
+        return String(a || "") === String(b || "");
+      }
+    }
+
+    function redirectToPublicUrlIfNeeded(room){
+      const publicUrl = String(room?.public_url || "").trim();
+      const noRedirect = getParam("no_redirect") === "1";
+
+      if(!publicUrl || noRedirect) return false;
+
+      try{
+        const target = new URL(publicUrl, location.href);
+
+        /*
+          Sécurité anti-boucle : si on est déjà sur la fiche partenaire, on ne bouge pas.
+          Sinon, l’ancienne fiche dynamique bascule vers la fiche officielle du pro.
+        */
+        if(!sameUrl(target.href, location.href)){
+          location.replace(target.href);
+          return true;
+        }
+      }catch(e){
+        console.warn("[DIGIY LOC fiche] public_url invalide:", publicUrl, e?.message || e);
+      }
+
+      return false;
+    }
+
+    async function fetchPublicRoomBySlug(roomSlug){
+      const sb = getSb();
+      const slug = String(roomSlug || "").trim();
+
+      if(!sb || !slug) return null;
+
+      try{
+        const { data, error } = await sb.rpc("digiy_loc_public_room_by_slug", { p_slug: slug });
+
+        if(error){
+          console.warn("[DIGIY LOC fiche] RPC error:", error.message);
+          return null;
+        }
+
+        if(data && data.ok && data.room){
+          return data.room;
+        }
+
+        return null;
+      }catch(e){
+        console.warn("[DIGIY LOC fiche] RPC exception:", e?.message || e);
+        return null;
+      }
+    }
 
     function computeKindFromType(type,nom){
       const t=String(type||"").toLowerCase(); const n=String(nom||"").toLowerCase();
@@ -312,12 +433,34 @@
     lbOverlay.addEventListener("click",(e)=>{ if(e.target===lbOverlay)closeLightbox(); });
     document.addEventListener("keydown",(e)=>{ if(e.key==="Escape")closeLightbox(); });
 
-    function buildGalleryPhotos(){
+    function buildGalleryPhotosFromParams(){
       const raw=[]; for(let i=1;i<=MAX_GALLERY_PHOTOS;i++){const v=getParam("p"+i);if(v)raw.push(v);}
       const unique=[]; const seen=new Set();
       raw.forEach(url=>{ const clean=String(url||"").trim(); if(!clean||seen.has(clean))return; seen.add(clean); unique.push(clean); });
       const cover=safeImg(getParam("cover")); if(!unique.length)unique.push(cover);
       return unique.slice(0,MAX_GALLERY_PHOTOS);
+    }
+
+    function buildGalleryPhotosFromRoom(room){
+      const raw = [];
+      if(room?.photo_url) raw.push(room.photo_url);
+
+      if(Array.isArray(room?.gallery_urls)){
+        room.gallery_urls.forEach((url) => raw.push(url));
+      }
+
+      const unique = [];
+      const seen = new Set();
+
+      raw.forEach((url) => {
+        const clean = String(url || "").trim();
+        if(!clean || seen.has(clean)) return;
+        seen.add(clean);
+        unique.push(clean);
+      });
+
+      if(!unique.length) unique.push(FALLBACK_IMG);
+      return unique.slice(0, MAX_GALLERY_PHOTOS);
     }
 
     function renderGallery(urls,title){
@@ -331,7 +474,7 @@
       });
     }
 
-    function focusDemandBox(){ const box=document.getElementById("quickDemandBox") || document.getElementById("guestName"); if(!box)return; box.scrollIntoView({behavior:"smooth",block:"center"}); setTimeout(()=>box.focus(),250); }
+    function focusDemandBox(){ const box=document.getElementById("quickDemandBox") || document.getElementById("guestName"); if(!box)return; box.scrollIntoView({behavior:"smooth",block:"center"}); setTimeout(()=>guestName.focus(),250); }
     function formatDateFr(yyyyMmDd){ const v=String(yyyyMmDd||"").trim(); if(!v)return "—"; const p=v.split("-"); if(p.length!==3)return v; return `${p[2]}/${p[1]}/${p[0]}`; }
 
     function buildInquiryPayload(){
@@ -344,17 +487,18 @@
       const people=String(guestCount.value||"").trim(); const budget=String(guestBudget.value||"").trim();
       const note=String(guestNote.value||"").trim();
       const subject=`DIGIY LOC — Demande logement — ${title}`;
-      /* ━━━ AVANT : "room_slug : ${roomSlug}" → "Identifiant : ${roomSlug}" ━━━ */
+
       const quickLine = note || [
         people ? `Je cherche pour ${people} personne(s)` : "Je suis intéressé par ce logement",
         arrival ? `à partir du ${formatDateFr(arrival)}` : "",
         departure ? `jusqu’au ${formatDateFr(departure)}` : "",
         budget ? `avec un budget d’environ ${budget} / jour` : ""
       ].filter(Boolean).join(" ");
+
       const bodyLines=[
-        "Bonjour DIGIY 👋",
+        "Bonjour 👋",
         "",
-        "Je suis intéressé par ce logement.",
+        "Je suis intéressé par ce logement via DIGIY LOC.",
         "",
         "NOTE RAPIDE",
         quickLine || "—",
@@ -380,7 +524,6 @@
       ];
       return{subject,body:bodyLines.join("\n"),name,phone};
     }
-
 
     function fillQuickExample(payload){
       const parts=String(payload||"").split("|");
@@ -416,18 +559,19 @@
 
     function validateInquiry(){
       const p=buildInquiryPayload();
-      if(!p.name){showStatus("Ajoute au moins ton nom pour que DIGIY te reconnaisse.","info");guestName.focus();return false;}
-      if(!p.phone){showStatus("Ajoute ton WhatsApp pour que DIGIY puisse te répondre.","info");guestPhone.focus();return false;}
+      if(!p.name){showStatus("Ajoute au moins ton nom pour que le propriétaire ou DIGIY te reconnaisse.","info");guestName.focus();return false;}
+      if(!p.phone){showStatus("Ajoute ton WhatsApp pour qu’on puisse te répondre.","info");guestPhone.focus();return false;}
       hideStatus(); return true;
     }
 
-    function sendInquiryWhatsApp(){ if(!validateInquiry())return; const p=buildInquiryPayload(); openWa(TEAM_WA,p.body); showStatus("WhatsApp DIGIY ouvert avec ta note logement préremplie.","ok"); }
+    function sendInquiryWhatsApp(){ if(!validateInquiry())return; const p=buildInquiryPayload(); openWa(CURRENT_CONTACT_WA || TEAM_WA,p.body); showStatus("WhatsApp ouvert avec ta note logement préremplie.","ok"); }
     function sendInquiryEmail(){ if(!validateInquiry())return; const p=buildInquiryPayload(); openMail(TEAM_EMAIL,p.subject,p.body); showStatus("Email DIGIY préparé avec la demande préremplie.","ok"); }
     function quickContactWhatsApp(){ if(CURRENT_ROOM){sendInquiryWhatsApp();return;} openWa(TEAM_WA,"Bonjour DIGIY 👋 Je veux des informations sur un logement."); }
     function quickContactEmail(){ if(CURRENT_ROOM){sendInquiryEmail();return;} openMail(TEAM_EMAIL,"DIGIY LOC — Demande logement","Bonjour DIGIY,\n\nJe veux des informations sur un logement.\n"); }
 
     function renderNotFound(roomSlug){
       CURRENT_ROOM={title:"Logement introuvable",city:"—",roomSlug:roomSlug||"—",priceNight:"—",priceWeek:"—",priceMonth:"—",cover:FALLBACK_IMG,gallery:[FALLBACK_IMG]};
+      CURRENT_CONTACT_WA = TEAM_WA;
       setMetaTitle("Introuvable");
       titleEl.textContent="Logement introuvable";
       descEl.textContent="Ce lien n'existe pas ou le logement n'est plus public. Retourne à la galerie ou envoie une demande à DIGIY.";
@@ -435,21 +579,76 @@
       subEl.innerHTML=""; renderGallery([FALLBACK_IMG],"Photo"); hideError();
       typeEl.textContent="—"; cityEl.textContent="—"; capEl.textContent="—"; slugEl.textContent=roomSlug||"—";
       pnEl.textContent="—"; psEl.textContent="—"; pmEl.textContent="—";
-      /* ━━━ AVANT : "room_slug demandé :" / "Aucun room_slug dans l'URL" → bannis ━━━ */
       if(roomSlug){showWarn("Identifiant demandé : "+roomSlug);}
       else{showWarn("Aucun identifiant dans l'URL. Exemple : fiche.html?slug=mon-logement-saly");}
       waEl.textContent=TEAM_WA; hideStatus();
     }
 
-    function main(){
+    function renderRoom(room){
+      const title = room?.nom || "Logement";
+      const city = room?.city || room?.quartier || room?.country || "Sénégal";
+      const roomSlug = room?.slug || "—";
+      const type = room?.type_logement || "";
+      const kind = computeKindFromType(type, title);
+      const galleryPhotos = buildGalleryPhotosFromRoom(room);
+      const cover = safeImg(room?.photo_url || galleryPhotos[0]);
+      const contact = room?.whatsapp_phone || room?.call_phone || TEAM_WA;
+
+      CURRENT_CONTACT_WA = contact || TEAM_WA;
+      CURRENT_ROOM = {
+        title,
+        city,
+        roomSlug,
+        kind,
+        priceNight: money(room?.prix_nuit),
+        priceWeek: money(room?.prix_semaine),
+        priceMonth: money(room?.prix_mois),
+        cover,
+        gallery: galleryPhotos
+      };
+
+      setMetaTitle(title);
+      titleEl.textContent = title;
+      descEl.textContent =
+        room?.description ||
+        room?.tagline ||
+        "Contact direct propriétaire. Paiement direct. 0% commission. Si ce logement te parle, laisse une note rapide et DIGIY prépare le contact.";
+
+      subEl.innerHTML="";
+      const c1=document.createElement("span"); c1.className="chip blue"; c1.textContent=kind;
+      const c2=document.createElement("span"); c2.className="chip"; c2.textContent=city;
+      const c3=document.createElement("span"); c3.className="chip green"; c3.textContent="0% commission";
+      subEl.appendChild(c1); subEl.appendChild(c2); subEl.appendChild(c3);
+
+      coverImg.src=cover;
+      coverImg.onerror=()=>{coverImg.onerror=null;coverImg.src=FALLBACK_IMG;};
+
+      renderGallery(galleryPhotos,title);
+
+      waEl.textContent = contact ? "Contact direct disponible" : TEAM_WA;
+      typeEl.textContent = kind;
+      cityEl.textContent = city;
+      capEl.textContent = room?.personnes_max ? `${room.personnes_max} pers.` : "—";
+      slugEl.textContent = roomSlug;
+      pnEl.textContent = money(room?.prix_nuit);
+      psEl.textContent = money(room?.prix_semaine);
+      pmEl.textContent = money(room?.prix_mois);
+
+      hideWarn();
+      hideError();
+      hideStatus();
+    }
+
+    function renderFromParams(){
       const title=getParam("nom"); const city=getParam("ville"); const type=getParam("type");
       const roomSlug=getParam("slug")||getParam("room_slug");
       const cap=getParam("cap"); const pn=getParam("pn"); const ps=getParam("ps"); const pm=getParam("pm");
       const desc=getParam("desc"); const cover=safeImg(getParam("cover"));
-      const galleryPhotos=buildGalleryPhotos(); const kind=computeKindFromType(type,title);
+      const galleryPhotos=buildGalleryPhotosFromParams(); const kind=computeKindFromType(type,title);
 
       if(!title&&!roomSlug){renderNotFound("");return;}
 
+      CURRENT_CONTACT_WA = TEAM_WA;
       CURRENT_ROOM={title:title||"Logement",city:city||"Sénégal",roomSlug:roomSlug||"—",kind,priceNight:money(pn),priceWeek:money(ps),priceMonth:money(pm),cover,gallery:galleryPhotos};
 
       setMetaTitle(CURRENT_ROOM.title);
@@ -473,6 +672,31 @@
       hideWarn(); hideError(); hideStatus();
     }
 
+    async function main(){
+      cleanPublicUrl();
+
+      document.querySelectorAll('a[href="./index.html"]').forEach((a) => {
+        a.href = OFFICIAL_GALLERY_URL;
+      });
+
+      const roomSlug = getParam("slug") || getParam("room_slug");
+
+      if(roomSlug){
+        const room = await fetchPublicRoomBySlug(roomSlug);
+
+        if(room){
+          if(redirectToPublicUrlIfNeeded(room)) return;
+          renderRoom(room);
+          return;
+        }
+
+        renderNotFound(roomSlug);
+        return;
+      }
+
+      renderFromParams();
+    }
+
     btnReserveTop.addEventListener("click",focusDemandBox);
     btnReserve.addEventListener("click",sendInquiryWhatsApp);
     btnWaQuick.addEventListener("click",quickContactWhatsApp);
@@ -481,7 +705,12 @@
     if(btnOtherNeed) btnOtherNeed.addEventListener("click",askOtherNeed);
     document.querySelectorAll(".quickExample").forEach(btn=>btn.addEventListener("click",()=>fillQuickExample(btn.dataset.fill||"")));
 
-    try{main();}catch(e){console.error(e);renderNotFound(getParam("slug")||getParam("room_slug"));showError("Erreur inattendue: "+(e?.message||e));}
+    main().catch((e)=>{
+      console.error(e);
+      renderNotFound(getParam("slug")||getParam("room_slug"));
+      showError("Erreur inattendue: "+(e?.message||e));
+    });
   </script>
+<!-- DIGIY LOC FICHE — REDIRECTION PUBLIC_URL + RPC ROOM V3 — 20260504 -->
 </body>
 </html>
