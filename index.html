@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="description" content="Chambres, villas, appartements. Disponibles maintenant sur la Petite Côte. Contact direct, paiement direct, 0% commission.">
   <meta name="theme-color" content="#07111b">
+  <link rel="canonical" href="https://beauville.github.io/digiy-loc/">
 
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
@@ -2148,6 +2149,40 @@
       }
     }
 
+    function cleanPublicUrl(){
+      try{
+        const u = new URL(location.href);
+        let changed = false;
+
+        ["phone","tel","wa","owner_phone"].forEach((key) => {
+          if(u.searchParams.has(key)){
+            u.searchParams.delete(key);
+            changed = true;
+          }
+        });
+
+        ["identifiant"].forEach((key) => {
+          if(u.searchParams.has(key)){
+            u.searchParams.delete(key);
+            changed = true;
+          }
+        });
+
+        const slug = String(u.searchParams.get("slug") || u.searchParams.get("room_slug") || "").trim().toLowerCase();
+        if(/^loc-\d{7,}/.test(slug) || /\d{9,}/.test(slug)){
+          u.searchParams.delete("slug");
+          u.searchParams.delete("room_slug");
+          changed = true;
+        }
+
+        if(changed){
+          history.replaceState({}, "", u.pathname + u.search + u.hash);
+        }
+      }catch(_){}
+    }
+
+    cleanPublicUrl();
+
     const grid = document.getElementById("grid");
     const openingGrid = document.getElementById("openingGrid");
     const openingTitle = document.getElementById("openingTitle");
@@ -2355,9 +2390,13 @@
     }
 
     function ficheLinkFor(p){
-      const direct = String(p?.public_url || "").trim();
-      if (direct) return direct;
-      return "https://beauville.github.io/digiy-loc/fiche.html?room_slug=" + encodeURIComponent(canonicalRoomSlug(p));
+      const roomSlug = canonicalRoomSlug(p);
+      const u = new URL("https://beauville.github.io/digiy-loc/fiche.html");
+      if (roomSlug){
+        u.searchParams.set("slug", roomSlug);
+        u.searchParams.set("room_slug", roomSlug);
+      }
+      return u.toString();
     }
 
     const ndOverlay = document.getElementById("ndOverlay");
@@ -2406,29 +2445,34 @@
     }
 
     async function reserveNow(pin){
-      const wa = pickWhatsApp(pin);
-      const title = pin.title || "ce logement";
-      const roomSlug = canonicalRoomSlug(pin);
+      const hydrated = await hydratePublicContact(pin);
+      const wa = pickWhatsApp(hydrated);
+      const title = hydrated.title || "ce logement";
+      const roomSlug = canonicalRoomSlug(hydrated);
 
       const msg = [
         `Bonjour, je souhaite réserver / avoir des infos pour "${title}" via DIGIY LOC.`,
         roomSlug ? `Identifiant : ${roomSlug}` : ""
       ].filter(Boolean).join("\n");
 
-      await logReservationIntent(pin);
+      await logReservationIntent(hydrated);
       openWa(wa, msg);
     }
 
     function pickLocForWhatsApp(pin){
       const title = pin?.title || "Logement";
       const roomSlug = canonicalRoomSlug(pin);
-      const phone = (pin?.whatsapp || pin?.phone || TEAM_WA || "").toString();
 
       document.getElementById("pickedHint").textContent = "Logement sélectionné ✅";
       document.getElementById("pickLine").classList.add("show");
       document.getElementById("pickedTitle").textContent = title;
       document.getElementById("pickedRoomSlug").value = roomSlug;
-      document.getElementById("pickedPhone").value = phone;
+
+      /*
+        On ne pose pas le téléphone dans la page depuis la galerie.
+        Au moment d'envoyer, le contact public est résolu via RPC fiche.
+      */
+      document.getElementById("pickedPhone").value = "";
       document.getElementById("contact").scrollIntoView({ behavior:"smooth", block:"start" });
     }
 
@@ -2440,12 +2484,19 @@
       document.getElementById("pickedPhone").value = "";
     });
 
-    document.getElementById("locLeadForm").addEventListener("submit", (e) => {
+    document.getElementById("locLeadForm").addEventListener("submit", async (e) => {
       e.preventDefault();
 
       const pickedRoomSlug = document.getElementById("pickedRoomSlug").value.trim();
-      const pickedPhone = document.getElementById("pickedPhone").value.trim() || TEAM_WA;
+      let pickedPhone = document.getElementById("pickedPhone").value.trim();
       const form = e.currentTarget;
+
+      if(!pickedPhone && pickedRoomSlug){
+        const room = await fetchPublicRoomBySlug(pickedRoomSlug);
+        pickedPhone = room?.whatsapp_phone || room?.call_phone || "";
+      }
+
+      if(!pickedPhone) pickedPhone = TEAM_WA;
 
       const name = (form.elements.namedItem("name")?.value || "").trim();
       const dates = (form.elements.namedItem("dates")?.value || "").trim();
@@ -2464,6 +2515,61 @@
 
       openWa(pickedPhone, msg);
     });
+
+    async function fetchPublicRoomBySlug(roomSlug){
+      const sb = getSb();
+      const slug = String(roomSlug || "").trim();
+
+      if(!sb || !slug) return null;
+
+      try{
+        const { data, error } = await sb.rpc("digiy_loc_public_room_by_slug", { p_slug: slug });
+
+        if(error){
+          console.warn("[DIGIY LOC] digiy_loc_public_room_by_slug error:", error.message);
+          return null;
+        }
+
+        if(data && data.ok && data.room){
+          return data.room;
+        }
+
+        return null;
+      }catch(e){
+        console.warn("[DIGIY LOC] fetchPublicRoomBySlug exception:", e?.message || e);
+        return null;
+      }
+    }
+
+    async function hydratePublicContact(pin){
+      const roomSlug = canonicalRoomSlug(pin);
+
+      if(!roomSlug) return pin;
+
+      if(pin && pin.__public_detail_loaded) return pin;
+
+      const room = await fetchPublicRoomBySlug(roomSlug);
+      if(!room) return pin;
+
+      const whatsapp = room.whatsapp_phone || room.call_phone || pin.whatsapp || "";
+      const phone = room.call_phone || room.whatsapp_phone || pin.phone || "";
+
+      Object.assign(pin, {
+        whatsapp,
+        phone,
+        title: pin.title || room.nom || "",
+        address_label: pin.address_label || [room.quartier, room.city].filter(Boolean).join(" • ") || room.adresse || "",
+        desc: pin.desc || room.tagline || room.description || "",
+        prix_nuit: pin.prix_nuit ?? room.prix_nuit ?? null,
+        prix_semaine: pin.prix_semaine ?? room.prix_semaine ?? null,
+        prix_mois: pin.prix_mois ?? room.prix_mois ?? null,
+        personnes_max: pin.personnes_max ?? room.personnes_max ?? null,
+        type_logement: pin.type_logement || room.type_logement || "",
+        __public_detail_loaded: true
+      });
+
+      return pin;
+    }
 
     async function fetchOccupancyToday(){
       const sb = getSb();
@@ -2495,41 +2601,49 @@
       }
 
       try{
-        const { data, error } = await sb
-          .from("digiy_loc_rooms")
-          .select("id,created_at,updated_at,owner_id,nom,adresse,personnes_max,prix_nuit,prix_semaine,prix_mois,description,photo_url,status,phone,business_code,slug,is_public,public_url,type_logement")
-          .eq("is_public", true)
-          .in("status", ["active", "actif"])
-          .order("created_at", { ascending:false });
+        const { data, error } = await sb.rpc("digiy_loc_public_gallery");
 
         if (error){
-          console.warn("[DIGIY LOC] Supabase error:", error.message);
+          console.warn("[DIGIY LOC] digiy_loc_public_gallery error:", error.message);
           return { ok:false, rows:[], error:error.message };
         }
 
-        const normalized = (data || []).map(row => ({
-          title: row.nom || "",
-          room_slug: row.slug || "",
-          slug: row.slug || "",
-          legacy_slug: row.slug || "",
-          address_label: row.adresse || "",
-          kind: computeKind(row),
-          whatsapp: row.phone || TEAM_WA,
-          phone: row.phone || TEAM_WA,
-          cover: row.photo_url || "",
-          photo_url: row.photo_url || "",
-          desc: row.description || "",
-          public_url: row.public_url || "",
-          type_logement: row.type_logement || "",
-          prix_nuit: row.prix_nuit ?? null,
-          prix_semaine: row.prix_semaine ?? null,
-          prix_mois: row.prix_mois ?? null,
-          personnes_max: row.personnes_max ?? null
-        })).filter(row =>
+        const normalized = (data || []).map(row => {
+          const address = [row.quartier, row.city].filter(Boolean).join(" • ") || row.city || row.quartier || "Sénégal";
+          const cover =
+            row.photo_url ||
+            (Array.isArray(row.gallery_urls) && row.gallery_urls[0]) ||
+            "";
+
+          return {
+            id: row.id || "",
+            title: row.nom || "",
+            room_slug: row.slug || "",
+            slug: row.slug || "",
+            legacy_slug: row.slug || "",
+            address_label: address,
+            kind: computeKind(row),
+            /*
+              La galerie ne transporte plus phone/owner_phone.
+              Le contact public est résolu au clic via digiy_loc_public_room_by_slug.
+            */
+            whatsapp: "",
+            phone: "",
+            cover,
+            photo_url: cover,
+            desc: row.tagline || row.description || "",
+            public_url: "",
+            type_logement: row.type_logement || "",
+            prix_nuit: row.prix_nuit ?? null,
+            prix_semaine: null,
+            prix_mois: null,
+            personnes_max: row.personnes_max ?? null,
+            is_official_partner: !!row.is_featured,
+            is_featured: !!row.is_featured
+          };
+        }).filter(row =>
           String(row.room_slug || "").trim() &&
-          String(row.title || "").trim() &&
-          String(row.address_label || "").trim() &&
-          String(row.cover || "").trim()
+          String(row.title || "").trim()
         );
 
         return { ok:true, rows:normalized, error:null };
@@ -2543,9 +2657,6 @@
       const out = [];
       const seen = new Set();
 
-      out.push(BAPTISTE_PIN);
-      seen.add(norm(canonicalRoomSlug(BAPTISTE_PIN)));
-
       for (const p of (list || [])){
         const s = norm(canonicalRoomSlug(p));
         if (!s || seen.has(s)) continue;
@@ -2553,7 +2664,11 @@
         seen.add(s);
       }
 
-      return out;
+      return out.sort((a,b) => {
+        const af = a.is_official_partner || a.is_featured ? 1 : 0;
+        const bf = b.is_official_partner || b.is_featured ? 1 : 0;
+        return bf - af;
+      });
     }
 
     function applyFilters(list){
@@ -2593,7 +2708,9 @@
       const roomSlug = canonicalRoomSlug(p);
       const legacySlug = canonicalLegacySlug(p);
       const city = p.address_label || "—";
+      const hasKnownPublicContact = !!String(p.whatsapp || p.phone || "").replace(/\D/g, "");
       const wa = pickWhatsApp(p);
+      const contactLabel = hasKnownPublicContact ? "WhatsApp propriétaire" : "Contact direct au choix";
       const cover = pickCover(p);
       const ficheUrl = ficheLinkFor(p);
       const cardKey = setCardData("live", p);
@@ -2646,7 +2763,7 @@
 
             <div class="contact-box">
               <div class="k">WhatsApp direct</div>
-              <div class="v">${escapeHtml(wa)}</div>
+              <div class="v">${escapeHtml(contactLabel)}</div>
             </div>
 
             <div class="actions three">
@@ -2871,7 +2988,8 @@
   </script>
 <!-- ============================================================
      DIGIY AUDIO — LOGEMENT
-     À coller juste avant </body> dans ta page logement
+     À coller juste avant <!-- DIGIY LOC INDEX PUBLIC — RPC GALLERY V2 — 20260504 -->
+</body> dans ta page logement
      ============================================================ -->
 
 <script>
