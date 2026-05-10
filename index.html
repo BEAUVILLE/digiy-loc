@@ -6,11 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="description" content="Chambres, villas, appartements. Disponibles maintenant sur la Petite Côte. Contact direct, paiement direct, 0% commission.">
   <meta name="theme-color" content="#07111b">
-  <link rel="canonical" href="https://beauville.github.io/digiy-loc/">
+  <link rel="canonical" href="https://loc.digiylyfe.com/">
 
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
-    window.DIGIY_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
+    window.DIGIY_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -1741,7 +1741,7 @@
             <span class="note">💸 Paiement direct</span>
             <span class="note">✅ 0% commission</span>
             <span class="note">🌙 NDIMBAL disponible</span>
-            <span class="note">📲 WhatsApp : +221 77 134 28 89</span>
+            <span class="note">📲 WhatsApp direct</span>
           </div>
         </div>
       </div>
@@ -2189,6 +2189,8 @@
     const resultCount = document.getElementById("resultCount");
 
     const TEAM_WA = "+221771342889";
+    const PUBLIC_BASE_URL = "https://loc.digiylyfe.com/";
+    const PUBLIC_FICHE_URL = "https://loc.digiylyfe.com/fiche.html";
     const NDIMBAL_RULE = "2 nuits payées = 3e offerte (Lun-Jeu)";
     const OCCUPANCY_VIEW = "v_loc_pin_occupancy_today";
     const CARD_STORE = new Map();
@@ -2305,7 +2307,7 @@
       phone:"+221778765785",
       cover:"https://orange-pig-270004.hostingersite.com/wp-content/uploads/2025/06/042-BAPTISTE.png",
       desc:"Appartement partenaire à Saly. Réservation directe propriétaire via WhatsApp. Paiement direct. 0% commission DIGIY.",
-      public_url:"https://orange-pig-270004.hostingersite.com/partenaires-chez-baptiste/",
+      public_url:"https://part-chez-baptiste.digiylyfe.com/",
       type_logement:"Appartement",
       is_official_partner:true,
       source_type:"partner",
@@ -2389,12 +2391,57 @@
       return row.cover || row.photo_url || "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80";
     }
 
+    function isSafeLocPublicUrl(raw){
+      const v = String(raw || "").trim();
+      if(!v) return "";
+
+      try{
+        const u = new URL(v, PUBLIC_BASE_URL);
+        const host = u.hostname.toLowerCase();
+
+        const allowed =
+          host === "loc.digiylyfe.com" ||
+          host.endsWith(".loc.digiylyfe.com") ||
+          host === "part-chez-baptiste.digiylyfe.com" ||
+          host === "beauville.github.io";
+
+        if(!allowed) return "";
+
+        ["phone","tel","wa","owner_phone","p_phone","whatsapp","client_phone","wave_phone","pin","pin4","token","session_token"].forEach(k => {
+          u.searchParams.delete(k);
+        });
+
+        const s = String(u.searchParams.get("slug") || u.searchParams.get("room_slug") || "").trim().toLowerCase();
+        if(/^loc-\d{7,}/.test(s) || /\d{9,}/.test(s)){
+          u.searchParams.delete("slug");
+          u.searchParams.delete("room_slug");
+        }
+
+        return u.toString();
+      }catch(_){
+        return "";
+      }
+    }
+
     function ficheLinkFor(p){
       const roomSlug = canonicalRoomSlug(p);
-      const u = new URL("https://beauville.github.io/digiy-loc/fiche.html");
-      if (roomSlug){
+      const official = isSafeLocPublicUrl(p && p.public_url);
+
+      if(official){
+        return official;
+      }
+
+      const u = new URL(PUBLIC_FICHE_URL);
+      if (roomSlug && !/^loc-\d{7,}/.test(String(roomSlug).toLowerCase()) && !/\d{9,}/.test(String(roomSlug))){
         u.searchParams.set("slug", roomSlug);
         u.searchParams.set("room_slug", roomSlug);
+      }else if(roomSlug){
+        /*
+          Même si l'identifiant est sensible, on reste dans la fiche LOC.
+          Le détail public résoudra ce qui est autorisé côté Supabase.
+          On ne renvoie jamais vers DRIVER ou un dashboard externe.
+        */
+        u.searchParams.set("slug", roomSlug);
       }
       return u.toString();
     }
