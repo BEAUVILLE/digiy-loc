@@ -2715,6 +2715,14 @@
       const out = [];
       const seen = new Set();
 
+      /*
+        DIGIY LOC — Partenaire vedette garanti.
+        CHEZ BAPTISTE reste visible même si Supabase ne le renvoie pas.
+        Les abonnés Supabase passent ensuite normalement.
+      */
+      out.push(BAPTISTE_PIN);
+      seen.add(norm(canonicalRoomSlug(BAPTISTE_PIN)));
+
       for (const p of (list || [])){
         const s = norm(canonicalRoomSlug(p));
         if (!s || seen.has(s)) continue;
@@ -2723,8 +2731,20 @@
       }
 
       return out.sort((a,b) => {
-        const af = a.is_official_partner || a.is_featured ? 1 : 0;
-        const bf = b.is_official_partner || b.is_featured ? 1 : 0;
+        const af =
+          a.is_official_partner ||
+          a.is_featured ||
+          norm(a.title) === norm("CHEZ BAPTISTE")
+            ? 1
+            : 0;
+
+        const bf =
+          b.is_official_partner ||
+          b.is_featured ||
+          norm(b.title) === norm("CHEZ BAPTISTE")
+            ? 1
+            : 0;
+
         return bf - af;
       });
     }
@@ -3047,6 +3067,7 @@
 <!-- ============================================================
      DIGIY AUDIO — LOGEMENT
      À coller juste avant <!-- DIGIY LOC INDEX PUBLIC — RPC GALLERY V2 — 20260504 -->
+<!-- DIGIY LOC — CHEZ BAPTISTE injecté en partenaire vedette garanti — 20260512 -->
 </body> dans ta page logement
      ============================================================ -->
 
@@ -3333,6 +3354,7 @@ font-size:17px;
      FIN DIGIY AUDIO — LOGEMENT
      ============================================================ -->
   
+<!-- DIGIY LOC — CHEZ BAPTISTE injecté en partenaire vedette garanti — 20260512 -->
 </body>
 </html>
   btn.addEventListener("click", function(){
@@ -3354,6 +3376,6 @@ font-size:17px;
      FIN DIGIY AUDIO — LOGEMENT
      ============================================================ -->
   
+<!-- DIGIY LOC — CHEZ BAPTISTE injecté en partenaire vedette garanti — 20260512 -->
 </body>
 </html>
-
