@@ -2191,6 +2191,7 @@
     const TEAM_WA = "+221771342889";
     const PUBLIC_BASE_URL = "https://loc.digiylyfe.com/";
     const PUBLIC_FICHE_URL = "https://loc.digiylyfe.com/fiche.html";
+    const BAPTISTE_PUBLIC_URL = "https://part-chez-baptiste.digiylyfe.com/";
     const NDIMBAL_RULE = "2 nuits payées = 3e offerte (Lun-Jeu)";
     const OCCUPANCY_VIEW = "v_loc_pin_occupancy_today";
     const CARD_STORE = new Map();
@@ -2307,7 +2308,7 @@
       phone:"+221778765785",
       cover:"https://orange-pig-270004.hostingersite.com/wp-content/uploads/2025/06/042-BAPTISTE.png",
       desc:"Appartement partenaire à Saly. Réservation directe propriétaire via WhatsApp. Paiement direct. 0% commission DIGIY.",
-      public_url:"https://part-chez-baptiste.digiylyfe.com/",
+      public_url:BAPTISTE_PUBLIC_URL,
       type_logement:"Appartement",
       is_official_partner:true,
       source_type:"partner",
@@ -2425,6 +2426,16 @@
 
     function ficheLinkFor(p){
       const roomSlug = canonicalRoomSlug(p);
+      const title = norm(p && p.title);
+
+      if(
+        title === norm("CHEZ BAPTISTE") ||
+        norm(roomSlug) === norm("chez-baptiste") ||
+        norm(p && p.legacy_slug) === norm("chez-baptiste")
+      ){
+        return BAPTISTE_PUBLIC_URL;
+      }
+
       const official = isSafeLocPublicUrl(p && p.public_url);
 
       if(official){
