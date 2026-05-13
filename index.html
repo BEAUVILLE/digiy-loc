@@ -1690,7 +1690,195 @@
       }
     }
 
-  </style>
+  
+    /* ============================================================
+       DIGIY LOC — Camembert options fiche propriétaire
+       Simple inclus · Premium intervention · Extra réalisation
+       ============================================================ */
+    .digiy-options-fab{
+      position:fixed;
+      left:14px;
+      bottom:96px;
+      z-index:100050;
+      display:flex;
+      align-items:center;
+      gap:9px;
+      min-height:54px;
+      padding:0 16px;
+      border-radius:999px;
+      border:1px solid rgba(250,204,21,.42);
+      background:linear-gradient(135deg,rgba(250,204,21,.96),rgba(249,115,22,.96));
+      color:#111827;
+      font-weight:1000;
+      box-shadow:0 16px 38px rgba(0,0,0,.38),0 0 0 6px rgba(250,204,21,.08);
+      cursor:pointer;
+      touch-action:manipulation;
+    }
+
+    .digiy-options-fab span:first-child{
+      width:30px;
+      height:30px;
+      border-radius:999px;
+      display:grid;
+      place-items:center;
+      background:rgba(17,24,39,.12);
+      font-size:17px;
+    }
+
+    .digiy-options-panel{
+      position:fixed;
+      left:14px;
+      bottom:160px;
+      z-index:100049;
+      width:min(360px,calc(100vw - 28px));
+      border-radius:26px;
+      border:1px solid rgba(250,204,21,.30);
+      background:
+        radial-gradient(circle at 0% 0%,rgba(250,204,21,.18),transparent 42%),
+        radial-gradient(circle at 100% 100%,rgba(34,197,94,.16),transparent 42%),
+        linear-gradient(180deg,rgba(8,18,28,.98),rgba(2,6,23,.98));
+      box-shadow:0 24px 70px rgba(0,0,0,.55);
+      padding:14px;
+      transform:translateY(10px) scale(.98);
+      opacity:0;
+      pointer-events:none;
+      transition:.18s ease;
+    }
+
+    .digiy-options-panel.open{
+      opacity:1;
+      pointer-events:auto;
+      transform:translateY(0) scale(1);
+    }
+
+    .digiy-options-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:10px;
+      margin-bottom:10px;
+    }
+
+    .digiy-options-title{
+      font-size:19px;
+      line-height:1.08;
+      font-weight:1000;
+      letter-spacing:-.03em;
+      color:#fde68a;
+    }
+
+    .digiy-options-sub{
+      margin-top:5px;
+      color:#dbeafe;
+      font-size:13px;
+      line-height:1.45;
+      font-weight:760;
+    }
+
+    .digiy-options-close{
+      width:36px;
+      height:36px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.06);
+      color:#e5e7eb;
+      font-size:18px;
+      font-weight:1000;
+    }
+
+    .digiy-options-pie{
+      display:grid;
+      gap:8px;
+    }
+
+    .digiy-option-slice{
+      display:grid;
+      grid-template-columns:42px 1fr;
+      gap:10px;
+      align-items:center;
+      padding:11px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.055);
+    }
+
+    .digiy-option-dot{
+      width:42px;
+      height:42px;
+      border-radius:999px;
+      display:grid;
+      place-items:center;
+      font-size:20px;
+      font-weight:1000;
+      color:#111827;
+    }
+
+    .digiy-option-dot.simple{background:#bbf7d0;}
+    .digiy-option-dot.premium{background:#fde68a;}
+    .digiy-option-dot.extra{background:#f97316;color:#fff7ed;}
+
+    .digiy-option-name{
+      font-size:14px;
+      font-weight:1000;
+      color:#ffffff;
+    }
+
+    .digiy-option-text{
+      margin-top:3px;
+      color:#cbd5e1;
+      font-size:12.5px;
+      line-height:1.42;
+      font-weight:760;
+    }
+
+    .digiy-options-cta{
+      margin-top:10px;
+      display:grid;
+      grid-template-columns:1fr;
+      gap:8px;
+    }
+
+    .digiy-options-cta a{
+      min-height:48px;
+      border-radius:16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      text-align:center;
+      padding:10px 12px;
+      font-weight:1000;
+    }
+
+    .digiy-options-cta .wa{
+      background:rgba(34,197,94,.16);
+      border:1px solid rgba(34,197,94,.36);
+      color:#bbf7d0;
+    }
+
+    .digiy-options-cta .tarifs{
+      background:rgba(250,204,21,.12);
+      border:1px solid rgba(250,204,21,.34);
+      color:#fde68a;
+    }
+
+    @media(max-width:760px){
+      .digiy-options-fab{
+        left:10px;
+        right:10px;
+        bottom:94px;
+        justify-content:center;
+        min-height:52px;
+      }
+
+      .digiy-options-panel{
+        left:10px;
+        bottom:154px;
+        width:calc(100vw - 20px);
+      }
+    }
+
+</style>
 </head>
 
 <body>
@@ -2043,7 +2231,79 @@
   </div>
 
 
-  <nav class="mobile-dock" aria-label="Navigation rapide LOC">
+  
+  <!-- DIGIY LOC — Camembert options fiche propriétaire -->
+  <button class="digiy-options-fab" id="digiyOptionsFab" type="button" aria-expanded="false" aria-controls="digiyOptionsPanel">
+    <span>🍕</span>
+    <strong>Options fiche propriétaire</strong>
+  </button>
+
+  <aside class="digiy-options-panel" id="digiyOptionsPanel" aria-hidden="true">
+    <div class="digiy-options-head">
+      <div>
+        <div class="digiy-options-title">Choisir le niveau de lumière</div>
+        <div class="digiy-options-sub">
+          Simple pour être visible. Premium pour mieux présenter. Extra pour une vraie vitrine partenaire.
+        </div>
+      </div>
+      <button class="digiy-options-close" id="digiyOptionsClose" type="button" aria-label="Fermer les options">×</button>
+    </div>
+
+    <div class="digiy-options-pie">
+      <div class="digiy-option-slice">
+        <div class="digiy-option-dot simple">1</div>
+        <div>
+          <div class="digiy-option-name">Fiche Simple · incluse</div>
+          <div class="digiy-option-text">
+            Présence dans la galerie LOC, photo, prix, zone, capacité et WhatsApp direct.
+          </div>
+        </div>
+      </div>
+
+      <div class="digiy-option-slice">
+        <div class="digiy-option-dot premium">2</div>
+        <div>
+          <div class="digiy-option-name">Fiche Premium · mise en page</div>
+          <div class="digiy-option-text">
+            Intervention DIGIY pour organiser la présentation, les photos, les tarifs et les boutons.
+          </div>
+        </div>
+      </div>
+
+      <div class="digiy-option-slice">
+        <div class="digiy-option-dot extra">3</div>
+        <div>
+          <div class="digiy-option-name">Fiche Extra · réalisation complète</div>
+          <div class="digiy-option-text">
+            Vitrine partenaire complète : QR cliquable, partage WhatsApp, storytelling et page qui circule.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="digiy-options-cta">
+      <a
+        class="wa"
+        href="https://wa.me/221771342889?text=Bonjour%20DIGIY%2C%20je%20veux%20conna%C3%AEtre%20les%20options%20fiche%20LOC%20%3A%20Simple%2C%20Premium%20ou%20Extra."
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        📲 Parler des options fiche
+      </a>
+
+      <a
+        class="tarifs"
+        href="https://tarifs.digiylyfe.com/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        📦 Voir les tarifs DIGIY
+      </a>
+    </div>
+  </aside>
+
+
+<nav class="mobile-dock" aria-label="Navigation rapide LOC">
     <div class="mobile-dock-inner">
       <a href="https://digiylyfe.com/"><strong>🌍</strong><span>Site</span></a>
       <a href="https://digiy-hub.digiylyfe.com/"><strong>🧭</strong><span>HUB</span></a>
@@ -3064,10 +3324,49 @@
 
     render();
   </script>
+
+<script>
+(function(){
+  "use strict";
+
+  const fab = document.getElementById("digiyOptionsFab");
+  const panel = document.getElementById("digiyOptionsPanel");
+  const close = document.getElementById("digiyOptionsClose");
+
+  if(!fab || !panel || !close) return;
+
+  function setOpen(on){
+    panel.classList.toggle("open", !!on);
+    panel.setAttribute("aria-hidden", on ? "false" : "true");
+    fab.setAttribute("aria-expanded", on ? "true" : "false");
+  }
+
+  fab.addEventListener("click", function(){
+    setOpen(!panel.classList.contains("open"));
+  });
+
+  close.addEventListener("click", function(){
+    setOpen(false);
+  });
+
+  document.addEventListener("keydown", function(event){
+    if(event.key === "Escape") setOpen(false);
+  });
+
+  document.addEventListener("click", function(event){
+    if(!panel.classList.contains("open")) return;
+    if(panel.contains(event.target) || fab.contains(event.target)) return;
+    setOpen(false);
+  });
+})();
+</script>
+
+
 <!-- ============================================================
      DIGIY AUDIO — LOGEMENT
      À coller juste avant <!-- DIGIY LOC INDEX PUBLIC — RPC GALLERY V2 — 20260504 -->
 <!-- DIGIY LOC — CHEZ BAPTISTE injecté en partenaire vedette garanti — 20260512 -->
+<!-- DIGIY LOC — Camembert options fiche propriétaire ajouté — 20260513 -->
 </body> dans ta page logement
      ============================================================ -->
 
