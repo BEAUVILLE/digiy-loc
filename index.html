@@ -2558,22 +2558,24 @@
     }
 
     const BAPTISTE_PIN = {
-      title:"CHEZ BAPTISTE",
+      title:"Appartement CHEZ BAPTISTE — Saly",
       room_slug:"chez-baptiste",
       slug:"chez-baptiste",
       legacy_slug:"chez-baptiste",
-      address_label:"Saly",
-      kind:"Appartement • Direct propriétaire",
-      whatsapp:"+221778765785",
+      address_label:"Saly · quartier calme",
+      kind:"Appartement • Direct propriétaire • Vitrine complète",
+      whatsapp:"+221771342889",
       phone:"+221778765785",
       cover:"https://orange-pig-270004.hostingersite.com/wp-content/uploads/2025/06/042-BAPTISTE.png",
-      desc:"Appartement partenaire à Saly. Réservation directe propriétaire via WhatsApp. Paiement direct. 0% commission DIGIY.",
+      desc:"Appartement confortable à Saly pour 4 personnes max. Quartier calme, Sénélec en sus, paiement Wave direct propriétaire. La vitrine complète contient tarifs, QR, vidéo et réservation guidée.",
       public_url:BAPTISTE_PUBLIC_URL,
       type_logement:"Appartement",
       is_official_partner:true,
       source_type:"partner",
-      prix_nuit:null,
-      personnes_max:null
+      prix_nuit:30000,
+      prix_semaine:175000,
+      prix_mois:550000,
+      personnes_max:4
     };
 
     const OPENING_ZONES = [
@@ -2768,10 +2770,24 @@
       const title = hydrated.title || "ce logement";
       const roomSlug = canonicalRoomSlug(hydrated);
 
-      const msg = [
-        `Bonjour, je souhaite réserver / avoir des infos pour "${title}" via DIGIY LOC.`,
-        roomSlug ? `Identifiant : ${roomSlug}` : ""
-      ].filter(Boolean).join("\n");
+      const isBaptiste =
+        norm(title).includes("chez baptiste") ||
+        norm(roomSlug) === norm("chez-baptiste") ||
+        norm(hydrated?.legacy_slug) === norm("chez-baptiste");
+
+      const msg = isBaptiste
+        ? [
+            "Bonjour, je viens de DIGIY LOC.",
+            "Je suis intéressé par Appartement CHEZ BAPTISTE — Saly.",
+            "Dates souhaitées :",
+            "Nombre de personnes :",
+            "Budget :",
+            "Lien vitrine : " + BAPTISTE_PUBLIC_URL
+          ].join("\n")
+        : [
+            `Bonjour, je souhaite réserver / avoir des infos pour "${title}" via DIGIY LOC.`,
+            roomSlug ? `Identifiant : ${roomSlug}` : ""
+          ].filter(Boolean).join("\n");
 
       await logReservationIntent(hydrated);
       openWa(wa, msg);
@@ -3068,7 +3084,10 @@
       if (p.type_logement) meta.push(`<span class="meta-pill">${escapeHtml(p.type_logement)}</span>`);
       if (p.personnes_max) meta.push(`<span class="meta-pill">👥 ${escapeHtml(p.personnes_max)} pers.</span>`);
       meta.push(`<span class="meta-pill gold">0% commission</span>`);
-      if (isPinned) meta.push(`<span class="meta-pill gold">⭐ Partenaire vedette</span>`);
+      if (isPinned){
+        meta.push(`<span class="meta-pill gold">⭐ Partenaire vedette</span>`);
+        meta.push(`<span class="meta-pill gold">🎥 Vidéo · QR · Wave</span>`);
+      }
 
       return `
         <article class="card ${isPinned ? "pinned" : ""}">
@@ -3107,7 +3126,7 @@
             <div class="actions three">
               <button class="btn-card btn-wa" type="button" data-action="reserve" data-card-key="${escapeAttr(cardKey)}">📲 WhatsApp</button>
               <button class="btn-card btn-choose" type="button" data-action="choose" data-card-key="${escapeAttr(cardKey)}">✅ Je veux ce lieu</button>
-              <a class="btn-card btn-fiche" href="${escapeAttr(ficheUrl)}" target="_blank" rel="noopener noreferrer">👁 Voir la fiche</a>
+              <a class="btn-card btn-fiche" href="${escapeAttr(ficheUrl)}" target="_blank" rel="noopener noreferrer">${isPinned ? "🌍 Vitrine complète" : "👁 Voir la fiche"}</a>
             </div>
 
             <div class="actions">
@@ -3365,7 +3384,7 @@
 <!-- ============================================================
      DIGIY AUDIO — LOGEMENT
      À coller juste avant <!-- DIGIY LOC INDEX PUBLIC — RPC GALLERY V2 — 20260504 -->
-<!-- DIGIY LOC — CHEZ BAPTISTE injecté en partenaire vedette garanti — 20260512 -->
+<!-- DIGIY LOC — CHEZ BAPTISTE partenaire vedette + vitrine complète — 20260514 -->
 <!-- DIGIY LOC — Camembert options fiche propriétaire ajouté — 20260513 -->
 </body> dans ta page logement
      ============================================================ -->
@@ -3653,7 +3672,7 @@ font-size:17px;
      FIN DIGIY AUDIO — LOGEMENT
      ============================================================ -->
   
-<!-- DIGIY LOC — CHEZ BAPTISTE injecté en partenaire vedette garanti — 20260512 -->
+<!-- DIGIY LOC — CHEZ BAPTISTE partenaire vedette + vitrine complète — 20260514 -->
 </body>
 </html>
   btn.addEventListener("click", function(){
@@ -3675,6 +3694,7 @@ font-size:17px;
      FIN DIGIY AUDIO — LOGEMENT
      ============================================================ -->
   
-<!-- DIGIY LOC — CHEZ BAPTISTE injecté en partenaire vedette garanti — 20260512 -->
+<!-- DIGIY LOC — CHEZ BAPTISTE partenaire vedette + vitrine complète — 20260514 -->
 </body>
 </html>
+
