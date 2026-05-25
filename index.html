@@ -3556,57 +3556,6 @@
 
 <!-- ============================================================
      DIGIY AUDIO — LOGEMENT
-     À coller juste avant <!-- DIGIY LOC INDEX PUBLIC — RPC GALLERY V2 — 20260504 -->
-<!-- DIGIY LOC — CHEZ BAPTISTE partenaire vedette + QR partageable — 20260514 -->
-<!-- DIGIY LOC — Camembert options fiche propriétaire ajouté — 20260513 -->
-
-<script>
-(function(){
-  "use strict";
-
-  const BAPTISTE_PARTNER_URL = "https://part-chez-baptiste.digiylyfe.com/";
-  const btn = document.getElementById("btnCopyBaptisteQr");
-  const status = document.getElementById("qrBaptisteStatus");
-
-  async function copyText(text){
-    if(navigator.clipboard?.writeText){
-      await navigator.clipboard.writeText(text);
-      return true;
-    }
-
-    const ta = document.createElement("textarea");
-    ta.value = text;
-    ta.setAttribute("readonly","");
-    ta.style.position = "fixed";
-    ta.style.left = "-9999px";
-    document.body.appendChild(ta);
-    ta.select();
-    const ok = document.execCommand("copy");
-    ta.remove();
-    return ok;
-  }
-
-  if(btn){
-    btn.addEventListener("click", async function(){
-      try{
-        const ok = await copyText(BAPTISTE_PARTNER_URL);
-        if(status){
-          status.textContent = ok ? "✅ Lien de la vitrine Baptiste copié." : "⚠️ Copie bloquée. Copie le lien sous le QR.";
-          status.classList.add("show");
-          setTimeout(()=>status.classList.remove("show"), 2800);
-        }
-      }catch(_){
-        if(status){
-          status.textContent = "⚠️ Copie bloquée. Copie le lien sous le QR.";
-          status.classList.add("show");
-        }
-      }
-    });
-  }
-})();
-</script>
-
-</body> dans ta page logement
      ============================================================ -->
 
 <script>
@@ -3743,6 +3692,16 @@ font-size:17px;
   var timer = null;
   var launchId = 0;
 
+  function digiySpeakText(text){
+    return String(text || "")
+      .replace(/\bWave\b/g, "Wéïv")
+      .replace(/\bWouève\b/g, "Wéïv")
+      .replace(/\bWhatsApp\b/g, "Ouatsap")
+      .replace(/\bDIGIYLYFE\b/g, "Di-ji-laïf")
+      .replace(/\bRESA\b/g, "réservation")
+      .replace(/\bRÉSA\b/g, "réservation");
+  }
+
   function getFrenchVoice(){
     var voices = synth.getVoices() || [];
     if (!voices.length) return null;
@@ -3808,7 +3767,8 @@ font-size:17px;
 
     try { synth.cancel(); } catch(e){}
 
-    utterance = new SpeechSynthesisUtterance(config.text);
+    var spokenText = digiySpeakText(config.text);
+    utterance = new SpeechSynthesisUtterance(spokenText);
     utterance.lang = "fr-FR";
     utterance.rate = config.rate;
     utterance.pitch = config.pitch;
@@ -3820,7 +3780,7 @@ font-size:17px;
     utterance.onstart = function(){
       if (currentId !== launchId) return;
       setPlaying();
-      startProgress(config.text, currentId);
+      startProgress(spokenText, currentId);
     };
 
     utterance.onend = function(){
@@ -3893,30 +3853,9 @@ font-size:17px;
      ============================================================ -->
   
 <!-- DIGIY LOC — CHEZ BAPTISTE partenaire vedette + QR partageable — 20260514 -->
-</body>
-</html>
-  btn.addEventListener("click", function(){
-    if (playing) stop();
-    else play();
-  });
-
-  window.addEventListener("beforeunload", stop);
-
-  document.addEventListener("visibilitychange", function(){
-    if (document.hidden && playing) stop();
-  });
-
-  setIdle();
-})();
-</script>
-
-<!-- ============================================================
-     FIN DIGIY AUDIO — LOGEMENT
-     ============================================================ -->
-  
-<!-- DIGIY LOC — CHEZ BAPTISTE partenaire vedette + QR partageable — 20260514 -->
 <!-- DIGIY LOC — filtre disponibilité façon Booking -->
 <script src="./assets/js/digiy-loc-filtre-dispo-booking.js?v=20260520"></script>
 </body>
 </html>
+
 
