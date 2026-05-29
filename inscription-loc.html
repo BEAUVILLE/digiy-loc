@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#155f43" />
   <meta name="robots" content="index, follow" />
-  <meta name="digiy-version" content="carte-tarif-loc-wave-visible-sans-bouton-payer-2026-05-29" />
+  <meta name="digiy-version" content="carte-tarif-loc-sans-preselection-effacer-2026-05-29" />
 
   <title>Carte tarif propriétaire — DIGIY LOC</title>
   <meta name="description" content="Carte tarif propriétaire DIGIY LOC : abonnement LOC, Boost EXPLORE, RÉSEAU DIGIY, total à payer et paiement Wave concret." />
@@ -660,7 +660,7 @@
       <aside class="hero-side">
         <div class="side-title">Doctrine DIGIY</div>
         <div class="side-big">Le logement garde son nom, son propriétaire et sa relation client.</div>
-        <p>Choisis ton abonnement LOC. Les extras s’additionnent en sous-total, puis le paiement Wave affiche tout le détail.</p>
+        <p>Choisis ton abonnement LOC. Aucun tarif n’est précoché. Le client choisit volontairement, les extras s’additionnent, et il peut effacer en cas d’erreur.</p>
       </aside>
     </section>
 
@@ -766,10 +766,10 @@
         </ul>
 
         <div class="actions">
-          <button class="btn green" type="button" id="btnWhatsApp">💬 Envoyer la preuve / parler à JB</button>
+          <button class="btn green" type="button" id="btnWhatsApp">💬 WhatsApp</button><button class="btn" type="button" id="btnSms">📱 SMS</button><button class="btn" type="button" id="btnClear">🧹 Effacer</button>
         </div>
 
-        <p class="note">Tout est affiché ici : montant, bénéficiaire Wave, numéro, référence et date du récap. Après paiement, envoie la preuve à JB.</p>
+        <p class="note">Le message contient uniquement les choix sélectionnés, avec date, sous-total et total. Après paiement Wave, envoie la preuve à JB.</p>
       </aside>
     </main>
   </div>
@@ -989,7 +989,7 @@
     $("waveDate").textContent = paymentDateLabel();
   }
 
-  function buildMessage(){
+  function clearChoices(){state.base=null;state.boost=null;state.reseau=null;markActive("base","");markActive("boost","");markActive("reseau","");update();if(window.innerWidth<=820){setTimeout(()=>$('summaryCard').scrollIntoView({behavior:'smooth',block:'start'}),80)}}function buildMessage(){
     if(!state.base){
       return "Bonjour JB, je veux m’inscrire sur DIGIY LOC. Peux-tu m’aider à choisir mon code ?";
     }
@@ -1028,7 +1028,7 @@
     }
   }
 
-  $("btnWhatsApp").addEventListener("click", () => openWhatsApp(buildMessage()));
+  $("btnWhatsApp").addEventListener("click", () => openWhatsApp(buildMessage()));$("btnSms").addEventListener("click", e => copyText(buildMessage(), e.currentTarget));$("btnClear").addEventListener("click", clearChoices);
 
   $("btnCopyWave").addEventListener("click", e => {
     copyText(WAVE_TO, e.currentTarget);
@@ -1046,8 +1046,7 @@
   renderOptions(boosts, "boostOptions", "boost");
   renderOptions(reseau, "reseauOptions", "reseau");
 
-  select("base", locPlans[0]);
-})();
+  update();})();
 </script>
 </body>
 </html>
