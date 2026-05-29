@@ -81,3 +81,5 @@ jobs:
           git add index.html .github/workflows/patch-loc-inscription-button.yml
           git commit -m "Add LOC owner inscription button" || echo "Nothing to commit"
           git push
+
+# trigger: 2026-05-29 loc button
