@@ -1,0 +1,55 @@
+name: Patch LOC index tariff links
+
+on:
+  push:
+    paths:
+      - .github/workflows/patch-index-loc-tarifs-link.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Route LOC tariff/pro links to inscription-loc
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          # Toutes les portes tarif / publier côté LOC doivent rester dans la carte tarif LOC.
+          s = s.replace('href="https://tarifs.digiylyfe.com/" target="_blank" rel="noopener noreferrer"', 'href="./inscription-loc.html"')
+          s = s.replace('href="https://tarifs.digiylyfe.com/"', 'href="./inscription-loc.html"')
+          s = s.replace('href="https://commencer-a-payer.digiylyfe.com/" target="_blank" rel="noopener noreferrer"', 'href="./inscription-loc.html"')
+          s = s.replace('href="https://commencer-a-payer.digiylyfe.com/"', 'href="./inscription-loc.html"')
+
+          # Libellés plus clairs : pas de caisse générale, pas de tarifs généraux.
+          s = s.replace('📦 Tarifs DIGIY', '📦 Tarifs LOC')
+          s = s.replace('📦 Tarifs</a>', '📦 Tarifs LOC</a>')
+          s = s.replace('📦 Voir les tarifs DIGIY', '📦 Voir les tarifs LOC')
+          s = s.replace('Publier mon logement', 'Voir les tarifs LOC')
+          s = s.replace('<span>Proposer</span>', '<span>Tarifs</span>')
+          s = s.replace('>Publier<', '>Voir les tarifs<')
+
+          if './inscription-loc.html' not in s:
+              raise SystemExit('Lien inscription-loc absent après patch')
+          if 'https://tarifs.digiylyfe.com/' in s or 'https://commencer-a-payer.digiylyfe.com/' in s:
+              raise SystemExit('Ancien lien tarifs/paiement encore présent')
+
+          p.write_text(s, encoding='utf-8')
+          wf = Path('.github/workflows/patch-index-loc-tarifs-link.yml')
+          if wf.exists():
+              wf.unlink()
+          PY
+      - name: Commit patch
+        run: |
+          git config user.name "DIGIY Auto Patch"
+          git config user.email "actions@github.com"
+          git add index.html .github/workflows/patch-index-loc-tarifs-link.yml
+          git commit -m "Route LOC tariff links to inscription page" || echo "Nothing to commit"
+          git push
