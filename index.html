@@ -2377,11 +2377,11 @@
       </div>
 
       <div class="results-bar">
-        <div><strong id="resultCount">6</strong> repère(s) logement visibles</div>
+        <div><strong id="resultCount">1</strong> lieu(x) réel(s) visible(s)</div>
         <div>Contact direct · Réponse simple · Paiement direct</div>
       </div>
       <div class="message-card" id="locTemperature" style="margin-top:12px">
-        🌡️ Température LOC : 1 partenaire vedette + 5 exemples à activer. Les fiches réelles enrichissent la galerie quand elles sont disponibles.
+        🌡️ Température LOC : 1 lieu réel visible + 5 exemples à activer. Les fiches réelles enrichissent la galerie quand elles sont disponibles.
       </div>
 
       <section id="grid" class="grid"></section>
@@ -3200,40 +3200,48 @@
       }
     }
 
+    function isBaptisteLike(p){
+      const hay = [
+        p && p.title,
+        p && p.nom,
+        p && p.room_slug,
+        p && p.slug,
+        p && p.legacy_slug,
+        p && p.address_label,
+        p && p.desc
+      ].map(norm).join(" ");
+
+      return hay.includes("baptiste") || hay.includes("chez-baptiste");
+    }
+
     function placeOfficialPartnerFirst(list){
       const out = [];
       const seen = new Set();
 
       /*
         DIGIY LOC — Partenaire vedette garanti.
-        CHEZ BAPTISTE reste visible même si Supabase ne le renvoie pas.
-        Les abonnés Supabase passent ensuite normalement.
+        CHEZ BAPTISTE reste visible une seule fois : la carte officielle.
+        Si Supabase renvoie aussi Chez Baptiste, on évite le doublon public.
       */
       out.push(BAPTISTE_PIN);
       seen.add(norm(canonicalRoomSlug(BAPTISTE_PIN)));
+      seen.add("chez-baptiste");
 
       for (const p of (list || [])){
+        if (isBaptisteLike(p)) continue;
+
         const s = norm(canonicalRoomSlug(p));
-        if (!s || seen.has(s)) continue;
+        const t = norm(p && p.title);
+        const key = s || t;
+        if (!key || seen.has(key)) continue;
+
         out.push(p);
-        seen.add(s);
+        seen.add(key);
       }
 
       return out.sort((a,b) => {
-        const af =
-          a.is_official_partner ||
-          a.is_featured ||
-          norm(a.title) === norm("CHEZ BAPTISTE")
-            ? 1
-            : 0;
-
-        const bf =
-          b.is_official_partner ||
-          b.is_featured ||
-          norm(b.title) === norm("CHEZ BAPTISTE")
-            ? 1
-            : 0;
-
+        const af = (a.is_official_partner || a.is_featured || isBaptisteLike(a)) ? 1 : 0;
+        const bf = (b.is_official_partner || b.is_featured || isBaptisteLike(b)) ? 1 : 0;
         return bf - af;
       });
     }
@@ -3282,10 +3290,8 @@
       const ficheUrl = ficheLinkFor(p);
       const cardKey = setCardData("live", p);
 
-      const isPinned =
-        !!p.is_official_partner ||
-        norm(p.title) === norm("CHEZ BAPTISTE") ||
-        norm(roomSlug) === norm("chez-baptiste");
+      const isBaptisteCard = isBaptisteLike(p);
+      const isPinned = !!p.is_official_partner || !!p.is_featured || isBaptisteCard;
 
       const isOccupied = occMap
         ? ((occMap.get(roomSlug) === true) || (occMap.get(legacySlug) === true))
@@ -3305,7 +3311,7 @@
       return `
         <article class="card ${isPinned ? "pinned" : ""}">
           <div class="card-headline">
-            ${isPinned ? `<div class="mini-top gold">🏆 CHEZ BAPTISTE</div>` : `<div class="mini-top">🏠 Logement local</div>`}
+            ${isBaptisteCard ? `<div class="mini-top gold">🏆 CHEZ BAPTISTE</div>` : (isPinned ? `<div class="mini-top gold">⭐ Partenaire vedette</div>` : `<div class="mini-top">🏠 Logement local</div>`)}
           </div>
 
           <div class="photo">
@@ -3423,13 +3429,13 @@
       const previewTotal = previewPins.length + previewOpening.length;
       const temperature = document.getElementById("locTemperature");
 
-      resultCount.textContent = String(previewTotal);
+      resultCount.textContent = String(previewPins.length);
       grid.innerHTML = previewPins.map(p => cardTemplate(p, new Map())).join("");
       openingTitle.classList.add("show");
       openingGrid.style.display = "grid";
       openingGrid.innerHTML = previewOpening.map(p => openingCardTemplate(p)).join("");
       if (temperature){
-        temperature.textContent = `🌡️ Température LOC : ${previewTotal} repères visibles, dont 1 partenaire vedette et ${previewOpening.length} exemples à activer. Les fiches réelles enrichissent la galerie quand elles sont disponibles.`;
+        temperature.textContent = `🌡️ Température LOC : ${previewPins.length} lieu réel visible + ${previewOpening.length} exemples à activer. Les fiches réelles enrichissent la galerie quand elles sont disponibles.`;
       }
 
       const sbReadyNow = !!getSb();
@@ -3451,19 +3457,23 @@
       const filteredLive = applyFilters(livePins);
       const filteredOpening = applyFilters(OPENING_ZONES);
 
-      resultCount.textContent = String(filteredLive.length || (1 + filteredOpening.length));
+      const visibleLivePins = filteredLive.length ? filteredLive : [BAPTISTE_PIN];
+      const visibleLiveCount = visibleLivePins.length;
+      const totalPublicRepers = visibleLiveCount + filteredOpening.length;
+      resultCount.textContent = String(visibleLiveCount);
 
-      if (!filteredLive.length){
-        if (temperature){
+      if (temperature){
+        if (!filteredLive.length){
           const msg = livePins.length > 0
-            ? "🌡️ Température LOC : les filtres ne trouvent pas de fiche réelle, mais les repères restent visibles. Clique Effacer ou écris à DIGIY."
-            : "🌡️ Température LOC : galerie nourrie par les repères. Les fiches réelles s’ajoutent quand elles sont disponibles.";
+            ? `🌡️ Température LOC : aucun autre lieu réel ne correspond au filtre. ${visibleLiveCount} lieu de référence reste visible + ${filteredOpening.length} exemple(s) à activer.`
+            : `🌡️ Température LOC : ${visibleLiveCount} lieu de référence + ${filteredOpening.length} exemple(s) à activer. Les fiches réelles s’ajoutent quand elles sont disponibles.`;
           temperature.textContent = msg;
+        } else {
+          temperature.textContent = `🌡️ Température LOC : ${visibleLiveCount} lieu(x) réel(s) visible(s) + ${filteredOpening.length} exemple(s) à activer = ${totalPublicRepers} repère(s) au total.`;
         }
-        grid.innerHTML = [BAPTISTE_PIN].map(p => cardTemplate(p, occMap || new Map())).join("");
-      } else {
-        grid.innerHTML = filteredLive.map(p => cardTemplate(p, occMap)).join("");
       }
+
+      grid.innerHTML = visibleLivePins.map(p => cardTemplate(p, occMap || new Map())).join("");
 
       if (filteredOpening.length){
         openingTitle.classList.add("show");
@@ -3898,6 +3908,7 @@ font-size:17px;
 
 
 <!-- DIGIY LOC temperature clean 20260604 : 1 partenaire + 5 exemples, sans chargement froid -->
+
 
 
 
