@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="description" content="Chambres, villas, appartements. Disponibles maintenant sur la Petite Côte. Contact direct, paiement direct, 0% commission.">
   <meta name="theme-color" content="#07111b">
-  <meta name="digiy-version" content="loc-index-lexique-wolof-20260607">
+  <meta name="digiy-version" content="loc-index-hotel-demande-directe-20260618">
   <link rel="canonical" href="https://loc.digiylyfe.com/">
 
   <script>
@@ -1986,6 +1986,95 @@
       }
     }
 
+
+    /* DIGIY LOC — Porte publique hôtel / chambre */
+    .hotel-demand-alert{
+      margin-top:12px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      min-height:38px;
+      padding:0 12px;
+      border-radius:999px;
+      border:1px solid rgba(34,197,94,.34);
+      background:rgba(34,197,94,.10);
+      color:var(--green);
+      font-size:12px;
+      font-weight:950;
+    }
+    .hotel-demand-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:10px;
+      margin-top:12px;
+    }
+    .hotel-demand-field{
+      display:grid;
+      gap:6px;
+    }
+    .hotel-demand-field.full{
+      grid-column:1/-1;
+    }
+    .hotel-demand-field label{
+      font-size:13px;
+      color:var(--muted);
+      font-weight:850;
+    }
+    .hotel-demand-input,
+    .hotel-demand-textarea{
+      width:100%;
+      min-height:50px;
+      border-radius:14px;
+      border:1px solid var(--line-2);
+      background:rgba(2,6,23,.72);
+      color:var(--text);
+      padding:0 14px;
+      font-weight:800;
+    }
+    .hotel-demand-textarea{
+      min-height:108px;
+      resize:vertical;
+      padding:12px 14px;
+      line-height:1.55;
+    }
+    .hotel-demand-input:focus,
+    .hotel-demand-textarea:focus{
+      border-color:rgba(238,200,126,.58);
+      box-shadow:0 0 0 4px rgba(238,200,126,.10);
+    }
+    .hotel-demand-examples{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+    .hotel-demand-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin-top:12px;
+    }
+    .hotel-demand-status{
+      display:none;
+      margin-top:10px;
+      border-radius:16px;
+      padding:10px 12px;
+      border:1px solid rgba(34,197,94,.28);
+      background:rgba(34,197,94,.10);
+      color:var(--green);
+      font-weight:850;
+      line-height:1.5;
+      white-space:pre-wrap;
+    }
+    .hotel-demand-status.show{display:block}
+    @media(max-width:760px){
+      .hotel-demand-grid{grid-template-columns:1fr}
+      .hotel-demand-examples,
+      .hotel-demand-actions{display:grid;grid-template-columns:1fr}
+    }
+
+
 </style>
 </head>
 
@@ -2029,6 +2118,7 @@
 
           <div class="hero-actions">
             <a class="btn btn-primary" href="#results">Voir les logements</a>
+            <a class="btn btn-secondary" href="#hotel-demande">🏨 Demander une chambre</a>
             <a class="btn btn-secondary" href="#qr-baptiste">🔳 QR Baptiste</a>
             <a class="btn btn-secondary" href="https://loc.digiylyfe.com/lexique-loc.html?v=lexique-loc-v2-mobile-20260607">🇸🇳 Lexique Wolof LOC</a>
             <a class="btn btn-secondary" href="https://wa.me/221771342889?text=Bonjour%20DIGIY,%20je%20cherche%20o%C3%B9%20dormir%20sur%20la%20Petite%20C%C3%B4te." target="_blank" rel="noopener noreferrer">WhatsApp direct</a>
@@ -2068,6 +2158,15 @@
         </article>
 
         <article class="intent-card">
+          <div class="intent-visual">🏨</div>
+          <div>
+            <h2>Chambre / Hôtel</h2>
+            <p>Tu poses arrivée, départ, personnes, petit déjeuner, resto ou transfert. L’hôtel confirme la disponibilité.</p>
+          </div>
+          <a class="mini-btn gold" href="#hotel-demande">Demander une chambre</a>
+        </article>
+
+        <article class="intent-card">
           <div class="intent-visual">➕</div>
           <div>
             <h2>Proposer un logement</h2>
@@ -2075,6 +2174,109 @@
           </div>
           <a class="mini-btn" href="./inscription-loc.html">Voir les tarifs</a>
         </article>
+      </div>
+    </section>
+
+    
+    <section class="section" id="hotel-demande">
+      <div class="quick-note-card">
+        <div class="quick-note-top">
+          <div>
+            <div class="quick-note-title">🏨 Demander une chambre / hôtel</div>
+            <div class="quick-note-sub">
+              Le client prépare sa demande. DIGIY l’envoie proprement sur WhatsApp.
+              La disponibilité reste à confirmer par l’hôtel ou la résidence.
+            </div>
+            <div class="hotel-demand-alert">✅ Demande directe · paiement direct hôtel · 0% commission DIGIY</div>
+          </div>
+          <div class="quick-note-badge">Disponibilité à confirmer</div>
+        </div>
+
+        <div class="hotel-demand-grid">
+          <div class="hotel-demand-field">
+            <label for="hotelZone">Zone souhaitée</label>
+            <input id="hotelZone" class="hotel-demand-input" type="text" placeholder="Ex : Saly, Ngaparou, Mbour">
+          </div>
+
+          <div class="hotel-demand-field">
+            <label for="hotelArrival">Arrivée</label>
+            <input id="hotelArrival" class="hotel-demand-input" type="text" placeholder="Ex : ce soir, vendredi, 22 juin">
+          </div>
+
+          <div class="hotel-demand-field">
+            <label for="hotelDeparture">Départ</label>
+            <input id="hotelDeparture" class="hotel-demand-input" type="text" placeholder="Ex : demain, dimanche, 24 juin">
+          </div>
+
+          <div class="hotel-demand-field">
+            <label for="hotelPeople">Personnes</label>
+            <input id="hotelPeople" class="hotel-demand-input" type="text" placeholder="Ex : 2 adultes">
+          </div>
+
+          <div class="hotel-demand-field">
+            <label for="hotelRoomType">Type demandé</label>
+            <select id="hotelRoomType" class="hotel-demand-input">
+              <option>Chambre simple</option>
+              <option>Chambre double</option>
+              <option>Suite</option>
+              <option>Appartement</option>
+              <option>Villa</option>
+              <option>À proposer</option>
+            </select>
+          </div>
+
+          <div class="hotel-demand-field">
+            <label for="hotelBudget">Budget indicatif</label>
+            <input id="hotelBudget" class="hotel-demand-input" type="text" placeholder="Ex : 25 000 / 40 000 FCFA">
+          </div>
+
+          <div class="hotel-demand-field">
+            <label for="hotelBreakfast">Petit déjeuner</label>
+            <select id="hotelBreakfast" class="hotel-demand-input">
+              <option>À préciser</option>
+              <option>Oui</option>
+              <option>Non</option>
+            </select>
+          </div>
+
+          <div class="hotel-demand-field">
+            <label for="hotelResto">Restaurant / table</label>
+            <select id="hotelResto" class="hotel-demand-input">
+              <option>À préciser</option>
+              <option>Oui, demander une table</option>
+              <option>Non</option>
+            </select>
+          </div>
+
+          <div class="hotel-demand-field">
+            <label for="hotelTransfer">Transfert AIBD / chauffeur</label>
+            <select id="hotelTransfer" class="hotel-demand-input">
+              <option>À préciser</option>
+              <option>Oui, besoin transfert</option>
+              <option>Non</option>
+            </select>
+          </div>
+
+          <div class="hotel-demand-field full">
+            <label for="hotelMessage">Message libre</label>
+            <textarea id="hotelMessage" class="hotel-demand-textarea" placeholder="Ex : Je cherche une chambre calme à Saly, arrivée ce soir, départ dimanche, 2 personnes. Petit déjeuner souhaité. Merci de confirmer la disponibilité."></textarea>
+          </div>
+        </div>
+
+        <div class="hotel-demand-examples" aria-label="Exemples demande hôtel">
+          <button class="mini-btn gold" type="button" data-hotel-example="soir-saly">Ce soir à Saly</button>
+          <button class="mini-btn" type="button" data-hotel-example="weekend-couple">Week-end couple</button>
+          <button class="mini-btn" type="button" data-hotel-example="famille-villa">Famille / villa</button>
+          <button class="mini-btn" type="button" data-hotel-example="aibd">Avec transfert AIBD</button>
+        </div>
+
+        <div class="hotel-demand-actions">
+          <button class="btn btn-primary" id="btnHotelWa" type="button">📲 Envoyer demande hôtel</button>
+          <a class="btn btn-secondary" href="#results">Voir les logements visibles</a>
+          <a class="btn btn-ghost" href="./inscription-loc.html">Proposer un hôtel / logement</a>
+        </div>
+
+        <div class="hotel-demand-status" id="hotelDemandStatus">Demande hôtel prête.</div>
       </div>
     </section>
 
@@ -3844,12 +4046,167 @@ font-size:17px;
 <!-- DIGIY LOC — filtre disponibilité façon Booking -->
 <script src="./assets/js/digiy-loc-filtre-dispo-booking.js?v=20260520"></script>
   <script src="https://pro-action-digiy.digiylyfe.com/assets/js/digiy-retour-voix.js?v=retour-voix-20260606-v3" defer></script>
+
+<script>
+(function(){
+  "use strict";
+  const HOTEL_WA = "221771342889";
+
+  function byId(id){ return document.getElementById(id); }
+  function val(id){ const el = byId(id); return el ? String(el.value || "").trim() : ""; }
+
+  function setVal(id, value){
+    const el = byId(id);
+    if(el) el.value = value;
+  }
+
+  function showHotelStatus(message){
+    const box = byId("hotelDemandStatus");
+    if(!box) return;
+    box.textContent = message;
+    box.classList.add("show");
+  }
+
+  function buildHotelMessage(){
+    const lines = [
+      "Bonjour DIGIY, je viens depuis DIGIY LOC.",
+      "Je cherche une chambre / hébergement.",
+      "",
+      "Zone souhaitée : " + (val("hotelZone") || "À préciser"),
+      "Arrivée : " + (val("hotelArrival") || "À préciser"),
+      "Départ : " + (val("hotelDeparture") || "À préciser"),
+      "Personnes : " + (val("hotelPeople") || "À préciser"),
+      "Type demandé : " + (val("hotelRoomType") || "À proposer"),
+      "Budget indicatif : " + (val("hotelBudget") || "À préciser"),
+      "Petit déjeuner : " + (val("hotelBreakfast") || "À préciser"),
+      "Restaurant / table : " + (val("hotelResto") || "À préciser"),
+      "Transfert AIBD / chauffeur : " + (val("hotelTransfer") || "À préciser"),
+      "",
+      "Message :",
+      val("hotelMessage") || "Merci de proposer une disponibilité.",
+      "",
+      "Merci de confirmer la disponibilité.",
+      "Paiement direct à l’établissement. 0% commission DIGIY."
+    ];
+    return lines.join("\n");
+  }
+
+  function openHotelWhatsApp(){
+    const msg = buildHotelMessage();
+    showHotelStatus("Demande préparée :\n\n" + msg);
+    const url = "https://wa.me/" + HOTEL_WA + "?text=" + encodeURIComponent(msg);
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
+
+  function applyHotelExample(name){
+    if(name === "soir-saly"){
+      setVal("hotelZone","Saly");
+      setVal("hotelArrival","ce soir");
+      setVal("hotelDeparture","demain");
+      setVal("hotelPeople","2 personnes");
+      setVal("hotelRoomType","Chambre double");
+      setVal("hotelBudget","25 000 / 40 000 FCFA");
+      setVal("hotelBreakfast","À préciser");
+      setVal("hotelResto","À préciser");
+      setVal("hotelTransfer","Non");
+      setVal("hotelMessage","Je cherche une chambre propre à Saly pour ce soir. Merci de confirmer la disponibilité.");
+    }
+
+    if(name === "weekend-couple"){
+      setVal("hotelZone","Saly / Ngaparou");
+      setVal("hotelArrival","vendredi");
+      setVal("hotelDeparture","dimanche");
+      setVal("hotelPeople","2 adultes");
+      setVal("hotelRoomType","Chambre double");
+      setVal("hotelBudget","budget à discuter");
+      setVal("hotelBreakfast","Oui");
+      setVal("hotelResto","Oui, demander une table");
+      setVal("hotelTransfer","À préciser");
+      setVal("hotelMessage","Week-end couple, chambre calme souhaitée, petit déjeuner si possible.");
+    }
+
+    if(name === "famille-villa"){
+      setVal("hotelZone","Somone / Ngaparou / Saly");
+      setVal("hotelArrival","à préciser");
+      setVal("hotelDeparture","à préciser");
+      setVal("hotelPeople","famille");
+      setVal("hotelRoomType","Villa");
+      setVal("hotelBudget","budget à discuter");
+      setVal("hotelBreakfast","À préciser");
+      setVal("hotelResto","Non");
+      setVal("hotelTransfer","À préciser");
+      setVal("hotelMessage","Je cherche une villa ou un grand logement pour une famille. Merci de proposer une disponibilité.");
+    }
+
+    if(name === "aibd"){
+      setVal("hotelZone","Saly");
+      setVal("hotelArrival","arrivée depuis AIBD");
+      setVal("hotelDeparture","à préciser");
+      setVal("hotelPeople","2 personnes");
+      setVal("hotelRoomType","À proposer");
+      setVal("hotelBudget","à préciser");
+      setVal("hotelBreakfast","À préciser");
+      setVal("hotelResto","À préciser");
+      setVal("hotelTransfer","Oui, besoin transfert");
+      setVal("hotelMessage","Je cherche une chambre avec possibilité de transfert depuis AIBD. Merci de confirmer disponibilité et chauffeur.");
+    }
+
+    showHotelStatus("Exemple chargé. Vérifie puis envoie sur WhatsApp.");
+  }
+
+  document.addEventListener("click", function(e){
+    const hotelBtn = e.target.closest("#btnHotelWa");
+    if(hotelBtn){
+      e.preventDefault();
+      openHotelWhatsApp();
+      return;
+    }
+
+    const ex = e.target.closest("[data-hotel-example]");
+    if(ex){
+      e.preventDefault();
+      applyHotelExample(ex.getAttribute("data-hotel-example"));
+    }
+  });
+})();
+</script>
+
 </body>
 </html>
 
 
 
 <!-- DIGIY LOC temperature clean 20260605 : 1 partenaire + 2 exemples, intro courte, prononciation audio OK -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
