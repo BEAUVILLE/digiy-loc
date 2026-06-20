@@ -7,6 +7,22 @@
   <meta name="description" content="Chambres, villas, appartements. Disponibles maintenant sur la Petite Côte. Contact direct, paiement direct, 0% commission.">
   <meta name="theme-color" content="#07111b">
   <meta name="digiy-version" content="loc-index-hotel-demande-directe-20260618">
+  <meta name="digiy-bilingual-loc" content="fr-en-retour-fr-natif-20260620">
+  <script>
+    (function(){
+      try{
+        var p = new URLSearchParams(location.search);
+        var fromUrl = (p.get("lang") || "").toLowerCase();
+        var fromStore = "";
+        try{ fromStore = (localStorage.getItem("digiy_loc_lang_native_v1") || "").toLowerCase(); }catch(_){}
+        var lang = fromUrl === "en" ? "en" : (fromUrl === "fr" ? "fr" : (fromStore === "en" ? "en" : "fr"));
+        window.DIGIY_LOC_LANG = lang;
+        document.documentElement.setAttribute("lang", lang === "en" ? "en" : "fr");
+      }catch(_){
+        window.DIGIY_LOC_LANG = "fr";
+      }
+    })();
+  </script>
   <link rel="canonical" href="https://loc.digiylyfe.com/">
 
   <script>
@@ -2075,6 +2091,40 @@
     }
 
 
+
+    /* DIGIY LOC — switch FR/EN */
+    .langSwitch{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:5px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.055);
+      flex:0 0 auto;
+    }
+    .langSwitch button{
+      min-height:34px;
+      border:0;
+      border-radius:999px;
+      padding:0 10px;
+      color:var(--text);
+      background:transparent;
+      font-weight:1000;
+      font-size:12px;
+      letter-spacing:.02em;
+    }
+    .langSwitch button[aria-pressed="true"]{
+      background:linear-gradient(180deg, var(--brand-2), var(--brand));
+      color:#102132;
+      box-shadow:0 8px 18px rgba(238,200,126,.18);
+    }
+    @media(max-width:760px){
+      .topbar-inner{flex-wrap:wrap}
+      .langSwitch{margin-left:auto}
+      .langSwitch button{min-height:36px;padding:0 12px}
+    }
+
 </style>
 </head>
 
@@ -2101,6 +2151,11 @@
         <a class="pill-btn" href="https://loc.digiylyfe.com/lexique-loc.html?v=lexique-loc-v2-mobile-20260607">🇸🇳 Lexique Wolof</a>
         <a class="pill-btn" href="#results">Voir les lieux</a>
         <a class="pill-btn" href="https://wa.me/221771342889" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+      </div>
+
+      <div class="langSwitch" aria-label="Choisir la langue / Choose language">
+        <button type="button" data-lang-btn="fr" onclick="digiySetLocLang('fr')" aria-label="Version française">🇫🇷 FR</button>
+        <button type="button" data-lang-btn="en" onclick="digiySetLocLang('en')" aria-label="English version">🇬🇧 EN</button>
       </div>
     </div>
   </div>
@@ -2855,8 +2910,46 @@
       return escapeHtml(str).replaceAll("`","&#096;");
     }
 
+    function digiyLocCurrentLang(){
+      try{
+        const p = new URLSearchParams(location.search);
+        const fromUrl = (p.get("lang") || "").toLowerCase();
+        if(fromUrl === "en") return "en";
+        if(fromUrl === "fr") return "fr";
+        return (localStorage.getItem("digiy_loc_lang_native_v1") || "fr").toLowerCase() === "en" ? "en" : "fr";
+      }catch(_){ return "fr"; }
+    }
+
+    function digiyLocIsEnglish(){
+      return digiyLocCurrentLang() === "en";
+    }
+
+    function digiyLocLocalizeWaMessage(message){
+      if(!digiyLocIsEnglish()) return String(message || "");
+      return String(message || "")
+        .replace(/Bonjour DIGIY 👋/g, "Hello DIGIY 👋")
+        .replace(/Bonjour 👋/g, "Hello 👋")
+        .replace(/Bonjour DIGIY/g, "Hello DIGIY")
+        .replace(/Je cherche un logement\./g, "I am looking for accommodation.")
+        .replace(/Ma demande rapide :/g, "My quick request:")
+        .replace(/Message libre :/g, "Free message:")
+        .replace(/Merci de m’aider si un lieu correspond\./g, "Please help me if a place matches.")
+        .replace(/Je vous contacte via DIGIY LOC\./g, "I am contacting you through DIGIY LOC.")
+        .replace(/Identifiant : à préciser/g, "Identifier: to be confirmed")
+        .replace(/Identifiant :/g, "Identifier:")
+        .replace(/Prénom :/g, "First name:")
+        .replace(/à préciser/g, "to be confirmed")
+        .replace(/non précisé/g, "not specified")
+        .replace(/Personnes :/g, "Guests:")
+        .replace(/Budget :/g, "Budget:")
+        .replace(/Dates :/g, "Dates:")
+        .replace(/Je cherche ([^\n]+) à ([^\n]+) pour ([^,\n]+), budget environ ([^\n]+) \/ jour\./g, "I am looking for $1 in $2 for $3, budget around $4 per day.")
+        .replace(/Je veux en savoir plus sur NDIMBAL/g, "I want to know more about NDIMBAL")
+        .replace(/Je veux une fiche LOC pour mon logement/g, "I want a LOC page for my place");
+    }
+
     function openWa(phone, message){
-      const txt = encodeURIComponent(message || "");
+      const txt = encodeURIComponent(digiyLocLocalizeWaMessage(message || ""));
       const digits = String(phone || "").replace(/\D/g, "");
       if (!digits) return;
       window.open("https://wa.me/" + digits + (txt ? "?text=" + txt : ""), "_blank", "noopener,noreferrer");
@@ -3742,20 +3835,25 @@
      ============================================================ -->
 
 <script>
-window.DIGIY_AUDIO_CONFIG = {
-  label: "Écouter l’intro LOC",
-  stopLabel: "Arrêter",
-  text: "Bienvenue sur DIGIY LOC. Ici, tu vois un logement, tu lis l’essentiel, puis tu contactes directement le propriétaire. Pas de commission. Pas d’intermédiaire inutile. Pour proposer un lieu, la fiche d’inscription est fluide : elle active ta présence dans l’architecture métiers de la Supa-Apps. Direct, clair, humain. DIGIYLYFE.",
-  buttonBg: "linear-gradient(135deg,#d4af37,#b78b34)",
-  buttonColor: "#111827",
-  bottom: "24px",
-  left: "24px",
-  rate: 0.82,
-  pitch: 1,
-  volume: 1,
-  zIndex: 99999,
-  shadow: "0 10px 30px rgba(0,0,0,.26)"
-};
+(function(){
+  var isEn = (window.DIGIY_LOC_LANG === "en");
+  window.DIGIY_AUDIO_CONFIG = {
+    label: isEn ? "Listen to the LOC intro" : "Écouter l’intro LOC",
+    stopLabel: isEn ? "Stop" : "Arrêter",
+    text: isEn
+      ? "Welcome to DIGIY LOC. Here, you see a place, read the essentials, then contact the owner directly. No commission. No useless intermediary. To offer a place, the registration form is smooth: it activates your LOC presence inside the DIGIYLYFE business architecture. Direct, clear, human. DIGIYLYFE."
+      : "Bienvenue sur DIGIY LOC. Ici, tu vois un logement, tu lis l’essentiel, puis tu contactes directement le propriétaire. Pas de commission. Pas d’intermédiaire inutile. Pour proposer un lieu, la fiche d’inscription est fluide : elle active ta présence dans l’architecture métiers de la Supa-Apps. Direct, clair, humain. DIGIYLYFE.",
+    buttonBg: "linear-gradient(135deg,#d4af37,#b78b34)",
+    buttonColor: "#111827",
+    bottom: "24px",
+    left: "24px",
+    rate: isEn ? 0.90 : 0.82,
+    pitch: 1,
+    volume: 1,
+    zIndex: 99999,
+    shadow: "0 10px 30px rgba(0,0,0,.26)"
+  };
+})();
 </script>
 
 <style>
@@ -3904,6 +4002,18 @@ font-size:17px;
     );
   }
 
+  function getEnglishVoice(){
+    var voices = synth.getVoices() || [];
+    if (!voices.length) return null;
+
+    return (
+      voices.find(function(v){ return /en[-_]?US/i.test(v.lang) && /google/i.test(v.name); }) ||
+      voices.find(function(v){ return /en[-_]?US/i.test(v.lang); }) ||
+      voices.find(function(v){ return /^en/i.test(v.lang); }) ||
+      null
+    );
+  }
+
   function setIdle(){
     playing = false;
     ico.innerHTML = "&#9654;";
@@ -3957,14 +4067,15 @@ font-size:17px;
 
     try { synth.cancel(); } catch(e){}
 
-    var spokenText = digiySpeakText(config.text);
+    var isEnAudio = (window.DIGIY_LOC_LANG === "en");
+    var spokenText = isEnAudio ? String(config.text || "") : digiySpeakText(config.text);
     utterance = new SpeechSynthesisUtterance(spokenText);
-    utterance.lang = "fr-FR";
+    utterance.lang = isEnAudio ? "en-US" : "fr-FR";
     utterance.rate = config.rate;
     utterance.pitch = config.pitch;
     utterance.volume = config.volume;
 
-    var voice = getFrenchVoice();
+    var voice = isEnAudio ? getEnglishVoice() : getFrenchVoice();
     if (voice) utterance.voice = voice;
 
     utterance.onstart = function(){
@@ -4053,7 +4164,17 @@ font-size:17px;
   const HOTEL_WA = "221771342889";
 
   function byId(id){ return document.getElementById(id); }
-  function val(id){ const el = byId(id); return el ? String(el.value || "").trim() : ""; }
+  function locLang(){ try{ return (window.DIGIY_LOC_LANG === "en" || new URLSearchParams(location.search).get("lang") === "en") ? "en" : "fr"; }catch(_){ return "fr"; } }
+  function isEn(){ return locLang() === "en"; }
+  function txt(fr,en){ return isEn() ? en : fr; }
+  function val(id){
+    const el = byId(id);
+    if(!el) return "";
+    if(el.tagName === "SELECT" && el.selectedOptions && el.selectedOptions[0]){
+      return String(el.selectedOptions[0].textContent || el.value || "").trim();
+    }
+    return String(el.value || "").trim();
+  }
 
   function setVal(id, value){
     const el = byId(id);
@@ -4068,19 +4189,39 @@ font-size:17px;
   }
 
   function buildHotelMessage(){
-    const lines = [
+    const empty = txt("À préciser", "To be confirmed");
+    const lines = isEn() ? [
+      "Hello DIGIY, I am coming from DIGIY LOC.",
+      "I am looking for a room / accommodation.",
+      "",
+      "Desired area: " + (val("hotelZone") || empty),
+      "Arrival: " + (val("hotelArrival") || empty),
+      "Departure: " + (val("hotelDeparture") || empty),
+      "Guests: " + (val("hotelPeople") || empty),
+      "Requested type: " + (val("hotelRoomType") || "To propose"),
+      "Indicative budget: " + (val("hotelBudget") || empty),
+      "Breakfast: " + (val("hotelBreakfast") || empty),
+      "Restaurant / table: " + (val("hotelResto") || empty),
+      "AIBD transfer / driver: " + (val("hotelTransfer") || empty),
+      "",
+      "Message:",
+      val("hotelMessage") || "Please propose availability.",
+      "",
+      "Please confirm availability.",
+      "Direct payment to the hotel or residence. 0% DIGIY commission."
+    ] : [
       "Bonjour DIGIY, je viens depuis DIGIY LOC.",
       "Je cherche une chambre / hébergement.",
       "",
-      "Zone souhaitée : " + (val("hotelZone") || "À préciser"),
-      "Arrivée : " + (val("hotelArrival") || "À préciser"),
-      "Départ : " + (val("hotelDeparture") || "À préciser"),
-      "Personnes : " + (val("hotelPeople") || "À préciser"),
+      "Zone souhaitée : " + (val("hotelZone") || empty),
+      "Arrivée : " + (val("hotelArrival") || empty),
+      "Départ : " + (val("hotelDeparture") || empty),
+      "Personnes : " + (val("hotelPeople") || empty),
       "Type demandé : " + (val("hotelRoomType") || "À proposer"),
-      "Budget indicatif : " + (val("hotelBudget") || "À préciser"),
-      "Petit déjeuner : " + (val("hotelBreakfast") || "À préciser"),
-      "Restaurant / table : " + (val("hotelResto") || "À préciser"),
-      "Transfert AIBD / chauffeur : " + (val("hotelTransfer") || "À préciser"),
+      "Budget indicatif : " + (val("hotelBudget") || empty),
+      "Petit déjeuner : " + (val("hotelBreakfast") || empty),
+      "Restaurant / table : " + (val("hotelResto") || empty),
+      "Transfert AIBD / chauffeur : " + (val("hotelTransfer") || empty),
       "",
       "Message :",
       val("hotelMessage") || "Merci de proposer une disponibilité.",
@@ -4093,7 +4234,7 @@ font-size:17px;
 
   function openHotelWhatsApp(){
     const msg = buildHotelMessage();
-    showHotelStatus("Demande préparée :\n\n" + msg);
+    showHotelStatus(txt("Demande préparée :\n\n", "Request prepared:\n\n") + msg);
     const url = "https://wa.me/" + HOTEL_WA + "?text=" + encodeURIComponent(msg);
     window.open(url, "_blank", "noopener,noreferrer");
   }
@@ -4151,7 +4292,7 @@ font-size:17px;
       setVal("hotelMessage","Je cherche une chambre avec possibilité de transfert depuis AIBD. Merci de confirmer disponibilité et chauffeur.");
     }
 
-    showHotelStatus("Exemple chargé. Vérifie puis envoie sur WhatsApp.");
+    showHotelStatus(txt("Exemple chargé. Vérifie puis envoie sur WhatsApp.", "Example loaded. Check it, then send on WhatsApp."));
   }
 
   document.addEventListener("click", function(e){
@@ -4171,12 +4312,173 @@ font-size:17px;
 })();
 </script>
 
+
+<script>
+(function(){
+  "use strict";
+
+  const LANG_KEY = "digiy_loc_lang_native_v1";
+  const META = {
+    fr:{
+      title:"Dormir à Saly ce soir — DIGIY LOC",
+      description:"Chambres, villas, appartements. Disponibles maintenant sur la Petite Côte. Contact direct, paiement direct, 0% commission."
+    },
+    en:{"title": "Sleep in Saly tonight — DIGIY LOC", "description": "Rooms, villas, apartments. Available now on the Petite Côte. Direct contact, direct payment, 0% commission."}
+  };
+  const TEXT = {"Petite Côte": "Petite Côte", "Dormir à Saly ce soir": "Sleep in Saly tonight", "🌍 Site DIGIYLYFE": "🌍 DIGIYLYFE site", "🧭 HUB DIGIY": "🧭 DIGIY HUB", "📦 Tarifs LOC": "📦 LOC prices", "🇸🇳 Lexique Wolof": "🇸🇳 Wolof lexicon", "Voir les lieux": "See places", "WhatsApp": "WhatsApp", "🏠 Hébergement local · Contact direct": "🏠 Local accommodation · Direct contact", "Chambres, villas, appartements. Disponibles maintenant sur la Petite Côte. Tu vois le lieu, tu choisis, tu écris direct.": "Rooms, villas, apartments. Available now on the Petite Côte. You see the place, choose, and write directly.", "Voir les logements": "See accommodation", "🏨 Demander une chambre": "🏨 Request a room", "🔳 QR Baptiste": "🔳 Baptiste QR", "🇸🇳 Lexique Wolof LOC": "🇸🇳 LOC Wolof lexicon", "WhatsApp direct": "Direct WhatsApp", "Voir les tarifs LOC": "See LOC prices", "📍 Saly · Ngaparou · Somone · Mbour": "📍 Saly · Ngaparou · Somone · Mbour", "💸 Paiement direct": "💸 Direct payment", "✅ 0% commission": "✅ 0% commission", "🌙 NDIMBAL disponible": "🌙 NDIMBAL available", "📲 WhatsApp direct": "📲 Direct WhatsApp", "Demander un logement": "Request accommodation", "Tu écris zone, dates, personnes et budget. DIGIY reçoit ta demande sur WhatsApp.": "You write the area, dates, guests and budget. DIGIY receives your request on WhatsApp.", "Faire ma demande": "Make my request", "Tu regardes les lieux visibles maintenant, puis tu écris au bon contact.": "You view the visible places, then write to the right contact.", "Chambre / Hôtel": "Room / Hotel", "Tu poses arrivée, départ, personnes, petit déjeuner, resto ou transfert. L’hôtel confirme la disponibilité.": "You enter arrival, departure, guests, breakfast, restaurant or transfer. The hotel confirms availability.", "Proposer un logement": "Offer accommodation", "Tu as un lieu ? La fiche d’inscription est fluide pour activer ta présence LOC dans l’architecture métiers de la Supa-Apps.": "Do you have a place? The registration form is smooth to activate your LOC presence inside the DIGIYLYFE business architecture.", "Voir les tarifs": "See prices", "🏨 Demander une chambre / hôtel": "🏨 Request a room / hotel", "Le client prépare sa demande. DIGIY l’envoie proprement sur WhatsApp. La disponibilité reste à confirmer par l’hôtel ou la résidence.": "The client prepares the request. DIGIY sends it cleanly on WhatsApp. Availability must still be confirmed by the hotel or residence.", "✅ Demande directe · paiement direct hôtel · 0% commission DIGIY": "✅ Direct request · direct hotel payment · 0% DIGIY commission", "Disponibilité à confirmer": "Availability to be confirmed", "Zone souhaitée": "Desired area", "Arrivée": "Arrival", "Départ": "Departure", "Personnes": "Guests", "Type demandé": "Requested type", "Chambre simple": "Single room", "Chambre double": "Double room", "Suite": "Suite", "Appartement": "Apartment", "Villa": "Villa", "À proposer": "To propose", "Budget indicatif": "Indicative budget", "Petit déjeuner": "Breakfast", "À préciser": "To be confirmed", "Oui": "Yes", "Non": "No", "Restaurant / table": "Restaurant / table", "Oui, demander une table": "Yes, request a table", "Transfert AIBD / chauffeur": "AIBD transfer / driver", "Oui, besoin transfert": "Yes, transfer needed", "Message libre": "Free message", "Ce soir à Saly": "Tonight in Saly", "Week-end couple": "Couple weekend", "Famille / villa": "Family / villa", "Avec transfert AIBD": "With AIBD transfer", "📲 Envoyer demande hôtel": "📲 Send hotel request", "Voir les logements visibles": "See visible accommodation", "Proposer un hôtel / logement": "Offer a hotel / accommodation", "Demande hôtel prête.": "Hotel request ready.", "2 exemples pour comprendre": "2 examples to understand", "Deux portes suffisent pour initier le visiteur : une vraie fiche complète et une demande simple à envoyer. La suite se fait par inscription fluide, contact direct et activation propre dans l’architecture métiers de la Supa-Apps.": "Two doors are enough to guide the visitor: one full real page and one simple request to send. The next step is smooth registration, direct contact and clean activation inside the DIGIYLYFE business architecture.", "Exemple réel": "Real example", "CHEZ BAPTISTE · Saly": "CHEZ BAPTISTE · Saly", "Vitrine complète avec lien public, QR, WhatsApp direct et paiement propriétaire. Le client voit, comprend et contacte sans détour.": "Complete showcase with public link, QR, direct WhatsApp and owner payment. The client sees, understands and contacts without detour.", "Ouvrir la fiche": "Open the page", "Exemple demande": "Request example", "Chambre simple · Mbour": "Single room · Mbour", "Une personne cherche un coin propre ce soir : zone, budget, dates, puis message direct. Simple, terrain, sans commission.": "Someone is looking for a clean place tonight: area, budget, dates, then direct message. Simple, practical, commission-free.", "Voir Mbour": "See Mbour", "Tu ne trouves pas encore ton lieu ?": "Can’t find your place yet?", "Écris directement à DIGIY sur WhatsApp. Donne ta zone, tes dates et ton budget, et on te répond simplement.": "Write directly to DIGIY on WhatsApp. Give your area, dates and budget, and we reply simply.", "📲 Écrire à DIGIY": "📲 Write to DIGIY", "📞 Appeler": "📞 Call", "Note rapide logement": "Quick accommodation note", "Tu ne trouves pas encore ton logement ? Écris ce que tu cherches. DIGIY reçoit ta demande sur WhatsApp et peut te répondre dès qu’un lieu correspond.": "Can’t find accommodation yet? Write what you need. DIGIY receives your request on WhatsApp and can reply when a place matches.", "Même jeune, la demande ne se perd pas": "Even early, the request is not lost", "Dates / nuits": "Dates / nights", "Budget / jour": "Budget / day", "2 nuits à Saly": "2 nights in Saly", "Ce soir à Mbour": "Tonight in Mbour", "Studio à Ngaparou": "Studio in Ngaparou", "Villa à Somone": "Villa in Somone", "Je connais un logement": "I know a place", "📲 Envoyer ma demande à DIGIY": "📲 Send my request to DIGIY", "Demande préparée.": "Request prepared.", "Tu as un logement à proposer ?": "Do you have accommodation to offer?", "Des visiteurs cherchent déjà où dormir. La fiche d’inscription LOC est fluide : elle active ta présence dans l’architecture métiers de la Supa-Apps, puis tu reçois les demandes directement, sans commission DIGIY.": "Visitors are already looking for places to sleep. The LOC registration form is smooth: it activates your presence inside the DIGIYLYFE business architecture, then you receive requests directly, with no DIGIY commission.", "Parler à DIGIY": "Talk to DIGIY", "QR partageable · CHEZ BAPTISTE": "Shareable QR · CHEZ BAPTISTE", "La fiche Baptiste circule comme EXPLORE.": "The Baptiste page circulates like EXPLORE.", "Scanne, copie ou partage la vitrine complète. Sur papier, le QR ouvre la fiche partenaire. Sur téléphone, les boutons ouvrent directement la vitrine ou WhatsApp. Le client arrive côté public, sans PIN.": "Scan, copy or share the full showcase. On paper, the QR opens the partner page. On phone, the buttons open the showcase or WhatsApp directly. The client arrives on the public side, without PIN.", "🌍 Ouvrir la vitrine complète": "🌍 Open the full showcase", "📋 Copier le lien": "📋 Copy link", "📤 Partager WhatsApp": "📤 Share on WhatsApp", "Lien copié.": "Link copied.", "Toutes les zones": "All areas", "Type : Tout": "Type: All", "Studio": "Studio", "Chambre": "Room", "Maison": "House", "🔎 Chercher": "🔎 Search", "↩ Effacer": "↩ Clear", "Écrire au bon propriétaire": "Write to the right owner", "Choisis un logement dans la liste 👇": "Choose accommodation in the list 👇", "Aucun lieu choisi": "No place selected", "Changer": "Change", "Votre prénom": "Your first name", "Dates": "Dates", "Budget": "Budget", "📲 Écrire sur WhatsApp": "📲 Write on WhatsApp", "Message prêt. Tu n’as plus qu’à envoyer.": "Message ready. You only need to send it.", "Les lieux visibles maintenant": "Places visible now", "Des logements publiés, lisibles vite, avec contact direct et fiche si tu veux voir plus.": "Published accommodation, quick to read, with direct contact and a page if you want to see more.", "lieu(x) réel(s) visible(s)": "real place(s) visible", "Contact direct · Réponse simple · Paiement direct": "Direct contact · Simple reply · Direct payment", "🌡️ Température LOC : 1 lieu réel visible + 2 exemples utiles. Les fiches réelles enrichissent la galerie quand elles sont disponibles.": "🌡️ LOC temperature: 1 real place visible + 2 useful examples. Real pages enrich the gallery when available.", "Lieux réels. Hôtes locaux. Contact direct.": "Real places. Local hosts. Direct contact.", "Pas d’intermédiaire. Pas de commission.": "No intermediary. No commission.", "2 exemples utiles": "2 useful examples", "Deux cartes suffisent pour montrer l’esprit LOC sans transformer la vitrine en catalogue d’attente.": "Two cards are enough to show the LOC spirit without turning the showcase into a waiting catalog.", "Revenir dans la maison DIGIY": "Return to the DIGIY house", "Cette page montre les logements. Pour comprendre DIGIYLYFE ou choisir un module, utilise les portes ci-dessous.": "This page shows accommodation. To understand DIGIYLYFE or choose a module, use the doors below.", "façade publique": "public facade", "— Sénégal → Afrique": "— Senegal → Africa", "0% commission • Paiement direct • Pont court vers le réel": "0% commission • Direct payment • Short bridge to the real world", "DIGIY LOC — Camembert options fiche propriétaire": "DIGIY LOC — Owner page option wheel", "Options fiche propriétaire": "Owner page options", "Choisir le niveau de lumière": "Choose the level of visibility", "Simple pour être visible. Premium pour mieux présenter. Extra pour une vraie vitrine partenaire.": "Simple to be visible. Premium to present better. Extra for a full partner showcase.", "Fiche Simple · incluse": "Simple page · included", "Présence dans la galerie LOC, photo, prix, zone, capacité et WhatsApp direct.": "Presence in the LOC gallery, photo, price, area, capacity and direct WhatsApp.", "Fiche Premium · mise en page": "Premium page · layout", "Intervention DIGIY pour organiser la présentation, les photos, les tarifs et les boutons.": "DIGIY intervention to organize the presentation, photos, prices and buttons.", "Fiche Extra · réalisation complète": "Extra page · full build", "Vitrine partenaire complète : QR cliquable, partage WhatsApp, storytelling et page qui circule.": "Full partner showcase: clickable QR, WhatsApp sharing, storytelling and a page that circulates.", "📲 Parler des options fiche": "📲 Discuss page options", "📦 Voir les tarifs LOC": "📦 See LOC prices", "Site": "Site", "HUB": "HUB", "Demander": "Request", "Logements": "Places", "Wolof": "Wolof", "Tarifs": "Prices", "Note rapide": "Quick note", "🌙 NDIMBAL — le pouvoir des nuits offertes": "🌙 NDIMBAL — the power of offered nights", "NDIMBAL n'est pas une commission ni un frais. C'est une stratégie locale : tu restes plus longtemps, tu dépenses plus dans le quartier, et tout le monde respire mieux.": "NDIMBAL is not a commission or a fee. It is a local strategy: you stay longer, spend more in the neighborhood, and everyone breathes better.", "✕ Fermer": "✕ Close", "OFFRE OFFICIELLE": "OFFICIAL OFFER", "2 nuits payées = 3e offerte": "2 paid nights = 3rd night offered", "Valable": "Valid", "du lundi au jeudi": "from Monday to Thursday", "selon disponibilité du logement NDIMBAL. Objectif : pousser les séjours en semaine et faire tourner l’économie locale.": "depending on NDIMBAL accommodation availability. Goal: encourage weekday stays and support the local economy.", "✅ Tu gagnes": "✅ You gain", "1 nuit": "1 night", "→ tu restes plus longtemps.": "→ you stay longer.", "✅ Tu consommes": "✅ You consume", "1 jour de plus": "1 more day", "dans le coin.": "in the area.", "✅ Le logement gagne en": "✅ The accommodation gains", "bouche-à-oreille": "word of mouth", "COMMENT REPÉRER ?": "HOW TO SPOT IT?", "Dans la galerie, un logement NDIMBAL porte un badge dédié ou un propriétaire t’en parle directement.": "In the gallery, NDIMBAL accommodation has a dedicated badge or an owner tells you directly.", "1) Tu choisis tes dates.": "1) You choose your dates.", "2) Tu écris au propriétaire via WhatsApp.": "2) You write to the owner via WhatsApp.", "3) Tu demandes :": "3) You ask:", "“Je veux profiter de NDIMBAL”": "“I want to use NDIMBAL”", "✅ J’ai compris": "✅ I understand", "📲 Parler à DIGIY": "📲 Talk to DIGIY", "▶": "▶", "Écouter l’intro LOC": "Listen to the LOC intro", "Arrêter": "Stop", "Appartement CHEZ BAPTISTE — Saly": "CHEZ BAPTISTE Apartment — Saly", "Saly · quartier calme": "Saly · quiet neighborhood", "Appartement • Direct propriétaire • Vitrine complète": "Apartment • Direct owner • Full showcase", "Appartement confortable à Saly pour 4 personnes max. Quartier calme, Sénélec en sus, paiement Wave direct propriétaire. La vitrine complète contient tarifs, QR, vidéo et réservation guidée.": "Comfortable apartment in Saly for up to 4 guests. Quiet neighborhood, Senelec extra, direct owner Wave payment. The full showcase includes prices, QR, video and guided booking.", "Saly Centre — exemple à activer": "Saly Center — example to activate", "Appartement • Chambre": "Apartment • Room", "Exemple utile : un lieu simple, bien situé, avec prix clair, WhatsApp direct et fiche propre. Pas encore une réservation confirmée.": "Useful example: a simple, well-located place, clear price, direct WhatsApp and clean page. Not a confirmed booking yet.", "Mbour — chambre petit budget": "Mbour — budget room", "Chambre • Budget clair": "Room • Clear budget", "Exemple utile : chambre simple pour ce soir ou demain, contact rapide, paiement direct au propriétaire.": "Useful example: simple room for tonight or tomorrow, quick contact, direct payment to the owner.", "Complet aujourd’hui": "Full today", "Disponible maintenant": "Available now", "Contact direct": "Direct contact", "WhatsApp propriétaire": "Owner WhatsApp", "Contact direct au choix": "Direct contact choice", "⭐ Partenaire vedette": "⭐ Featured partner", "🎥 Vidéo · QR · Wave": "🎥 Video · QR · Wave", "🏆 CHEZ BAPTISTE": "🏆 CHEZ BAPTISTE", "🏠 Logement local": "🏠 Local accommodation", "/ nuit": "/ night", "Contact direct propriétaire. Paiement direct. Réponse simple et rapide.": "Direct owner contact. Direct payment. Simple and fast reply.", "✅ Je veux ce lieu": "✅ I want this place", "🌍 Vitrine complète": "🌍 Full showcase", "👁 Voir la fiche": "👁 See page", "🌙 NDIMBAL — Comprendre": "🌙 NDIMBAL — Understand", "Zone en ouverture": "Opening area", "Zone à préciser": "Area to confirm", "Location": "Rental", "🚧 Exemple à activer": "🚧 Example to activate", "Activation en cours": "Activation in progress", "Exemple": "Example", "à confirmer": "to confirm", "Contact équipe DIGIY": "DIGIY team contact", "DIGIY peut t'aider à chercher un logement dans ce secteur.": "DIGIY can help you look for accommodation in this area.", "WhatsApp DIGIY": "DIGIY WhatsApp", "✅ Choisir la zone": "✅ Choose area", "pers.": "guests", "0% commission": "0% commission"};
+  const ATTR = {"Retour en haut": "Back to top", "Ex : Saly, Ngaparou, Mbour": "E.g.: Saly, Ngaparou, Mbour", "Ex : ce soir, vendredi, 22 juin": "E.g.: tonight, Friday, June 22", "Ex : demain, dimanche, 24 juin": "E.g.: tomorrow, Sunday, June 24", "Ex : 2 adultes": "E.g.: 2 adults", "Ex : 25 000 / 40 000 FCFA": "E.g.: 25,000 / 40,000 FCFA", "Ex : Je cherche une chambre calme à Saly, arrivée ce soir, départ dimanche, 2 personnes. Petit déjeuner souhaité. Merci de confirmer la disponibilité.": "E.g.: I am looking for a quiet room in Saly, arrival tonight, departure Sunday, 2 people. Breakfast wanted. Please confirm availability.", "Exemples demande hôtel": "Hotel request examples", "Ex : 2 nuits, ce week-end": "E.g.: 2 nights, this weekend", "Ex : 2 personnes": "E.g.: 2 people", "Ex : 25 000 / 30 000 FCFA": "E.g.: 25,000 / 30,000 FCFA", "Ex : Je cherche 2 nuits à Saly pour 2 personnes, budget 25 000 / 30 000 FCFA par jour. Coin calme proche plage si possible.": "E.g.: I am looking for 2 nights in Saly for 2 people, budget 25,000 / 30,000 FCFA per day. Quiet place near the beach if possible.", "Exemples de notes rapides": "Quick note examples", "Ouvrir la vitrine partenaire CHEZ BAPTISTE": "Open the CHEZ BAPTISTE partner showcase", "QR partageable CHEZ BAPTISTE — Saly": "Shareable QR CHEZ BAPTISTE — Saly", "Chercher une zone, un lieu...": "Search an area, a place...", "Ex: Awa": "E.g.: Awa", "Ex: 12/03 - 18/03": "E.g.: 12/03 - 18/03", "Ex: 2": "E.g.: 2", "Ex: 25 000 FCFA / nuit": "E.g.: 25,000 FCFA / night", "Fermer les options": "Close options", "Navigation rapide LOC": "Quick LOC navigation", "Comprendre NDIMBAL": "Understand NDIMBAL", "Écouter l’intro LOC": "Listen to the LOC intro", "Version française": "French version", "English version": "English version"};
+
+  function getLang(){
+    try{
+      const p = new URLSearchParams(location.search);
+      const fromUrl = (p.get("lang") || "").toLowerCase();
+      if(fromUrl === "en") return "en";
+      if(fromUrl === "fr") return "fr";
+      const saved = (localStorage.getItem(LANG_KEY) || "").toLowerCase();
+      return saved === "en" ? "en" : "fr";
+    }catch(_){
+      return "fr";
+    }
+  }
+
+  function setPressed(lang){
+    document.querySelectorAll("[data-lang-btn]").forEach(btn => {
+      const on = btn.getAttribute("data-lang-btn") === lang;
+      btn.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+  }
+
+  function setMeta(lang){
+    const meta = META[lang] || META.fr;
+    document.documentElement.lang = lang === "en" ? "en" : "fr";
+    document.title = meta.title;
+    const desc = document.querySelector('meta[name="description"]');
+    if(desc) desc.setAttribute("content", meta.description);
+  }
+
+  function translateSmart(text){
+    if(!text) return text;
+    const exact = TEXT[text];
+    if(exact) return exact;
+
+    let out = text;
+
+    out = out
+      .replace(/lieu\(x\) réel\(s\) visible\(s\)/g, "real place(s) visible")
+      .replace(/lieu réel visible/g, "real place visible")
+      .replace(/lieux réels visibles/g, "real places visible")
+      .replace(/lieu de référence reste visible/g, "reference place remains visible")
+      .replace(/lieu de référence/g, "reference place")
+      .replace(/exemples à activer/g, "examples to activate")
+      .replace(/exemple\(s\) à activer/g, "example(s) to activate")
+      .replace(/repère\(s\) au total/g, "reference point(s) in total")
+      .replace(/aucun autre lieu réel ne correspond au filtre/g, "no other real place matches the filter")
+      .replace(/Les fiches réelles enrichissent la galerie quand elles sont disponibles/g, "Real pages enrich the gallery when available")
+      .replace(/Les fiches réelles s’ajoutent quand elles sont disponibles/g, "Real pages are added when available")
+      .replace(/Température LOC/g, "LOC temperature")
+      .replace(/Contact direct/g, "Direct contact")
+      .replace(/Réponse simple/g, "Simple reply")
+      .replace(/Paiement direct/g, "Direct payment")
+      .replace(/à activer/g, "to activate")
+      .replace(/à confirmer/g, "to confirm")
+      .replace(/\/ nuit/g, "/ night")
+      .replace(/personnes/g, "people")
+      .replace(/personne/g, "person")
+      .replace(/Lieu\(x\)/g, "Place(s)");
+
+    return out === text ? text : out;
+  }
+
+  function applyEnglish(root){
+    const scope = root || document.body;
+    if(!scope) return;
+
+    const walker = document.createTreeWalker(scope, NodeFilter.SHOW_TEXT, {
+      acceptNode(node){
+        const parent = node.parentElement;
+        if(!parent) return NodeFilter.FILTER_REJECT;
+        const tag = parent.tagName;
+        if(["SCRIPT","STYLE","NOSCRIPT","TEXTAREA"].includes(tag)) return NodeFilter.FILTER_REJECT;
+        const raw = node.nodeValue;
+        if(!raw || !raw.trim()) return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+
+    const nodes = [];
+    while(walker.nextNode()) nodes.push(walker.currentNode);
+
+    nodes.forEach(node => {
+      const raw = node.nodeValue;
+      const trimmed = raw.trim();
+      const translated = translateSmart(trimmed);
+      if(translated && translated !== trimmed){
+        node.nodeValue = raw.replace(trimmed, translated);
+      }
+    });
+
+    scope.querySelectorAll("[placeholder],[aria-label],[title],[alt]").forEach(el => {
+      ["placeholder","aria-label","title","alt"].forEach(attr => {
+        const val = el.getAttribute(attr);
+        if(!val) return;
+        const out = ATTR[val] || translateSmart(val);
+        if(out && out !== val) el.setAttribute(attr, out);
+      });
+    });
+  }
+
+  function applyLang(lang){
+    setMeta(lang);
+    setPressed(lang);
+    if(lang === "en") applyEnglish(document.body);
+  }
+
+  window.digiySetLocLang = function(lang){
+    try{
+      const u = new URL(location.href);
+      if(lang === "en"){
+        localStorage.setItem(LANG_KEY, "en");
+        u.searchParams.set("lang", "en");
+        location.replace(u.toString());
+        return;
+      }
+
+      localStorage.removeItem(LANG_KEY);
+      u.searchParams.set("lang", "fr");
+      location.replace(u.toString());
+    }catch(_){
+      if(lang === "en"){
+        try{ localStorage.setItem(LANG_KEY, "en"); }catch(__){}
+      }else{
+        try{ localStorage.removeItem(LANG_KEY); }catch(__){}
+      }
+      location.reload();
+    }
+  };
+
+  const lang = getLang();
+  window.DIGIY_LOC_LANG = lang;
+  applyLang(lang);
+
+  if(lang === "en"){
+    const observer = new MutationObserver(mutations => {
+      let changed = false;
+      for(const m of mutations){
+        if(m.addedNodes && m.addedNodes.length){ changed = true; break; }
+        if(m.type === "characterData"){ changed = true; break; }
+      }
+      if(changed){
+        setTimeout(() => applyEnglish(document.body), 40);
+      }
+    });
+    observer.observe(document.body, {childList:true, subtree:true, characterData:true});
+  }
+})();
+</script>
+
 </body>
 </html>
 
-
-
-<!-- DIGIY LOC temperature clean 20260605 : 1 partenaire + 2 exemples, intro courte, prononciation audio OK -->
 
 
 
