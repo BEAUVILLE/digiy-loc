@@ -2,11 +2,11 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <title>Dormir à Saly ce soir — DIGIY LOC</title>
+  <title>DIGIY LOC — Logements directs Afrique, France, Diaspora</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="description" content="Chambres, villas, appartements. Disponibles maintenant sur la Petite Côte. Contact direct, paiement direct, 0% commission.">
+  <meta name="description" content="DIGIY LOC ouvre les logements locaux en contact direct : Sénégal, France, diaspora. Chambres, villas, appartements, gîtes, hôtels. Paiement direct, 0% commission.">
   <meta name="theme-color" content="#07111b">
-  <meta name="digiy-version" content="loc-index-hotel-demande-directe-20260618">
+  <meta name="digiy-version" content="loc-index-international-afrique-france-diaspora-20260629">
   <meta name="digiy-bilingual-loc" content="fr-en-retour-fr-natif-20260620">
   <script>
     (function(){
@@ -2125,6 +2125,78 @@
       .langSwitch button{min-height:36px;padding:0 12px}
     }
 
+
+    /* DIGIY LOC — ouverture internationale */
+    .territory-wrap{
+      margin-top:14px;
+      padding:16px;
+      border-radius:24px;
+      border:1px solid rgba(250,204,21,.24);
+      background:
+        radial-gradient(circle at top left, rgba(250,204,21,.12), transparent 42%),
+        radial-gradient(circle at bottom right, rgba(34,197,94,.10), transparent 40%),
+        linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.03));
+      box-shadow:var(--shadow-2);
+    }
+    .territory-kicker{
+      color:var(--brand-2);
+      font-size:12px;
+      font-weight:950;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      margin-bottom:8px;
+    }
+    .territory-title{
+      font-size:clamp(27px,4vw,42px);
+      line-height:1.04;
+      letter-spacing:-.035em;
+      font-weight:950;
+      margin:0;
+    }
+    .territory-text{
+      margin-top:10px;
+      color:var(--muted);
+      font-size:16px;
+      line-height:1.65;
+      font-weight:650;
+      max-width:68ch;
+    }
+    .territory-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:12px;
+      margin-top:14px;
+    }
+    .territory-card{
+      border-radius:20px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.045);
+      padding:14px;
+      min-height:150px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .territory-card strong{
+      color:var(--brand-2);
+      font-size:18px;
+      line-height:1.12;
+      font-weight:950;
+    }
+    .territory-card p{
+      color:var(--muted);
+      line-height:1.55;
+      font-size:14px;
+      font-weight:650;
+    }
+    .territory-card .mini-btn{
+      margin-top:auto;
+      width:100%;
+    }
+    @media(max-width:820px){
+      .territory-grid{grid-template-columns:1fr}
+    }
+
 </style>
 </head>
 
@@ -2139,8 +2211,8 @@
           loading="lazy"
         >
         <div class="brand-meta">
-          <div class="brand-kicker">Petite Côte</div>
-          <div class="brand-title">Dormir à Saly ce soir</div>
+          <div class="brand-kicker">Afrique · France · Diaspora</div>
+          <div class="brand-title">DIGIY LOC · logements directs</div>
         </div>
       </a>
 
@@ -2164,15 +2236,16 @@
     <section class="hero">
       <div class="hero-card">
         <div class="hero-content">
-          <div class="hero-eyebrow">🏠 Hébergement local · Contact direct</div>
-          <h1 class="hero-title">Dormir à Saly ce soir</h1>
+          <div class="hero-eyebrow">🏠 Hébergement local · Afrique · France · Diaspora</div>
+          <h1 class="hero-title">Logements locaux en contact direct</h1>
           <p class="hero-sub">
-            Chambres, villas, appartements. Disponibles maintenant sur la Petite Côte.
-            Tu vois le lieu, tu choisis, tu écris direct.
+            Chambres, villas, appartements, gîtes et hôtels. Sénégal, France, diaspora :
+            tu vois le lieu, tu choisis, tu écris direct au bon contact.
           </p>
 
           <div class="hero-actions">
             <a class="btn btn-primary" href="#results">Voir les logements</a>
+            <a class="btn btn-secondary" href="#territoires">🌍 Voir les territoires</a>
             <a class="btn btn-secondary" href="#hotel-demande">🏨 Demander une chambre</a>
             <a class="btn btn-secondary" href="#qr-baptiste">🔳 QR Baptiste</a>
             <a class="btn btn-secondary" href="https://loc.digiylyfe.com/lexique-loc.html?v=lexique-loc-v2-mobile-20260607">🇸🇳 Lexique Wolof LOC</a>
@@ -2181,12 +2254,42 @@
           </div>
 
           <div class="hero-notes">
-            <span class="note">📍 Saly · Ngaparou · Somone · Mbour</span>
+            <span class="note">📍 Saly · Mbour · Sarlat · Arcachon</span>
+            <span class="note">🌍 Afrique · France · Diaspora</span>
             <span class="note">💸 Paiement direct</span>
             <span class="note">✅ 0% commission</span>
-            <span class="note">🌙 NDIMBAL disponible</span>
+            <span class="note">🌙 NDIMBAL / offres locales</span>
             <span class="note">📲 WhatsApp direct</span>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="territoires">
+      <div class="territory-wrap">
+        <div class="territory-kicker">DIGIY LOC · territoires ouverts</div>
+        <h2 class="territory-title">Saly est la preuve. La France et la diaspora ouvrent l’échelle.</h2>
+        <p class="territory-text">
+          DIGIY LOC ne doit pas être lu comme une simple page “Saly”. Saly reste le terrain vivant,
+          mais le module porte une méthode plus large : rendre un logement local visible, partageable,
+          contactable et payable directement, sans commission DIGIY.
+        </p>
+        <div class="territory-grid">
+          <article class="territory-card">
+            <strong>🇸🇳 Sénégal · preuve terrain</strong>
+            <p>Saly, Mbour, Ngaparou, Somone, Petite Côte, Dakar, AIBD : logements, hôtels, chambres et villas en contact direct.</p>
+            <a class="mini-btn gold" href="#results">Voir les lieux visibles</a>
+          </article>
+          <article class="territory-card">
+            <strong>🇫🇷 France · marché pro</strong>
+            <p>Sarlat, Arcachon, gîtes, chambres d’hôtes, locations saisonnières et petits hébergeurs qui veulent garder leur client.</p>
+            <a class="mini-btn" href="#note-rapide">Préparer une demande France</a>
+          </article>
+          <article class="territory-card">
+            <strong>🌍 Diaspora · pont direct</strong>
+            <p>Familles, voyageurs et clients peuvent retrouver un logement local fiable sans passer par une plateforme qui capte la relation.</p>
+            <a class="mini-btn" href="#hotel-demande">Demander un logement</a>
+          </article>
         </div>
       </div>
     </section>
@@ -2198,7 +2301,7 @@
           <div class="intent-visual">🏠</div>
           <div>
             <h2>Demander un logement</h2>
-            <p>Tu écris zone, dates, personnes et budget. DIGIY reçoit ta demande sur WhatsApp.</p>
+            <p>Tu écris territoire, zone, dates, personnes et budget. DIGIY reçoit ta demande sur WhatsApp.</p>
           </div>
           <a class="mini-btn gold" href="#note-rapide">Faire ma demande</a>
         </article>
@@ -2225,7 +2328,7 @@
           <div class="intent-visual">➕</div>
           <div>
             <h2>Proposer un logement</h2>
-            <p>Tu as un lieu ? La fiche d’inscription est fluide pour activer ta présence LOC dans l’architecture métiers de la Supa-Apps.</p>
+            <p>Tu as un lieu au Sénégal, en France ou côté diaspora ? La fiche d’inscription active ta présence LOC dans l’architecture métiers DIGIY.</p>
           </div>
           <a class="mini-btn" href="./inscription-loc.html">Voir les tarifs</a>
         </article>
@@ -2240,7 +2343,7 @@
             <div class="quick-note-title">🏨 Demander une chambre / hôtel</div>
             <div class="quick-note-sub">
               Le client prépare sa demande. DIGIY l’envoie proprement sur WhatsApp.
-              La disponibilité reste à confirmer par l’hôtel ou la résidence.
+              La disponibilité reste à confirmer par l’hôtel, la résidence, le gîte ou le propriétaire.
             </div>
             <div class="hotel-demand-alert">✅ Demande directe · paiement direct hôtel · 0% commission DIGIY</div>
           </div>
@@ -2249,8 +2352,8 @@
 
         <div class="hotel-demand-grid">
           <div class="hotel-demand-field">
-            <label for="hotelZone">Zone souhaitée</label>
-            <input id="hotelZone" class="hotel-demand-input" type="text" placeholder="Ex : Saly, Ngaparou, Mbour">
+            <label for="hotelZone">Pays / zone souhaitée</label>
+            <input id="hotelZone" class="hotel-demand-input" type="text" placeholder="Ex : Saly, Mbour, Sarlat, Arcachon">
           </div>
 
           <div class="hotel-demand-field">
@@ -2282,7 +2385,7 @@
 
           <div class="hotel-demand-field">
             <label for="hotelBudget">Budget indicatif</label>
-            <input id="hotelBudget" class="hotel-demand-input" type="text" placeholder="Ex : 25 000 / 40 000 FCFA">
+            <input id="hotelBudget" class="hotel-demand-input" type="text" placeholder="Ex : 25 000 FCFA / 70 € / nuit">
           </div>
 
           <div class="hotel-demand-field">
@@ -2314,7 +2417,7 @@
 
           <div class="hotel-demand-field full">
             <label for="hotelMessage">Message libre</label>
-            <textarea id="hotelMessage" class="hotel-demand-textarea" placeholder="Ex : Je cherche une chambre calme à Saly, arrivée ce soir, départ dimanche, 2 personnes. Petit déjeuner souhaité. Merci de confirmer la disponibilité."></textarea>
+            <textarea id="hotelMessage" class="hotel-demand-textarea" placeholder="Ex : Je cherche une chambre ou un gîte à Saly, Sarlat ou Arcachon, arrivée ce week-end, 2 personnes. Merci de confirmer la disponibilité."></textarea>
           </div>
         </div>
 
@@ -2339,9 +2442,9 @@
       <div class="examples-wrap">
         <div class="section-head">
           <div>
-            <h2 class="section-title">2 exemples pour comprendre</h2>
+            <h2 class="section-title">3 exemples pour comprendre</h2>
             <p class="section-text">
-              Deux portes suffisent pour initier le visiteur : une vraie fiche complète et une demande simple à envoyer.
+              Trois portes suffisent pour initier le visiteur : une vraie fiche complète, une demande simple et une ouverture France/diaspora.
               La suite se fait par inscription fluide, contact direct et activation propre dans l’architecture métiers de la Supa-Apps.
             </p>
           </div>
@@ -2362,13 +2465,25 @@
 
           <article class="example-card">
             <div class="example-kicker">Exemple demande</div>
-            <div class="example-title">Chambre simple · Mbour</div>
+            <div class="example-title">Chambre simple · Mbour / Sarlat</div>
             <div class="example-text">
-              Une personne cherche un coin propre ce soir : zone, budget, dates, puis message direct. Simple, terrain, sans commission.
+              Une personne cherche un coin propre ce soir : territoire, zone, budget, dates, puis message direct. Simple, terrain, sans commission.
             </div>
             <div class="example-actions">
               <button class="mini-btn gold" type="button" data-example-zone="mbour" data-example-q="chambre mbour">Voir Mbour</button>
               <a class="mini-btn" href="https://wa.me/221771342889?text=Bonjour%20DIGIY,%20je%20cherche%20une%20chambre%20simple%20%C3%A0%20Mbour%20pour%20ce%20soir.%20Budget%20:%20" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+            </div>
+          </article>
+
+          <article class="example-card">
+            <div class="example-kicker">Extension France</div>
+            <div class="example-title">Gîte / chambre · Sarlat ou Arcachon</div>
+            <div class="example-text">
+              Même logique : une fiche claire, un QR, un contact direct, paiement au propriétaire et 0% commission DIGIY.
+            </div>
+            <div class="example-actions">
+              <button class="mini-btn gold" type="button" onclick="document.getElementById('quickZone').value='Sarlat / Arcachon'; document.getElementById('quickMessage').value='Je cherche un logement à Sarlat ou Arcachon, dates à préciser, 2 personnes. Merci de proposer une disponibilité.'; location.hash='note-rapide';">Préparer demande</button>
+              <a class="mini-btn" href="https://wa.me/221771342889?text=Bonjour%20DIGIY,%20je%20cherche%20un%20logement%20%C3%A0%20Sarlat%20ou%20Arcachon.%20Dates%20:%20%20Budget%20:%20" target="_blank" rel="noopener noreferrer">WhatsApp</a>
             </div>
           </article>
         </div>
@@ -2378,13 +2493,13 @@
     <section class="section">
       <div class="whatsapp-help">
         <div>
-          <div class="whatsapp-help-title">Tu ne trouves pas encore ton lieu ?</div>
+          <div class="whatsapp-help-title">Tu ne trouves pas encore ton lieu ou ton territoire ?</div>
           <div class="whatsapp-help-text">
-            Écris directement à DIGIY sur WhatsApp. Donne ta zone, tes dates et ton budget, et on te répond simplement.
+            Écris directement à DIGIY sur WhatsApp. Donne ton pays, ta zone, tes dates et ton budget, et on te répond simplement.
           </div>
         </div>
         <div class="whatsapp-help-actions">
-          <a class="btn btn-primary" href="https://wa.me/221771342889?text=Bonjour%20DIGIY,%20je%20cherche%20un%20logement.%20Zone%20:%20%20Dates%20:%20%20Budget%20:%20" target="_blank" rel="noopener noreferrer">📲 Écrire à DIGIY</a>
+          <a class="btn btn-primary" href="https://wa.me/221771342889?text=Bonjour%20DIGIY,%20je%20cherche%20un%20logement.%20Pays%20/%20zone%20:%20%20Dates%20:%20%20Budget%20:%20" target="_blank" rel="noopener noreferrer">📲 Écrire à DIGIY</a>
           <a class="btn btn-secondary" href="tel:+221771342889">📞 Appeler</a>
         </div>
       </div>
@@ -2394,10 +2509,10 @@
       <div class="quick-note-card">
         <div class="quick-note-top">
           <div>
-            <div class="quick-note-title">Note rapide logement</div>
+            <div class="quick-note-title">Note rapide logement · Sénégal / France / diaspora</div>
             <div class="quick-note-sub">
               Tu ne trouves pas encore ton logement ? Écris ce que tu cherches.
-              DIGIY reçoit ta demande sur WhatsApp et peut te répondre dès qu’un lieu correspond.
+              DIGIY reçoit ta demande sur WhatsApp et peut te répondre dès qu’un lieu correspond, au Sénégal, en France ou côté diaspora.
             </div>
           </div>
           <div class="quick-note-badge">Même jeune, la demande ne se perd pas</div>
@@ -2405,8 +2520,8 @@
 
         <div class="quick-note-grid">
           <div class="quick-note-field">
-            <label for="quickZone">Zone souhaitée</label>
-            <input id="quickZone" class="quick-note-input" type="text" placeholder="Ex : Saly, Ngaparou, Mbour" autocomplete="off">
+            <label for="quickZone">Pays / zone souhaitée</label>
+            <input id="quickZone" class="quick-note-input" type="text" placeholder="Ex : Saly, Mbour, Sarlat, Arcachon" autocomplete="off">
           </div>
 
           <div class="quick-note-field">
@@ -2421,12 +2536,12 @@
 
           <div class="quick-note-field">
             <label for="quickBudget">Budget / jour</label>
-            <input id="quickBudget" class="quick-note-input" type="text" placeholder="Ex : 25 000 / 30 000 FCFA">
+            <input id="quickBudget" class="quick-note-input" type="text" placeholder="Ex : 25 000 FCFA / 70 € / nuit">
           </div>
 
           <div class="quick-note-field" style="grid-column:1/-1">
             <label for="quickMessage">Message libre</label>
-            <textarea id="quickMessage" class="quick-note-textarea" placeholder="Ex : Je cherche 2 nuits à Saly pour 2 personnes, budget 25 000 / 30 000 FCFA par jour. Coin calme proche plage si possible."></textarea>
+            <textarea id="quickMessage" class="quick-note-textarea" placeholder="Ex : Je cherche 2 nuits à Saly, Sarlat ou Arcachon pour 2 personnes, budget à préciser. Coin calme proche plage ou centre si possible."></textarea>
           </div>
         </div>
 
@@ -2449,7 +2564,7 @@
           <div>
             <div class="owner-callout-title">Tu as un logement à proposer ?</div>
             <div class="owner-callout-text">
-              Des visiteurs cherchent déjà où dormir. La fiche d’inscription LOC est fluide : elle active ta présence dans l’architecture métiers de la Supa-Apps, puis tu reçois les demandes directement, sans commission DIGIY.
+              Des visiteurs cherchent déjà où dormir. La fiche d’inscription LOC active ta présence dans l’architecture métiers DIGIY, puis tu reçois les demandes directement, sans commission DIGIY.
             </div>
           </div>
           <div class="whatsapp-help-actions">
@@ -2467,7 +2582,7 @@
             <div class="qr-share-kicker">QR partageable · CHEZ BAPTISTE</div>
             <h2 class="qr-share-title">La fiche Baptiste circule comme EXPLORE.</h2>
             <div class="qr-share-text">
-              Scanne, copie ou partage la vitrine complète. Sur papier, le QR ouvre la fiche partenaire.
+              Scanne, copie ou partage la vitrine complète. Sur papier ou téléphone, le QR ouvre la fiche partenaire.
               Sur téléphone, les boutons ouvrent directement la vitrine ou WhatsApp. Le client arrive côté public, sans PIN.
             </div>
 
@@ -2528,17 +2643,20 @@
     <section class="section">
       <div class="filters-card">
         <div class="chip-row" id="zoneChips">
-          <button class="chip active" type="button" data-zone="">Toutes les zones</button>
+          <button class="chip active" type="button" data-zone="">Tous les territoires</button>
           <button class="chip" type="button" data-zone="saly">Saly</button>
           <button class="chip" type="button" data-zone="ngaparou">Ngaparou</button>
           <button class="chip" type="button" data-zone="somone">Somone</button>
           <button class="chip" type="button" data-zone="mbour">Mbour</button>
           <button class="chip" type="button" data-zone="dakar">Dakar</button>
           <button class="chip" type="button" data-zone="thies">Thiès</button>
+          <button class="chip" type="button" data-zone="sarlat">Sarlat</button>
+          <button class="chip" type="button" data-zone="arcachon">Arcachon</button>
+          <button class="chip" type="button" data-zone="diaspora">Diaspora</button>
         </div>
 
         <div class="filter-grid">
-          <input id="q" class="control" placeholder="Chercher une zone, un lieu..." autocomplete="off">
+          <input id="q" class="control" placeholder="Chercher un territoire, une zone, un lieu..." autocomplete="off">
           <select id="kind" class="control">
             <option value="">Type : Tout</option>
             <option value="villa">Villa</option>
@@ -2599,7 +2717,7 @@
       <div class="section-head">
         <div>
           <h2 class="section-title">Les lieux visibles maintenant</h2>
-          <p class="section-text">Des logements publiés, lisibles vite, avec contact direct et fiche si tu veux voir plus.</p>
+          <p class="section-text">Des logements publiés, lisibles vite, avec contact direct et fiche si tu veux voir plus. Saly est la preuve, les autres territoires s’ouvrent au fil des partenaires.</p>
         </div>
       </div>
 
@@ -2608,7 +2726,7 @@
         <div>Contact direct · Réponse simple · Paiement direct</div>
       </div>
       <div class="message-card" id="locTemperature" style="margin-top:12px">
-        🌡️ Température LOC : 1 lieu réel visible + 2 exemples utiles. Les fiches réelles enrichissent la galerie quand elles sont disponibles.
+        🌡️ Température LOC : 1 lieu réel visible + 2 exemples utiles + ouverture France/diaspora. Les fiches réelles enrichissent la galerie quand elles sont disponibles.
       </div>
 
       <section id="grid" class="grid"></section>
@@ -2617,8 +2735,8 @@
     <section class="proof-strip">
       <div class="proof-card-wrap">
         <p>
-          <strong>Saly · Ngaparou · Somone · Mbour</strong><br>
-          Lieux réels. Hôtes locaux. Contact direct.<br>
+          <strong>Saly · Mbour · Sarlat · Arcachon · Diaspora</strong><br>
+          Lieux réels ou territoires à activer. Hôtes locaux. Contact direct.<br>
           Pas d’intermédiaire. Pas de commission.
         </p>
       </div>
@@ -2641,7 +2759,7 @@
         <div>
           <div class="whatsapp-help-title">Revenir dans la maison DIGIY</div>
           <div class="whatsapp-help-text">
-            Cette page montre les logements. Pour comprendre DIGIYLYFE ou choisir un module, utilise les portes ci-dessous.
+            Cette page montre les logements directs. Pour comprendre DIGIYLYFE, ouvrir un autre territoire ou choisir un module, utilise les portes ci-dessous.
           </div>
         </div>
         <div class="whatsapp-help-actions">
@@ -2653,8 +2771,8 @@
     </section>
 
     <footer>
-      <div>DIGIY LOC • <span>façade publique</span> — Sénégal → Afrique</div>
-      <div>0% commission • Paiement direct • Pont court vers le réel</div>
+      <div>DIGIY LOC • <span>façade publique</span> — Sénégal · France · Diaspora</div>
+      <div>0% commission • Paiement direct • Contact direct local</div>
     </footer>
   </div>
 
@@ -2737,7 +2855,7 @@
       <a href="https://digiy-hub.digiylyfe.com/"><strong>🧭</strong><span>HUB</span></a>
       <a class="primary" href="#note-rapide"><strong>🏠</strong><span>Demander</span></a>
       <a href="#results"><strong>🛏️</strong><span>Logements</span></a>
-      <a href="https://loc.digiylyfe.com/lexique-loc.html?v=lexique-loc-v2-mobile-20260607"><strong>🇸🇳</strong><span>Wolof</span></a>
+      <a href="#territoires"><strong>🌍</strong><span>Monde</span></a>
       <a href="./inscription-loc.html"><strong>➕</strong><span>Tarifs</span></a>
     </div>
   </nav>
@@ -4213,7 +4331,7 @@ font-size:17px;
       "Bonjour DIGIY, je viens depuis DIGIY LOC.",
       "Je cherche une chambre / hébergement.",
       "",
-      "Zone souhaitée : " + (val("hotelZone") || empty),
+      "Pays / zone souhaitée : " + (val("hotelZone") || empty),
       "Arrivée : " + (val("hotelArrival") || empty),
       "Départ : " + (val("hotelDeparture") || empty),
       "Personnes : " + (val("hotelPeople") || empty),
@@ -4320,13 +4438,13 @@ font-size:17px;
   const LANG_KEY = "digiy_loc_lang_native_v1";
   const META = {
     fr:{
-      title:"Dormir à Saly ce soir — DIGIY LOC",
-      description:"Chambres, villas, appartements. Disponibles maintenant sur la Petite Côte. Contact direct, paiement direct, 0% commission."
+      title:"DIGIY LOC — Logements directs Afrique, France, Diaspora",
+      description:"DIGIY LOC ouvre les logements locaux en contact direct : Sénégal, France, diaspora. Chambres, villas, appartements, gîtes, hôtels. Paiement direct, 0% commission."
     },
-    en:{"title": "Sleep in Saly tonight — DIGIY LOC", "description": "Rooms, villas, apartments. Available now on the Petite Côte. Direct contact, direct payment, 0% commission."}
+    en:{"title": "DIGIY LOC — Direct housing across Africa, France and the diaspora", "description": "DIGIY LOC opens local housing with direct contact: Senegal, France, diaspora. Rooms, villas, apartments, guest houses, hotels. Direct payment, 0% commission."}
   };
-  const TEXT = {"Petite Côte": "Petite Côte", "Dormir à Saly ce soir": "Sleep in Saly tonight", "🌍 Site DIGIYLYFE": "🌍 DIGIYLYFE site", "🧭 HUB DIGIY": "🧭 DIGIY HUB", "📦 Tarifs LOC": "📦 LOC prices", "🇸🇳 Lexique Wolof": "🇸🇳 Wolof lexicon", "Voir les lieux": "See places", "WhatsApp": "WhatsApp", "🏠 Hébergement local · Contact direct": "🏠 Local accommodation · Direct contact", "Chambres, villas, appartements. Disponibles maintenant sur la Petite Côte. Tu vois le lieu, tu choisis, tu écris direct.": "Rooms, villas, apartments. Available now on the Petite Côte. You see the place, choose, and write directly.", "Voir les logements": "See accommodation", "🏨 Demander une chambre": "🏨 Request a room", "🔳 QR Baptiste": "🔳 Baptiste QR", "🇸🇳 Lexique Wolof LOC": "🇸🇳 LOC Wolof lexicon", "WhatsApp direct": "Direct WhatsApp", "Voir les tarifs LOC": "See LOC prices", "📍 Saly · Ngaparou · Somone · Mbour": "📍 Saly · Ngaparou · Somone · Mbour", "💸 Paiement direct": "💸 Direct payment", "✅ 0% commission": "✅ 0% commission", "🌙 NDIMBAL disponible": "🌙 NDIMBAL available", "📲 WhatsApp direct": "📲 Direct WhatsApp", "Demander un logement": "Request accommodation", "Tu écris zone, dates, personnes et budget. DIGIY reçoit ta demande sur WhatsApp.": "You write the area, dates, guests and budget. DIGIY receives your request on WhatsApp.", "Faire ma demande": "Make my request", "Tu regardes les lieux visibles maintenant, puis tu écris au bon contact.": "You view the visible places, then write to the right contact.", "Chambre / Hôtel": "Room / Hotel", "Tu poses arrivée, départ, personnes, petit déjeuner, resto ou transfert. L’hôtel confirme la disponibilité.": "You enter arrival, departure, guests, breakfast, restaurant or transfer. The hotel confirms availability.", "Proposer un logement": "Offer accommodation", "Tu as un lieu ? La fiche d’inscription est fluide pour activer ta présence LOC dans l’architecture métiers de la Supa-Apps.": "Do you have a place? The registration form is smooth to activate your LOC presence inside the DIGIYLYFE business architecture.", "Voir les tarifs": "See prices", "🏨 Demander une chambre / hôtel": "🏨 Request a room / hotel", "Le client prépare sa demande. DIGIY l’envoie proprement sur WhatsApp. La disponibilité reste à confirmer par l’hôtel ou la résidence.": "The client prepares the request. DIGIY sends it cleanly on WhatsApp. Availability must still be confirmed by the hotel or residence.", "✅ Demande directe · paiement direct hôtel · 0% commission DIGIY": "✅ Direct request · direct hotel payment · 0% DIGIY commission", "Disponibilité à confirmer": "Availability to be confirmed", "Zone souhaitée": "Desired area", "Arrivée": "Arrival", "Départ": "Departure", "Personnes": "Guests", "Type demandé": "Requested type", "Chambre simple": "Single room", "Chambre double": "Double room", "Suite": "Suite", "Appartement": "Apartment", "Villa": "Villa", "À proposer": "To propose", "Budget indicatif": "Indicative budget", "Petit déjeuner": "Breakfast", "À préciser": "To be confirmed", "Oui": "Yes", "Non": "No", "Restaurant / table": "Restaurant / table", "Oui, demander une table": "Yes, request a table", "Transfert AIBD / chauffeur": "AIBD transfer / driver", "Oui, besoin transfert": "Yes, transfer needed", "Message libre": "Free message", "Ce soir à Saly": "Tonight in Saly", "Week-end couple": "Couple weekend", "Famille / villa": "Family / villa", "Avec transfert AIBD": "With AIBD transfer", "📲 Envoyer demande hôtel": "📲 Send hotel request", "Voir les logements visibles": "See visible accommodation", "Proposer un hôtel / logement": "Offer a hotel / accommodation", "Demande hôtel prête.": "Hotel request ready.", "2 exemples pour comprendre": "2 examples to understand", "Deux portes suffisent pour initier le visiteur : une vraie fiche complète et une demande simple à envoyer. La suite se fait par inscription fluide, contact direct et activation propre dans l’architecture métiers de la Supa-Apps.": "Two doors are enough to guide the visitor: one full real page and one simple request to send. The next step is smooth registration, direct contact and clean activation inside the DIGIYLYFE business architecture.", "Exemple réel": "Real example", "CHEZ BAPTISTE · Saly": "CHEZ BAPTISTE · Saly", "Vitrine complète avec lien public, QR, WhatsApp direct et paiement propriétaire. Le client voit, comprend et contacte sans détour.": "Complete showcase with public link, QR, direct WhatsApp and owner payment. The client sees, understands and contacts without detour.", "Ouvrir la fiche": "Open the page", "Exemple demande": "Request example", "Chambre simple · Mbour": "Single room · Mbour", "Une personne cherche un coin propre ce soir : zone, budget, dates, puis message direct. Simple, terrain, sans commission.": "Someone is looking for a clean place tonight: area, budget, dates, then direct message. Simple, practical, commission-free.", "Voir Mbour": "See Mbour", "Tu ne trouves pas encore ton lieu ?": "Can’t find your place yet?", "Écris directement à DIGIY sur WhatsApp. Donne ta zone, tes dates et ton budget, et on te répond simplement.": "Write directly to DIGIY on WhatsApp. Give your area, dates and budget, and we reply simply.", "📲 Écrire à DIGIY": "📲 Write to DIGIY", "📞 Appeler": "📞 Call", "Note rapide logement": "Quick accommodation note", "Tu ne trouves pas encore ton logement ? Écris ce que tu cherches. DIGIY reçoit ta demande sur WhatsApp et peut te répondre dès qu’un lieu correspond.": "Can’t find accommodation yet? Write what you need. DIGIY receives your request on WhatsApp and can reply when a place matches.", "Même jeune, la demande ne se perd pas": "Even early, the request is not lost", "Dates / nuits": "Dates / nights", "Budget / jour": "Budget / day", "2 nuits à Saly": "2 nights in Saly", "Ce soir à Mbour": "Tonight in Mbour", "Studio à Ngaparou": "Studio in Ngaparou", "Villa à Somone": "Villa in Somone", "Je connais un logement": "I know a place", "📲 Envoyer ma demande à DIGIY": "📲 Send my request to DIGIY", "Demande préparée.": "Request prepared.", "Tu as un logement à proposer ?": "Do you have accommodation to offer?", "Des visiteurs cherchent déjà où dormir. La fiche d’inscription LOC est fluide : elle active ta présence dans l’architecture métiers de la Supa-Apps, puis tu reçois les demandes directement, sans commission DIGIY.": "Visitors are already looking for places to sleep. The LOC registration form is smooth: it activates your presence inside the DIGIYLYFE business architecture, then you receive requests directly, with no DIGIY commission.", "Parler à DIGIY": "Talk to DIGIY", "QR partageable · CHEZ BAPTISTE": "Shareable QR · CHEZ BAPTISTE", "La fiche Baptiste circule comme EXPLORE.": "The Baptiste page circulates like EXPLORE.", "Scanne, copie ou partage la vitrine complète. Sur papier, le QR ouvre la fiche partenaire. Sur téléphone, les boutons ouvrent directement la vitrine ou WhatsApp. Le client arrive côté public, sans PIN.": "Scan, copy or share the full showcase. On paper, the QR opens the partner page. On phone, the buttons open the showcase or WhatsApp directly. The client arrives on the public side, without PIN.", "🌍 Ouvrir la vitrine complète": "🌍 Open the full showcase", "📋 Copier le lien": "📋 Copy link", "📤 Partager WhatsApp": "📤 Share on WhatsApp", "Lien copié.": "Link copied.", "Toutes les zones": "All areas", "Type : Tout": "Type: All", "Studio": "Studio", "Chambre": "Room", "Maison": "House", "🔎 Chercher": "🔎 Search", "↩ Effacer": "↩ Clear", "Écrire au bon propriétaire": "Write to the right owner", "Choisis un logement dans la liste 👇": "Choose accommodation in the list 👇", "Aucun lieu choisi": "No place selected", "Changer": "Change", "Votre prénom": "Your first name", "Dates": "Dates", "Budget": "Budget", "📲 Écrire sur WhatsApp": "📲 Write on WhatsApp", "Message prêt. Tu n’as plus qu’à envoyer.": "Message ready. You only need to send it.", "Les lieux visibles maintenant": "Places visible now", "Des logements publiés, lisibles vite, avec contact direct et fiche si tu veux voir plus.": "Published accommodation, quick to read, with direct contact and a page if you want to see more.", "lieu(x) réel(s) visible(s)": "real place(s) visible", "Contact direct · Réponse simple · Paiement direct": "Direct contact · Simple reply · Direct payment", "🌡️ Température LOC : 1 lieu réel visible + 2 exemples utiles. Les fiches réelles enrichissent la galerie quand elles sont disponibles.": "🌡️ LOC temperature: 1 real place visible + 2 useful examples. Real pages enrich the gallery when available.", "Lieux réels. Hôtes locaux. Contact direct.": "Real places. Local hosts. Direct contact.", "Pas d’intermédiaire. Pas de commission.": "No intermediary. No commission.", "2 exemples utiles": "2 useful examples", "Deux cartes suffisent pour montrer l’esprit LOC sans transformer la vitrine en catalogue d’attente.": "Two cards are enough to show the LOC spirit without turning the showcase into a waiting catalog.", "Revenir dans la maison DIGIY": "Return to the DIGIY house", "Cette page montre les logements. Pour comprendre DIGIYLYFE ou choisir un module, utilise les portes ci-dessous.": "This page shows accommodation. To understand DIGIYLYFE or choose a module, use the doors below.", "façade publique": "public facade", "— Sénégal → Afrique": "— Senegal → Africa", "0% commission • Paiement direct • Pont court vers le réel": "0% commission • Direct payment • Short bridge to the real world", "DIGIY LOC — Camembert options fiche propriétaire": "DIGIY LOC — Owner page option wheel", "Options fiche propriétaire": "Owner page options", "Choisir le niveau de lumière": "Choose the level of visibility", "Simple pour être visible. Premium pour mieux présenter. Extra pour une vraie vitrine partenaire.": "Simple to be visible. Premium to present better. Extra for a full partner showcase.", "Fiche Simple · incluse": "Simple page · included", "Présence dans la galerie LOC, photo, prix, zone, capacité et WhatsApp direct.": "Presence in the LOC gallery, photo, price, area, capacity and direct WhatsApp.", "Fiche Premium · mise en page": "Premium page · layout", "Intervention DIGIY pour organiser la présentation, les photos, les tarifs et les boutons.": "DIGIY intervention to organize the presentation, photos, prices and buttons.", "Fiche Extra · réalisation complète": "Extra page · full build", "Vitrine partenaire complète : QR cliquable, partage WhatsApp, storytelling et page qui circule.": "Full partner showcase: clickable QR, WhatsApp sharing, storytelling and a page that circulates.", "📲 Parler des options fiche": "📲 Discuss page options", "📦 Voir les tarifs LOC": "📦 See LOC prices", "Site": "Site", "HUB": "HUB", "Demander": "Request", "Logements": "Places", "Wolof": "Wolof", "Tarifs": "Prices", "Note rapide": "Quick note", "🌙 NDIMBAL — le pouvoir des nuits offertes": "🌙 NDIMBAL — the power of offered nights", "NDIMBAL n'est pas une commission ni un frais. C'est une stratégie locale : tu restes plus longtemps, tu dépenses plus dans le quartier, et tout le monde respire mieux.": "NDIMBAL is not a commission or a fee. It is a local strategy: you stay longer, spend more in the neighborhood, and everyone breathes better.", "✕ Fermer": "✕ Close", "OFFRE OFFICIELLE": "OFFICIAL OFFER", "2 nuits payées = 3e offerte": "2 paid nights = 3rd night offered", "Valable": "Valid", "du lundi au jeudi": "from Monday to Thursday", "selon disponibilité du logement NDIMBAL. Objectif : pousser les séjours en semaine et faire tourner l’économie locale.": "depending on NDIMBAL accommodation availability. Goal: encourage weekday stays and support the local economy.", "✅ Tu gagnes": "✅ You gain", "1 nuit": "1 night", "→ tu restes plus longtemps.": "→ you stay longer.", "✅ Tu consommes": "✅ You consume", "1 jour de plus": "1 more day", "dans le coin.": "in the area.", "✅ Le logement gagne en": "✅ The accommodation gains", "bouche-à-oreille": "word of mouth", "COMMENT REPÉRER ?": "HOW TO SPOT IT?", "Dans la galerie, un logement NDIMBAL porte un badge dédié ou un propriétaire t’en parle directement.": "In the gallery, NDIMBAL accommodation has a dedicated badge or an owner tells you directly.", "1) Tu choisis tes dates.": "1) You choose your dates.", "2) Tu écris au propriétaire via WhatsApp.": "2) You write to the owner via WhatsApp.", "3) Tu demandes :": "3) You ask:", "“Je veux profiter de NDIMBAL”": "“I want to use NDIMBAL”", "✅ J’ai compris": "✅ I understand", "📲 Parler à DIGIY": "📲 Talk to DIGIY", "▶": "▶", "Écouter l’intro LOC": "Listen to the LOC intro", "Arrêter": "Stop", "Appartement CHEZ BAPTISTE — Saly": "CHEZ BAPTISTE Apartment — Saly", "Saly · quartier calme": "Saly · quiet neighborhood", "Appartement • Direct propriétaire • Vitrine complète": "Apartment • Direct owner • Full showcase", "Appartement confortable à Saly pour 4 personnes max. Quartier calme, Sénélec en sus, paiement Wave direct propriétaire. La vitrine complète contient tarifs, QR, vidéo et réservation guidée.": "Comfortable apartment in Saly for up to 4 guests. Quiet neighborhood, Senelec extra, direct owner Wave payment. The full showcase includes prices, QR, video and guided booking.", "Saly Centre — exemple à activer": "Saly Center — example to activate", "Appartement • Chambre": "Apartment • Room", "Exemple utile : un lieu simple, bien situé, avec prix clair, WhatsApp direct et fiche propre. Pas encore une réservation confirmée.": "Useful example: a simple, well-located place, clear price, direct WhatsApp and clean page. Not a confirmed booking yet.", "Mbour — chambre petit budget": "Mbour — budget room", "Chambre • Budget clair": "Room • Clear budget", "Exemple utile : chambre simple pour ce soir ou demain, contact rapide, paiement direct au propriétaire.": "Useful example: simple room for tonight or tomorrow, quick contact, direct payment to the owner.", "Complet aujourd’hui": "Full today", "Disponible maintenant": "Available now", "Contact direct": "Direct contact", "WhatsApp propriétaire": "Owner WhatsApp", "Contact direct au choix": "Direct contact choice", "⭐ Partenaire vedette": "⭐ Featured partner", "🎥 Vidéo · QR · Wave": "🎥 Video · QR · Wave", "🏆 CHEZ BAPTISTE": "🏆 CHEZ BAPTISTE", "🏠 Logement local": "🏠 Local accommodation", "/ nuit": "/ night", "Contact direct propriétaire. Paiement direct. Réponse simple et rapide.": "Direct owner contact. Direct payment. Simple and fast reply.", "✅ Je veux ce lieu": "✅ I want this place", "🌍 Vitrine complète": "🌍 Full showcase", "👁 Voir la fiche": "👁 See page", "🌙 NDIMBAL — Comprendre": "🌙 NDIMBAL — Understand", "Zone en ouverture": "Opening area", "Zone à préciser": "Area to confirm", "Location": "Rental", "🚧 Exemple à activer": "🚧 Example to activate", "Activation en cours": "Activation in progress", "Exemple": "Example", "à confirmer": "to confirm", "Contact équipe DIGIY": "DIGIY team contact", "DIGIY peut t'aider à chercher un logement dans ce secteur.": "DIGIY can help you look for accommodation in this area.", "WhatsApp DIGIY": "DIGIY WhatsApp", "✅ Choisir la zone": "✅ Choose area", "pers.": "guests", "0% commission": "0% commission"};
-  const ATTR = {"Retour en haut": "Back to top", "Ex : Saly, Ngaparou, Mbour": "E.g.: Saly, Ngaparou, Mbour", "Ex : ce soir, vendredi, 22 juin": "E.g.: tonight, Friday, June 22", "Ex : demain, dimanche, 24 juin": "E.g.: tomorrow, Sunday, June 24", "Ex : 2 adultes": "E.g.: 2 adults", "Ex : 25 000 / 40 000 FCFA": "E.g.: 25,000 / 40,000 FCFA", "Ex : Je cherche une chambre calme à Saly, arrivée ce soir, départ dimanche, 2 personnes. Petit déjeuner souhaité. Merci de confirmer la disponibilité.": "E.g.: I am looking for a quiet room in Saly, arrival tonight, departure Sunday, 2 people. Breakfast wanted. Please confirm availability.", "Exemples demande hôtel": "Hotel request examples", "Ex : 2 nuits, ce week-end": "E.g.: 2 nights, this weekend", "Ex : 2 personnes": "E.g.: 2 people", "Ex : 25 000 / 30 000 FCFA": "E.g.: 25,000 / 30,000 FCFA", "Ex : Je cherche 2 nuits à Saly pour 2 personnes, budget 25 000 / 30 000 FCFA par jour. Coin calme proche plage si possible.": "E.g.: I am looking for 2 nights in Saly for 2 people, budget 25,000 / 30,000 FCFA per day. Quiet place near the beach if possible.", "Exemples de notes rapides": "Quick note examples", "Ouvrir la vitrine partenaire CHEZ BAPTISTE": "Open the CHEZ BAPTISTE partner showcase", "QR partageable CHEZ BAPTISTE — Saly": "Shareable QR CHEZ BAPTISTE — Saly", "Chercher une zone, un lieu...": "Search an area, a place...", "Ex: Awa": "E.g.: Awa", "Ex: 12/03 - 18/03": "E.g.: 12/03 - 18/03", "Ex: 2": "E.g.: 2", "Ex: 25 000 FCFA / nuit": "E.g.: 25,000 FCFA / night", "Fermer les options": "Close options", "Navigation rapide LOC": "Quick LOC navigation", "Comprendre NDIMBAL": "Understand NDIMBAL", "Écouter l’intro LOC": "Listen to the LOC intro", "Version française": "French version", "English version": "English version"};
+  const TEXT = {"Petite Côte": "Petite Côte", "Dormir à Saly ce soir": "Sleep in Saly tonight", "🌍 Site DIGIYLYFE": "🌍 DIGIYLYFE site", "🧭 HUB DIGIY": "🧭 DIGIY HUB", "📦 Tarifs LOC": "📦 LOC prices", "🇸🇳 Lexique Wolof": "🇸🇳 Wolof lexicon", "Voir les lieux": "See places", "WhatsApp": "WhatsApp", "🏠 Hébergement local · Contact direct": "🏠 Local accommodation · Direct contact", "Chambres, villas, appartements. Disponibles maintenant sur la Petite Côte. Tu vois le lieu, tu choisis, tu écris direct.": "Rooms, villas, apartments. Available now on the Petite Côte. You see the place, choose, and write directly.", "Voir les logements": "See accommodation", "🏨 Demander une chambre": "🏨 Request a room", "🔳 QR Baptiste": "🔳 Baptiste QR", "🇸🇳 Lexique Wolof LOC": "🇸🇳 LOC Wolof lexicon", "WhatsApp direct": "Direct WhatsApp", "Voir les tarifs LOC": "See LOC prices", "📍 Saly · Ngaparou · Somone · Mbour": "📍 Saly · Ngaparou · Somone · Mbour", "💸 Paiement direct": "💸 Direct payment", "✅ 0% commission": "✅ 0% commission", "🌙 NDIMBAL disponible": "🌙 NDIMBAL available", "📲 WhatsApp direct": "📲 Direct WhatsApp", "Demander un logement": "Request accommodation", "Tu écris territoire, zone, dates, personnes et budget. DIGIY reçoit ta demande sur WhatsApp.": "You write the area, dates, guests and budget. DIGIY receives your request on WhatsApp.", "Faire ma demande": "Make my request", "Tu regardes les lieux visibles maintenant, puis tu écris au bon contact.": "You view the visible places, then write to the right contact.", "Chambre / Hôtel": "Room / Hotel", "Tu poses arrivée, départ, personnes, petit déjeuner, resto ou transfert. L’hôtel confirme la disponibilité.": "You enter arrival, departure, guests, breakfast, restaurant or transfer. The hotel confirms availability.", "Proposer un logement": "Offer accommodation", "Tu as un lieu au Sénégal, en France ou côté diaspora ? La fiche d’inscription active ta présence LOC dans l’architecture métiers DIGIY.": "Do you have a place? The registration form is smooth to activate your LOC presence inside the DIGIYLYFE business architecture.", "Voir les tarifs": "See prices", "🏨 Demander une chambre / hôtel": "🏨 Request a room / hotel", "Le client prépare sa demande. DIGIY l’envoie proprement sur WhatsApp. La disponibilité reste à confirmer par l’hôtel ou la résidence.": "The client prepares the request. DIGIY sends it cleanly on WhatsApp. Availability must still be confirmed by the hotel or residence.", "✅ Demande directe · paiement direct hôtel · 0% commission DIGIY": "✅ Direct request · direct hotel payment · 0% DIGIY commission", "Disponibilité à confirmer": "Availability to be confirmed", "Pays / zone souhaitée": "Desired area", "Arrivée": "Arrival", "Départ": "Departure", "Personnes": "Guests", "Type demandé": "Requested type", "Chambre simple": "Single room", "Chambre double": "Double room", "Suite": "Suite", "Appartement": "Apartment", "Villa": "Villa", "À proposer": "To propose", "Budget indicatif": "Indicative budget", "Petit déjeuner": "Breakfast", "À préciser": "To be confirmed", "Oui": "Yes", "Non": "No", "Restaurant / table": "Restaurant / table", "Oui, demander une table": "Yes, request a table", "Transfert AIBD / chauffeur": "AIBD transfer / driver", "Oui, besoin transfert": "Yes, transfer needed", "Message libre": "Free message", "Ce soir à Saly": "Tonight in Saly", "Week-end couple": "Couple weekend", "Famille / villa": "Family / villa", "Avec transfert AIBD": "With AIBD transfer", "📲 Envoyer demande hôtel": "📲 Send hotel request", "Voir les logements visibles": "See visible accommodation", "Proposer un hôtel / logement": "Offer a hotel / accommodation", "Demande hôtel prête.": "Hotel request ready.", "3 exemples pour comprendre": "2 examples to understand", "Trois portes suffisent pour initier le visiteur : une vraie fiche complète, une demande simple et une ouverture France/diaspora. La suite se fait par inscription fluide, contact direct et activation propre dans l’architecture métiers de la Supa-Apps.": "Two doors are enough to guide the visitor: one full real page and one simple request to send. The next step is smooth registration, direct contact and clean activation inside the DIGIYLYFE business architecture.", "Exemple réel": "Real example", "CHEZ BAPTISTE · Saly": "CHEZ BAPTISTE · Saly", "Vitrine complète avec lien public, QR, WhatsApp direct et paiement propriétaire. Le client voit, comprend et contacte sans détour.": "Complete showcase with public link, QR, direct WhatsApp and owner payment. The client sees, understands and contacts without detour.", "Ouvrir la fiche": "Open the page", "Exemple demande": "Request example", "Chambre simple · Mbour / Sarlat": "Single room · Mbour", "Une personne cherche un coin propre ce soir : territoire, zone, budget, dates, puis message direct. Simple, terrain, sans commission.": "Someone is looking for a clean place tonight: area, budget, dates, then direct message. Simple, practical, commission-free.", "Voir Mbour": "See Mbour", "Tu ne trouves pas encore ton lieu ou ton territoire ?": "Can’t find your place yet?", "Écris directement à DIGIY sur WhatsApp. Donne ton pays, ta zone, tes dates et ton budget, et on te répond simplement.": "Write directly to DIGIY on WhatsApp. Give your area, dates and budget, and we reply simply.", "📲 Écrire à DIGIY": "📲 Write to DIGIY", "📞 Appeler": "📞 Call", "Note rapide logement · Sénégal / France / diaspora": "Quick accommodation note", "Tu ne trouves pas encore ton logement ? Écris ce que tu cherches. DIGIY reçoit ta demande sur WhatsApp et peut te répondre dès qu’un lieu correspond.": "Can’t find accommodation yet? Write what you need. DIGIY receives your request on WhatsApp and can reply when a place matches.", "Même jeune, la demande ne se perd pas": "Even early, the request is not lost", "Dates / nuits": "Dates / nights", "Budget / jour": "Budget / day", "2 nuits à Saly": "2 nights in Saly", "Ce soir à Mbour": "Tonight in Mbour", "Studio à Ngaparou": "Studio in Ngaparou", "Villa à Somone": "Villa in Somone", "Je connais un logement": "I know a place", "📲 Envoyer ma demande à DIGIY": "📲 Send my request to DIGIY", "Demande préparée.": "Request prepared.", "Tu as un logement à proposer ?": "Do you have accommodation to offer?", "Des visiteurs cherchent déjà où dormir. La fiche d’inscription LOC active ta présence dans l’architecture métiers DIGIY, puis tu reçois les demandes directement, sans commission DIGIY.": "Visitors are already looking for places to sleep. The LOC registration form is smooth: it activates your presence inside the DIGIYLYFE business architecture, then you receive requests directly, with no DIGIY commission.", "Parler à DIGIY": "Talk to DIGIY", "QR partageable · CHEZ BAPTISTE": "Shareable QR · CHEZ BAPTISTE", "La fiche Baptiste circule comme EXPLORE.": "The Baptiste page circulates like EXPLORE.", "Scanne, copie ou partage la vitrine complète. Sur papier ou téléphone, le QR ouvre la fiche partenaire. Sur téléphone, les boutons ouvrent directement la vitrine ou WhatsApp. Le client arrive côté public, sans PIN.": "Scan, copy or share the full showcase. On paper, the QR opens the partner page. On phone, the buttons open the showcase or WhatsApp directly. The client arrives on the public side, without PIN.", "🌍 Ouvrir la vitrine complète": "🌍 Open the full showcase", "📋 Copier le lien": "📋 Copy link", "📤 Partager WhatsApp": "📤 Share on WhatsApp", "Lien copié.": "Link copied.", "Tous les territoires": "All areas", "Type : Tout": "Type: All", "Studio": "Studio", "Chambre": "Room", "Maison": "House", "🔎 Chercher": "🔎 Search", "↩ Effacer": "↩ Clear", "Écrire au bon propriétaire": "Write to the right owner", "Choisis un logement dans la liste 👇": "Choose accommodation in the list 👇", "Aucun lieu choisi": "No place selected", "Changer": "Change", "Votre prénom": "Your first name", "Dates": "Dates", "Budget": "Budget", "📲 Écrire sur WhatsApp": "📲 Write on WhatsApp", "Message prêt. Tu n’as plus qu’à envoyer.": "Message ready. You only need to send it.", "Les lieux visibles maintenant": "Places visible now", "Des logements publiés, lisibles vite, avec contact direct et fiche si tu veux voir plus. Saly est la preuve, les autres territoires s’ouvrent au fil des partenaires.": "Published accommodation, quick to read, with direct contact and a page if you want to see more.", "lieu(x) réel(s) visible(s)": "real place(s) visible", "Contact direct · Réponse simple · Paiement direct": "Direct contact · Simple reply · Direct payment", "🌡️ Température LOC : 1 lieu réel visible + 2 exemples utiles + ouverture France/diaspora. Les fiches réelles enrichissent la galerie quand elles sont disponibles.": "🌡️ LOC temperature: 1 real place visible + 2 useful examples. Real pages enrich the gallery when available.", "Lieux réels. Hôtes locaux. Contact direct.": "Real places. Local hosts. Direct contact.", "Pas d’intermédiaire. Pas de commission.": "No intermediary. No commission.", "2 exemples utiles": "2 useful examples", "Deux cartes suffisent pour montrer l’esprit LOC sans transformer la vitrine en catalogue d’attente.": "Two cards are enough to show the LOC spirit without turning the showcase into a waiting catalog.", "Revenir dans la maison DIGIY": "Return to the DIGIY house", "Cette page montre les logements directs. Pour comprendre DIGIYLYFE, ouvrir un autre territoire ou choisir un module, utilise les portes ci-dessous.": "This page shows accommodation. To understand DIGIYLYFE or choose a module, use the doors below.", "façade publique": "public facade", "— Sénégal → Afrique": "— Senegal → Africa", "0% commission • Paiement direct • Contact direct local": "0% commission • Direct payment • Short bridge to the real world", "DIGIY LOC — Camembert options fiche propriétaire": "DIGIY LOC — Owner page option wheel", "Options fiche propriétaire": "Owner page options", "Choisir le niveau de lumière": "Choose the level of visibility", "Simple pour être visible. Premium pour mieux présenter. Extra pour une vraie vitrine partenaire.": "Simple to be visible. Premium to present better. Extra for a full partner showcase.", "Fiche Simple · incluse": "Simple page · included", "Présence dans la galerie LOC, photo, prix, zone, capacité et WhatsApp direct.": "Presence in the LOC gallery, photo, price, area, capacity and direct WhatsApp.", "Fiche Premium · mise en page": "Premium page · layout", "Intervention DIGIY pour organiser la présentation, les photos, les tarifs et les boutons.": "DIGIY intervention to organize the presentation, photos, prices and buttons.", "Fiche Extra · réalisation complète": "Extra page · full build", "Vitrine partenaire complète : QR cliquable, partage WhatsApp, storytelling et page qui circule.": "Full partner showcase: clickable QR, WhatsApp sharing, storytelling and a page that circulates.", "📲 Parler des options fiche": "📲 Discuss page options", "📦 Voir les tarifs LOC": "📦 See LOC prices", "Site": "Site", "HUB": "HUB", "Demander": "Request", "Logements": "Places", "Wolof": "Wolof", "Tarifs": "Prices", "Note rapide": "Quick note", "🌙 NDIMBAL — le pouvoir des nuits offertes": "🌙 NDIMBAL — the power of offered nights", "NDIMBAL n'est pas une commission ni un frais. C'est une stratégie locale : tu restes plus longtemps, tu dépenses plus dans le quartier, et tout le monde respire mieux.": "NDIMBAL is not a commission or a fee. It is a local strategy: you stay longer, spend more in the neighborhood, and everyone breathes better.", "✕ Fermer": "✕ Close", "OFFRE OFFICIELLE": "OFFICIAL OFFER", "2 nuits payées = 3e offerte": "2 paid nights = 3rd night offered", "Valable": "Valid", "du lundi au jeudi": "from Monday to Thursday", "selon disponibilité du logement NDIMBAL. Objectif : pousser les séjours en semaine et faire tourner l’économie locale.": "depending on NDIMBAL accommodation availability. Goal: encourage weekday stays and support the local economy.", "✅ Tu gagnes": "✅ You gain", "1 nuit": "1 night", "→ tu restes plus longtemps.": "→ you stay longer.", "✅ Tu consommes": "✅ You consume", "1 jour de plus": "1 more day", "dans le coin.": "in the area.", "✅ Le logement gagne en": "✅ The accommodation gains", "bouche-à-oreille": "word of mouth", "COMMENT REPÉRER ?": "HOW TO SPOT IT?", "Dans la galerie, un logement NDIMBAL porte un badge dédié ou un propriétaire t’en parle directement.": "In the gallery, NDIMBAL accommodation has a dedicated badge or an owner tells you directly.", "1) Tu choisis tes dates.": "1) You choose your dates.", "2) Tu écris au propriétaire via WhatsApp.": "2) You write to the owner via WhatsApp.", "3) Tu demandes :": "3) You ask:", "“Je veux profiter de NDIMBAL”": "“I want to use NDIMBAL”", "✅ J’ai compris": "✅ I understand", "📲 Parler à DIGIY": "📲 Talk to DIGIY", "▶": "▶", "Écouter l’intro LOC": "Listen to the LOC intro", "Arrêter": "Stop", "Appartement CHEZ BAPTISTE — Saly": "CHEZ BAPTISTE Apartment — Saly", "Saly · quartier calme": "Saly · quiet neighborhood", "Appartement • Direct propriétaire • Vitrine complète": "Apartment • Direct owner • Full showcase", "Appartement confortable à Saly pour 4 personnes max. Quartier calme, Sénélec en sus, paiement Wave direct propriétaire. La vitrine complète contient tarifs, QR, vidéo et réservation guidée.": "Comfortable apartment in Saly for up to 4 guests. Quiet neighborhood, Senelec extra, direct owner Wave payment. The full showcase includes prices, QR, video and guided booking.", "Saly Centre — exemple à activer": "Saly Center — example to activate", "Appartement • Chambre": "Apartment • Room", "Exemple utile : un lieu simple, bien situé, avec prix clair, WhatsApp direct et fiche propre. Pas encore une réservation confirmée.": "Useful example: a simple, well-located place, clear price, direct WhatsApp and clean page. Not a confirmed booking yet.", "Mbour — chambre petit budget": "Mbour — budget room", "Chambre • Budget clair": "Room • Clear budget", "Exemple utile : chambre simple pour ce soir ou demain, contact rapide, paiement direct au propriétaire.": "Useful example: simple room for tonight or tomorrow, quick contact, direct payment to the owner.", "Complet aujourd’hui": "Full today", "Disponible maintenant": "Available now", "Contact direct": "Direct contact", "WhatsApp propriétaire": "Owner WhatsApp", "Contact direct au choix": "Direct contact choice", "⭐ Partenaire vedette": "⭐ Featured partner", "🎥 Vidéo · QR · Wave": "🎥 Video · QR · Wave", "🏆 CHEZ BAPTISTE": "🏆 CHEZ BAPTISTE", "🏠 Logement local": "🏠 Local accommodation", "/ nuit": "/ night", "Contact direct propriétaire. Paiement direct. Réponse simple et rapide.": "Direct owner contact. Direct payment. Simple and fast reply.", "✅ Je veux ce lieu": "✅ I want this place", "🌍 Vitrine complète": "🌍 Full showcase", "👁 Voir la fiche": "👁 See page", "🌙 NDIMBAL — Comprendre": "🌙 NDIMBAL — Understand", "Zone en ouverture": "Opening area", "Zone à préciser": "Area to confirm", "Location": "Rental", "🚧 Exemple à activer": "🚧 Example to activate", "Activation en cours": "Activation in progress", "Exemple": "Example", "à confirmer": "to confirm", "Contact équipe DIGIY": "DIGIY team contact", "DIGIY peut t'aider à chercher un logement dans ce secteur.": "DIGIY can help you look for accommodation in this area.", "WhatsApp DIGIY": "DIGIY WhatsApp", "✅ Choisir la zone": "✅ Choose area", "pers.": "guests", "0% commission": "0% commission"};
+  const ATTR = {"Retour en haut": "Back to top", "Ex : Saly, Mbour, Sarlat, Arcachon": "E.g.: Saly, Ngaparou, Mbour", "Ex : ce soir, vendredi, 22 juin": "E.g.: tonight, Friday, June 22", "Ex : demain, dimanche, 24 juin": "E.g.: tomorrow, Sunday, June 24", "Ex : 2 adultes": "E.g.: 2 adults", "Ex : 25 000 FCFA / 70 € / nuit": "E.g.: 25,000 / 40,000 FCFA", "Ex : Je cherche une chambre calme à Saly, arrivée ce soir, départ dimanche, 2 personnes. Petit déjeuner souhaité. Merci de confirmer la disponibilité.": "E.g.: I am looking for a quiet room in Saly, arrival tonight, departure Sunday, 2 people. Breakfast wanted. Please confirm availability.", "Exemples demande hôtel": "Hotel request examples", "Ex : 2 nuits, ce week-end": "E.g.: 2 nights, this weekend", "Ex : 2 personnes": "E.g.: 2 people", "Ex : 25 000 / 30 000 FCFA": "E.g.: 25,000 / 30,000 FCFA", "Ex : Je cherche 2 nuits à Saly pour 2 personnes, budget 25 000 / 30 000 FCFA par jour. Coin calme proche plage si possible.": "E.g.: I am looking for 2 nights in Saly for 2 people, budget 25,000 / 30,000 FCFA per day. Quiet place near the beach if possible.", "Exemples de notes rapides": "Quick note examples", "Ouvrir la vitrine partenaire CHEZ BAPTISTE": "Open the CHEZ BAPTISTE partner showcase", "QR partageable CHEZ BAPTISTE — Saly": "Shareable QR CHEZ BAPTISTE — Saly", "Chercher un territoire, une zone, un lieu...": "Search an area, a place...", "Ex: Awa": "E.g.: Awa", "Ex: 12/03 - 18/03": "E.g.: 12/03 - 18/03", "Ex: 2": "E.g.: 2", "Ex: 25 000 FCFA / nuit": "E.g.: 25,000 FCFA / night", "Fermer les options": "Close options", "Navigation rapide LOC": "Quick LOC navigation", "Comprendre NDIMBAL": "Understand NDIMBAL", "Écouter l’intro LOC": "Listen to the LOC intro", "Version française": "French version", "English version": "English version"};
 
   function getLang(){
     try{
@@ -4476,8 +4594,128 @@ font-size:17px;
 })();
 </script>
 
+
+<script>
+(function(){
+  function replaceExactText(fr,en){
+    if((window.DIGIY_LOC_LANG||"fr") !== "en") return;
+    var walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{
+      acceptNode:function(node){
+        var p=node.parentElement;
+        if(!p || ["SCRIPT","STYLE","NOSCRIPT","TEXTAREA"].includes(p.tagName)) return NodeFilter.FILTER_REJECT;
+        return node.nodeValue && node.nodeValue.indexOf(fr)>-1 ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+      }
+    });
+    var nodes=[];
+    while(walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(function(n){ n.nodeValue=n.nodeValue.split(fr).join(en); });
+  }
+  function attrReplace(fr,en){
+    if((window.DIGIY_LOC_LANG||"fr") !== "en") return;
+    document.querySelectorAll("[placeholder],[aria-label],[title],[alt]").forEach(function(el){
+      ["placeholder","aria-label","title","alt"].forEach(function(a){
+        var v=el.getAttribute(a);
+        if(v && v.indexOf(fr)>-1) el.setAttribute(a,v.split(fr).join(en));
+      });
+    });
+  }
+  var pairs=[
+    ["Afrique · France · Diaspora","Africa · France · Diaspora"],
+    ["DIGIY LOC · logements directs","DIGIY LOC · direct housing"],
+    ["🏠 Hébergement local · Afrique · France · Diaspora","🏠 Local accommodation · Africa · France · Diaspora"],
+    ["Logements locaux en contact direct","Local housing with direct contact"],
+    ["Chambres, villas, appartements, gîtes et hôtels. Sénégal, France, diaspora : tu vois le lieu, tu choisis, tu écris direct au bon contact.","Rooms, villas, apartments, guest houses and hotels. Senegal, France, diaspora: you see the place, choose, and write directly to the right contact."],
+    ["🌍 Voir les territoires","🌍 See territories"],
+    ["📍 Saly · Mbour · Sarlat · Arcachon","📍 Saly · Mbour · Sarlat · Arcachon"],
+    ["🌍 Afrique · France · Diaspora","🌍 Africa · France · Diaspora"],
+    ["🌙 NDIMBAL / offres locales","🌙 NDIMBAL / local offers"],
+    ["DIGIY LOC · territoires ouverts","DIGIY LOC · open territories"],
+    ["Saly est la preuve. La France et la diaspora ouvrent l’échelle.","Saly is the proof. France and the diaspora open the scale."],
+    ["DIGIY LOC ne doit pas être lu comme une simple page “Saly”. Saly reste le terrain vivant, mais le module porte une méthode plus large : rendre un logement local visible, partageable, contactable et payable directement, sans commission DIGIY.","DIGIY LOC should not be read as just a “Saly” page. Saly remains the living field proof, but the module carries a wider method: making local housing visible, shareable, contactable and payable directly, with 0% DIGIY commission."],
+    ["🇸🇳 Sénégal · preuve terrain","🇸🇳 Senegal · field proof"],
+    ["Saly, Mbour, Ngaparou, Somone, Petite Côte, Dakar, AIBD : logements, hôtels, chambres et villas en contact direct.","Saly, Mbour, Ngaparou, Somone, Petite Côte, Dakar, AIBD: housing, hotels, rooms and villas with direct contact."],
+    ["🇫🇷 France · marché pro","🇫🇷 France · pro market"],
+    ["Sarlat, Arcachon, gîtes, chambres d’hôtes, locations saisonnières et petits hébergeurs qui veulent garder leur client.","Sarlat, Arcachon, guest houses, seasonal rentals and small hosts who want to keep their client relationship."],
+    ["🌍 Diaspora · pont direct","🌍 Diaspora · direct bridge"],
+    ["Familles, voyageurs et clients peuvent retrouver un logement local fiable sans passer par une plateforme qui capte la relation.","Families, travelers and clients can find trusted local accommodation without going through a platform that captures the relationship."],
+    ["Préparer une demande France","Prepare a France request"],
+    ["Pays / zone souhaitée","Country / desired area"],
+    ["Tous les territoires","All territories"],
+    ["Chercher un territoire, une zone, un lieu...","Search a territory, area, place..."],
+    ["Saly est la preuve, les autres territoires s’ouvrent au fil des partenaires.","Saly is the proof; other territories open as partners join."],
+    ["Gîte / chambre · Sarlat ou Arcachon","Guest house / room · Sarlat or Arcachon"],
+    ["Même logique : une fiche claire, un QR, un contact direct, paiement au propriétaire et 0% commission DIGIY.","Same logic: a clear page, a QR, direct contact, payment to the owner and 0% DIGIY commission."],
+    ["Préparer demande","Prepare request"],
+    ["Monde","World"],
+    ["Sénégal · France · Diaspora","Senegal · France · Diaspora"],
+    ["Contact direct local","Local direct contact"]
+  ];
+  pairs.forEach(function(p){replaceExactText(p[0],p[1]); attrReplace(p[0],p[1]);});
+})();
+</script>
+
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
