@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="robots" content="index,follow" />
   <meta name="theme-color" content="#155f43" />
-  <meta name="digiy-version" content="loc-inscription-france-senegal-sendwave-grille-pays-20260629" />
-  <title>Inscription LOC — France · Sénégal · DIGIY</title>
+  <meta name="digiy-version" content="loc-inscription-doctrine-presence-sendwave-dore-20260707" />
+  <title>Inscription LOC — Présence logement · France · Sénégal · DIGIY</title>
 
   <style>
     :root{
@@ -119,6 +119,24 @@
       color:rgba(255,255,255,.92);
       line-height:1.58;
       font-weight:900;
+    }
+
+
+    .pills{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+
+    .pill{
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(250,204,21,.10);
+      color:#fff8dc;
+      font-size:13px;
+      font-weight:1000;
     }
 
     .grid{
@@ -401,6 +419,78 @@
       font-weight:950;
     }
 
+    .gold-emphasis{
+      border:1px solid rgba(250,204,21,.72)!important;
+      background:linear-gradient(135deg,rgba(250,204,21,.28),rgba(245,158,11,.18))!important;
+      color:#fff8dc!important;
+      box-shadow:0 12px 28px rgba(250,204,21,.14);
+    }
+
+    .value-card{
+      margin:0 0 14px;
+      border:2px solid rgba(250,204,21,.58);
+      border-radius:24px;
+      background:
+        radial-gradient(circle at top right,rgba(250,204,21,.22),transparent 38%),
+        linear-gradient(145deg,rgba(255,255,255,.12),rgba(21,95,67,.78));
+      box-shadow:0 16px 42px rgba(0,0,0,.22);
+      padding:18px;
+      display:grid;
+      gap:12px;
+    }
+
+    .value-code{
+      width:max-content;
+      max-width:100%;
+      border-radius:999px;
+      border:1px solid rgba(250,204,21,.68);
+      background:rgba(250,204,21,.18);
+      color:#fff8dc;
+      padding:8px 12px;
+      font-size:12px;
+      font-weight:1000;
+      letter-spacing:.02em;
+    }
+
+    .value-card h2{
+      margin:0;
+      font-size:clamp(28px,4.7vw,48px);
+      line-height:1;
+      font-weight:1000;
+      letter-spacing:-.04em;
+      color:#fff8dc;
+    }
+
+    .value-card p{
+      margin:0;
+    }
+
+    .value-list{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:8px;
+    }
+
+    .value-list span{
+      border:1px solid rgba(255,255,255,.20);
+      background:rgba(255,255,255,.08);
+      border-radius:16px;
+      padding:11px;
+      color:#fff8dc;
+      font-size:13px;
+      line-height:1.35;
+      font-weight:1000;
+    }
+
+    .value-quote{
+      border-left:4px solid var(--gold);
+      background:rgba(13,63,48,.56);
+      border-radius:16px;
+      padding:12px 14px;
+      color:#fff8dc;
+      font-weight:1000;
+    }
+
     @media(max-width:850px){
       .hero,
       .grid{grid-template-columns:1fr}
@@ -410,6 +500,7 @@
       .nav{width:100%}
       .nav a{flex:1}
       .payLine{display:grid;gap:3px}
+      .value-list{grid-template-columns:1fr}
     }
   </style>
 </head>
@@ -429,8 +520,15 @@
         <h1>Je loue, je reste maître.</h1>
         <p class="lead">
           LOC aide propriétaire, logement, villa, chambre, résidence ou agence à être visible,
-          joignable et organisé. Aucun tarif n’est précoché.
+          joignable et organisé. L’entrée de base est gratuite : tu paies seulement si tu veux activer une présence professionnelle, un QR, une mise en avant ou un outil métier.
         </p>
+
+        <div class="pills">
+          <span class="pill">Entrée gratuite</span>
+          <span class="pill">Présence LOC payante si activation</span>
+          <span class="pill">0% commission</span>
+          <span class="pill gold-emphasis">France → Sendwave Sénégal</span>
+        </div>
       </div>
 
       <div>
@@ -440,9 +538,28 @@
         </div>
         <p>
           Choix volontaire, addition claire, date dans le message, WhatsApp ou SMS.
-          Après paiement, envoie la preuve sur WhatsApp. France : Sendwave vers Wave Sénégal.
+          Sénégal : Wave direct. <strong class="gold-emphasis" style="display:inline-block;padding:2px 8px;border-radius:999px;">France : Sendwave vers Wave Sénégal</strong>.
+          Après paiement, envoie la preuve sur WhatsApp.
         </p>
       </div>
+    </section>
+
+    <section class="value-card" aria-label="Doctrine économique LOC">
+      <div class="value-code">ENTRÉE GRATUITE · PRÉSENCE LOC PAYANTE · 0% COMMISSION</div>
+      <h2>Gratuit pour entrer. Payant pour louer mieux. 0% commission pour rester libre.</h2>
+      <p>
+        DIGIY LOC ne prend pas de pourcentage sur tes locations. Le client contacte directement le propriétaire ou le professionnel.
+        Tu gardes ton client, ton paiement et ta décision. DIGIY construit la visibilité, le QR, le lien partageable et l’organisation.
+      </p>
+      <div class="value-list" aria-label="Promesse LOC">
+        <span>✅ Inscription de base gratuite</span>
+        <span>🏠 Présence logement activable</span>
+        <span>🤝 Paiement direct au pro</span>
+        <span class="gold-emphasis">🇫🇷 France : Sendwave possible</span>
+      </div>
+      <p class="value-quote">
+        Les plateformes prennent une part sur la route. DIGIY LOC ouvre la route directe entre le client et le logement.
+      </p>
     </section>
 
     <main class="grid">
@@ -457,17 +574,17 @@
               <strong>🇸🇳 Sénégal</strong>
               <span>Tarifs FCFA · Wave direct</span>
             </button>
-            <button class="countryBtn" type="button" data-country="france">
+            <button class="countryBtn gold-emphasis" type="button" data-country="france">
               <strong>🇫🇷 France</strong>
               <span>Tarifs EUR · Sendwave vers Wave Sénégal</span>
             </button>
           </div>
           <div class="countryNote" id="countryNote">
-            Les tarifs France et Sénégal sont une grille pays : pas une conversion au taux de change.
+            Les tarifs France et Sénégal sont une grille pays : pas une conversion au taux de change. France : Sendwave vers Wave Sénégal.
           </div>
         </div>
 
-        <div class="section">🏠 Abonnement LOC</div>
+        <div class="section">🏠 Présence LOC</div>
         <div class="prices" id="baseOptions"></div>
 
         <div class="section">✨ BOOST visibilité</div>
@@ -478,7 +595,7 @@
       </section>
 
       <aside class="card summary" id="summary">
-        <h2>Ce que l’abonnement m’apporte</h2>
+        <h2>Ce que ma présence LOC m’apporte</h2>
 
         <div class="selected" id="selectedBox">
           <strong>Aucun choix sélectionné</strong><br />
@@ -517,10 +634,10 @@
 
           <div class="proof">
             Après paiement Wave, envoie la capture ou la preuve par WhatsApp.
-            DIGIY vérifie puis accompagne l’ouverture / visibilité LOC.
+            DIGIY vérifie puis accompagne l’ouverture de la présence / visibilité LOC.
           </div>
 
-          <div class="payBadge" id="payBadge">
+          <div class="payBadge gold-emphasis" id="payBadge">
             🇸🇳 Sénégal : règlement Wave direct. 🇫🇷 France : règlement Sendwave vers Wave Sénégal.
           </div>
 
@@ -873,7 +990,7 @@ Je joins la capture / preuve de paiement à ce message.`;
         if(proof){
           proof.textContent = country === "france"
             ? "Depuis la France, règle par Sendwave vers le Wave Sénégal de JB BEAUVILLE, puis envoie la preuve par WhatsApp."
-            : "Après paiement Wave, envoie la capture ou la preuve par WhatsApp. DIGIY vérifie puis accompagne l’ouverture / visibilité LOC.";
+            : "Après paiement Wave, envoie la capture ou la preuve par WhatsApp. DIGIY vérifie puis accompagne l’ouverture de la présence / visibilité LOC.";
         }
 
         $("benefits").innerHTML = (items.length ? [...COMMON,...items.flatMap(p => p.bonus)] : [])
@@ -942,5 +1059,7 @@ Je joins la capture / preuve de paiement à ce message.`;
   </script>
 </body>
 </html>
+
+
 
 
