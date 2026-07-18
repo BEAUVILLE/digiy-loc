@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="robots" content="index,follow" />
   <meta name="theme-color" content="#155f43" />
-  <meta name="digiy-version" content="loc-inscription-presence-40eur-metier-15eur-20260718" />
+  <meta name="digiy-version" content="loc-grille-2a-2e-option-metier-20260718" />
   <title>Inscription LOC — Présence logement · France · Sénégal · DIGIY</title>
 
   <style>
@@ -525,17 +525,16 @@
       <div>
         <h1>Je loue, je reste maître.</h1>
         <p class="lead">
-          LOC aide propriétaire, logement, villa, chambre, résidence ou agence à être visible,
-          joignable et organisé. La demande d’inscription reste gratuite.
-          DIGIY PRÉSENCE construit l’identité numérique du logement.
-          DIGIY MÉTIER ajoute l’outil de gestion LOC uniquement si tu le choisis.
+          LOC aide propriétaire, résidence ou agence à gérer une ou plusieurs locations.
+          Choisis une seule formule selon le nombre de logements.
+          Le logiciel LOC reste une option distincte et facultative.
         </p>
 
         <div class="pills">
-          <span class="pill">Demande gratuite</span>
-          <span class="pill">Présence LOC payante si activation</span>
+          <span class="pill">2A à 2E selon le parc</span>
+          <span class="pill">Logiciel +8 000 FCFA / +15 €</span>
           <span class="pill">0% commission</span>
-          <span class="pill gold-emphasis">France → Sendwave Sénégal</span>
+          <span class="pill gold-emphasis">Paiement avant activation</span>
         </div>
       </div>
 
@@ -553,20 +552,19 @@
     </section>
 
     <section class="value-card" aria-label="Doctrine économique LOC">
-      <div class="value-code">DEMANDE GRATUITE · PRÉSENCE 19 900 / 40 € · MÉTIER +8 000 / +15 € · 0% COMMISSION</div>
-      <h2>Commencer proprement. Monter quand l’activité le demande.</h2>
+      <div class="value-code">FORMULE LOC 2A À 2E · LOGICIEL +8 000 / +15 € · 0% COMMISSION</div>
+      <h2>Choisir la formule adaptée au nombre de logements.</h2>
       <p>
-        DIGIY PRÉSENCE donne au logement une fiche professionnelle, un QR officiel,
-        un lien partageable, un contact direct et la maintenance essentielle.
-        DIGIY MÉTIER ajoute le logiciel LOC pour les disponibilités, demandes,
-        logements, clients et suivi opérationnel. Cette option reste facultative.
+        Chaque formule LOC conserve son prix officiel selon le nombre de logements.
+        Le logiciel LOC ajoute les disponibilités, demandes, clients et le suivi opérationnel.
+        Cette option reste facultative.
         PRO CARNET, BOOST et RÉSEAU restent séparés.
       </p>
       <div class="value-list" aria-label="Promesse LOC">
-        <span>1 · DIGIY PRÉSENCE · 19 900 FCFA / 40 €</span>
-        <span>2 · DIGIY MÉTIER · +8 000 FCFA / +15 €</span>
-        <span>✅ Total avec logiciel · 27 900 FCFA / 55 €</span>
-        <span>🤝 Aucun module supplémentaire imposé</span>
+        <span>2A · 1 à 5 logements</span>
+        <span>2B à 2D · parcs intermédiaires</span>
+        <span>2E · plus de 30 logements</span>
+        <span>Logiciel LOC facultatif</span>
       </div>
       <p class="value-quote">
         Les plateformes prennent une part sur la route. DIGIY LOC ouvre la route directe entre le client et le logement.
@@ -576,7 +574,7 @@
     <main class="grid">
       <section class="card">
         <h2>Activation LOC</h2>
-        <p>Commence par DIGIY PRÉSENCE. Ajoute DIGIY MÉTIER seulement si tu veux le logiciel LOC.</p>
+        <p>Choisis une seule formule LOC selon le nombre de logements. Ajoute ensuite le logiciel uniquement si tu en as besoin.</p>
 
         <div class="countryBox" aria-label="Choix pays LOC">
           <div class="countryTitle">🌍 Choisir le pays de règlement</div>
@@ -591,15 +589,15 @@
             </button>
           </div>
           <div class="countryNote" id="countryNote">
-            Sénégal : Présence 19 900 FCFA ; Métier +8 000 FCFA ; total 27 900 FCFA.
-            France : Présence 40 € ; Métier +15 € ; total 55 €.
+            Sénégal : formules 2A à 2E selon le nombre de logements.
+            Logiciel LOC facultatif : +8 000 FCFA.
           </div>
         </div>
 
-        <div class="section">1 · SOCLE — DIGIY PRÉSENCE</div>
+        <div class="section">1 · FORMULE LOC — CHOISIR UNE SEULE</div>
         <div class="prices" id="baseOptions"></div>
 
-        <div class="section">2 · OPTION MÉTIER — DIGIY MÉTIER</div>
+        <div class="section">2 · OPTION LOGICIEL LOC — FACULTATIVE</div>
         <div class="prices" id="metierOptions"></div>
 
         <div class="section">✨ BOOST visibilité</div>
@@ -658,7 +656,7 @@
 
           <div class="noteBox">
             <label for="paymentNote">📝 Note / preuve paiement</label>
-            <textarea id="paymentNote" placeholder="Ex : DIGIY PRÉSENCE LOC — 19 900 FCFA ; option métier ajoutée — total 27 900 FCFA — Mamadou Diop."></textarea>
+            <textarea id="paymentNote" placeholder="Ex : LOC 2A — 26 000 FCFA ; logiciel ajouté +8 000 FCFA ; total 34 000 FCFA — Mamadou Diop."></textarea>
             <div class="noteHelp">
               Cette note sera ajoutée dans le message WhatsApp/SMS pour identifier clairement le paiement.
             </div>
@@ -696,21 +694,57 @@
 
       const PLANS = [
         {
-          code:"PRESENCE",
+          code:"2A",
           cat:"base",
-          name:"DIGIY PRÉSENCE LOC",
-          fcfa:19900,
-          eur:40,
-          desc:"Fiche logement personnalisée, QR officiel, lien partageable, contact direct et maintenance essentielle.",
-          bonus:["Fiche logement visible","QR officiel","Lien partageable","Contact direct"]
+          name:"LOC 2A · 1 à 5 logements",
+          fcfa:26000,
+          eur:39,
+          desc:"Formule de base pour un petit parc de 1 à 5 logements.",
+          bonus:["Fiche LOC visible","QR officiel","Lien partageable","Contact direct"]
+        },
+        {
+          code:"2B",
+          cat:"base",
+          name:"LOC 2B · 6 à 9 logements",
+          fcfa:35000,
+          eur:59,
+          desc:"Formule de base pour un parc de 6 à 9 logements.",
+          bonus:["Fiche LOC visible","QR officiel","Lien partageable","Contact direct"]
+        },
+        {
+          code:"2C",
+          cat:"base",
+          name:"LOC 2C · 10 à 20 logements",
+          fcfa:50000,
+          eur:79,
+          desc:"Formule de base pour un parc de 10 à 20 logements.",
+          bonus:["Fiche LOC visible","QR officiel","Lien partageable","Contact direct"]
+        },
+        {
+          code:"2D",
+          cat:"base",
+          name:"LOC 2D · 21 à 30 logements",
+          fcfa:70000,
+          eur:99,
+          desc:"Formule de base pour un parc de 21 à 30 logements.",
+          bonus:["Fiche LOC visible","QR officiel","Lien partageable","Contact direct"]
+        },
+        {
+          code:"2E",
+          cat:"base",
+          name:"LOC 2E · Plus de 30 logements",
+          fcfa:100000,
+          eur:149,
+          desc:"Formule de base pour un parc de plus de 30 logements.",
+          bonus:["Fiche LOC visible","QR officiel","Lien partageable","Contact direct"]
         },
         {
           code:"METIER",
           cat:"metier",
-          name:"DIGIY MÉTIER LOC",
+          name:"Option logiciel métier LOC",
           fcfa:8000,
           eur:15,
-          desc:"Option facultative : logiciel LOC pour disponibilités, demandes, logements, clients et suivi opérationnel.",
+          desc:"Option facultative : disponibilités, demandes, logements, clients et suivi opérationnel.",
           bonus:["Logiciel métier LOC","Disponibilités","Demandes et clients","Suivi opérationnel"]
         },
         {
@@ -781,7 +815,6 @@
       const COMMON = [
         "Carte de visite complète",
         "QR et lien partageable",
-        "Disponibilités / demandes / messages selon logement",
         "Textes prêts",
         "Validation humaine",
         "0% commission",
@@ -860,8 +893,8 @@
         const noteEl = $("countryNote");
         if(noteEl){
           noteEl.innerHTML = country === "france"
-            ? "🇫🇷 France : DIGIY PRÉSENCE LOC à <strong>40 €</strong> ; DIGIY MÉTIER LOC à <strong>+15 €</strong> ; total <strong>55 €</strong>. Règlement Sendwave vers Wave Sénégal."
-            : "🇸🇳 Sénégal : DIGIY PRÉSENCE LOC à <strong>19 900 FCFA</strong> ; DIGIY MÉTIER LOC à <strong>+8 000 FCFA</strong> ; total <strong>27 900 FCFA</strong>.";
+            ? "🇫🇷 France : 2A 39 € · 2B 59 € · 2C 79 € · 2D 99 € · 2E 149 €. Logiciel LOC facultatif : <strong>+15 €</strong>."
+            : "🇸🇳 Sénégal : 2A 26 000 · 2B 35 000 · 2C 50 000 · 2D 70 000 · 2E 100 000 FCFA. Logiciel LOC facultatif : <strong>+8 000 FCFA</strong>.";
         }
 
         try{
@@ -884,7 +917,7 @@
             : cat === "boost" ? "boostOptions"
             : "reseauOptions";
 
-          const presenceSelected = selected.has("PRESENCE");
+          const presenceSelected = ["2A","2B","2C","2D","2E"].some(code => selected.has(code));
 
           $(target).innerHTML = PLANS
             .filter(p => p.cat === cat)
@@ -917,11 +950,22 @@
           b.onclick = () => {
             const code = b.dataset.code;
 
-            if(code === "METIER" && !selected.has("PRESENCE")) return;
+            const baseCodes = ["2A","2B","2C","2D","2E"];
+            const isBase = baseCodes.includes(code);
+            const hasBase = baseCodes.some(baseCode => selected.has(baseCode));
 
-            if(selected.has(code)){
+            if(code === "METIER" && !hasBase) return;
+
+            if(isBase){
+              if(selected.has(code)){
+                selected.delete(code);
+                selected.delete("METIER");
+              }else{
+                baseCodes.forEach(baseCode => selected.delete(baseCode));
+                selected.add(code);
+              }
+            }else if(selected.has(code)){
               selected.delete(code);
-              if(code === "PRESENCE") selected.delete("METIER");
             }else{
               selected.add(code);
             }
@@ -947,8 +991,8 @@ Choix :
 ${choiceLines()}
 
 Doctrine LOC :
-- DIGIY PRÉSENCE : socle
-- DIGIY MÉTIER : option facultative
+- Formule 2A à 2E : choisir une seule base selon le nombre de logements
+- Logiciel métier LOC : option facultative
 - PRO CARNET, BOOST et RÉSEAU : séparés
 
 Total : ${total.label}
@@ -988,8 +1032,8 @@ Je joins la capture / preuve de paiement à ce message.`;
         const total = totals();
 
         $("selectedBox").innerHTML = items.length
-          ? `<strong>${items.length} choix sélectionné${items.length > 1 ? "s" : ""}</strong><br>${selected.has("METIER") ? "Présence + logiciel métier" : selected.has("PRESENCE") ? "Présence seule" : "Option de visibilité séparée"}`
-          : `<strong>Aucun choix sélectionné</strong><br>Rien n’est précoché. Commence par DIGIY PRÉSENCE.`;
+          ? `<strong>${items.length} choix sélectionné${items.length > 1 ? "s" : ""}</strong><br>${selected.has("METIER") ? "Formule LOC + logiciel métier" : ["2A","2B","2C","2D","2E"].some(code => selected.has(code)) ? "Formule LOC seule" : "Option de visibilité séparée"}`
+          : `<strong>Aucun choix sélectionné</strong><br>Rien n’est précoché. Choisis une formule 2A à 2E.`;
 
         $("choiceList").innerHTML = items.length
           ? items.map(p => `<div class="line"><span>${p.code} · ${p.name}</span><b>${money(p)}</b></div>`).join("")
@@ -1090,6 +1134,19 @@ Je joins la capture / preuve de paiement à ce message.`;
   </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
