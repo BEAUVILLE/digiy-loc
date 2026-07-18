@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="robots" content="index,follow" />
   <meta name="theme-color" content="#155f43" />
-  <meta name="digiy-version" content="loc-inscription-demande-gratuite-activation-payante-sendwave-dore-20260707" />
+  <meta name="digiy-version" content="loc-inscription-presence-40eur-metier-15eur-20260718" />
   <title>Inscription LOC — Présence logement · France · Sénégal · DIGIY</title>
 
   <style>
@@ -178,6 +178,12 @@
     .option.active{
       border-color:#facc15;
       background:rgba(250,204,21,.18);
+    }
+
+    .option.disabled{
+      opacity:.45;
+      cursor:not-allowed;
+      filter:grayscale(.18);
     }
 
     .code{
@@ -520,7 +526,9 @@
         <h1>Je loue, je reste maître.</h1>
         <p class="lead">
           LOC aide propriétaire, logement, villa, chambre, résidence ou agence à être visible,
-          joignable et organisé. La demande d’inscription ne coûte rien tant qu’aucune présence PRO n’est activée : tu paies seulement si tu valides une présence professionnelle, un QR, une mise en avant ou un outil métier.
+          joignable et organisé. La demande d’inscription reste gratuite.
+          DIGIY PRÉSENCE construit l’identité numérique du logement.
+          DIGIY MÉTIER ajoute l’outil de gestion LOC uniquement si tu le choisis.
         </p>
 
         <div class="pills">
@@ -545,18 +553,20 @@
     </section>
 
     <section class="value-card" aria-label="Doctrine économique LOC">
-      <div class="value-code">DEMANDE GRATUITE · ACTIVATION LOC PAYANTE · 0% COMMISSION</div>
-      <h2>Demande gratuite pour être orienté. Activation payante pour louer mieux. 0% commission pour rester libre.</h2>
+      <div class="value-code">DEMANDE GRATUITE · PRÉSENCE 19 900 / 40 € · MÉTIER +8 000 / +15 € · 0% COMMISSION</div>
+      <h2>Commencer proprement. Monter quand l’activité le demande.</h2>
       <p>
-        DIGIY LOC ne prend pas de pourcentage sur tes locations. Le client final consulte et contacte directement le propriétaire ou le professionnel, sans commission DIGIY.
-        Tu gardes ton client, ton paiement et ta décision. DIGIY construit la visibilité, le QR, le lien partageable et l’organisation.
-        La gratuité concerne la demande initiale / orientation, pas l’activation de la présence PRO.
+        DIGIY PRÉSENCE donne au logement une fiche professionnelle, un QR officiel,
+        un lien partageable, un contact direct et la maintenance essentielle.
+        DIGIY MÉTIER ajoute le logiciel LOC pour les disponibilités, demandes,
+        logements, clients et suivi opérationnel. Cette option reste facultative.
+        PRO CARNET, BOOST et RÉSEAU restent séparés.
       </p>
       <div class="value-list" aria-label="Promesse LOC">
-        <span>✅ Demande / orientation gratuite</span>
-        <span>🏠 Présence logement activable</span>
-        <span>🤝 Paiement direct au pro</span>
-        <span class="gold-emphasis">🇫🇷 France : Sendwave possible</span>
+        <span>1 · DIGIY PRÉSENCE · 19 900 FCFA / 40 €</span>
+        <span>2 · DIGIY MÉTIER · +8 000 FCFA / +15 €</span>
+        <span>✅ Total avec logiciel · 27 900 FCFA / 55 €</span>
+        <span>🤝 Aucun module supplémentaire imposé</span>
       </div>
       <p class="value-quote">
         Les plateformes prennent une part sur la route. DIGIY LOC ouvre la route directe entre le client et le logement.
@@ -565,8 +575,8 @@
 
     <main class="grid">
       <section class="card">
-        <h2>Tarifs LOC</h2>
-        <p>Clique un ou plusieurs choix. Si tu te trompes, efface.</p>
+        <h2>Activation LOC</h2>
+        <p>Commence par DIGIY PRÉSENCE. Ajoute DIGIY MÉTIER seulement si tu veux le logiciel LOC.</p>
 
         <div class="countryBox" aria-label="Choix pays LOC">
           <div class="countryTitle">🌍 Choisir le pays de règlement</div>
@@ -581,12 +591,16 @@
             </button>
           </div>
           <div class="countryNote" id="countryNote">
-            Les tarifs France et Sénégal sont une grille pays : pas une conversion au taux de change. France : Sendwave vers Wave Sénégal.
+            Sénégal : Présence 19 900 FCFA ; Métier +8 000 FCFA ; total 27 900 FCFA.
+            France : Présence 40 € ; Métier +15 € ; total 55 €.
           </div>
         </div>
 
-        <div class="section">🏠 Présence LOC</div>
+        <div class="section">1 · SOCLE — DIGIY PRÉSENCE</div>
         <div class="prices" id="baseOptions"></div>
+
+        <div class="section">2 · OPTION MÉTIER — DIGIY MÉTIER</div>
+        <div class="prices" id="metierOptions"></div>
 
         <div class="section">✨ BOOST visibilité</div>
         <div class="prices" id="boostOptions"></div>
@@ -644,7 +658,7 @@
 
           <div class="noteBox">
             <label for="paymentNote">📝 Note / preuve paiement</label>
-            <textarea id="paymentNote" placeholder="Ex : Paiement Wave envoyé pour LOC 2B — 35 000 FCFA — au nom de Mamadou Diop — tél +221 77 000 00 00."></textarea>
+            <textarea id="paymentNote" placeholder="Ex : DIGIY PRÉSENCE LOC — 19 900 FCFA ; option métier ajoutée — total 27 900 FCFA — Mamadou Diop."></textarea>
             <div class="noteHelp">
               Cette note sera ajoutée dans le message WhatsApp/SMS pour identifier clairement le paiement.
             </div>
@@ -682,49 +696,22 @@
 
       const PLANS = [
         {
-          code:"2A",
+          code:"PRESENCE",
           cat:"base",
-          name:"LOC Essentiel · 1 à 5 logements",
-          fcfa:26000,
-          eur:39,
-          desc:"Fiche propre, QR, contact direct et gestion simple.",
-          bonus:["Fiche logement visible","QR","Contact direct"]
+          name:"DIGIY PRÉSENCE LOC",
+          fcfa:19900,
+          eur:40,
+          desc:"Fiche logement personnalisée, QR officiel, lien partageable, contact direct et maintenance essentielle.",
+          bonus:["Fiche logement visible","QR officiel","Lien partageable","Contact direct"]
         },
         {
-          code:"2B",
-          cat:"base",
-          name:"LOC Standard · 6 à 9 logements",
-          fcfa:35000,
-          eur:59,
-          desc:"Plusieurs biens, disponibilité claire et présence renforcée.",
-          bonus:["Plusieurs biens","Disponibilités","Présence renforcée"]
-        },
-        {
-          code:"2C",
-          cat:"base",
-          name:"LOC Pro · 10 à 20 logements",
-          fcfa:50000,
-          eur:79,
-          desc:"Parc large, organisation et visibilité structurée.",
-          bonus:["Parc large","Organisation","Visibilité structurée"]
-        },
-        {
-          code:"2D",
-          cat:"base",
-          name:"LOC Business · 21 à 30 logements",
-          fcfa:70000,
-          eur:99,
-          desc:"Gestion renforcée gros volume.",
-          bonus:["Gros volume","Gestion renforcée"]
-        },
-        {
-          code:"2E",
-          cat:"base",
-          name:"LOC Agence · +30 logements",
-          fcfa:100000,
-          eur:149,
-          desc:"Présence premium agence ou grand portefeuille.",
-          bonus:["Agence","Grand portefeuille","Premium"]
+          code:"METIER",
+          cat:"metier",
+          name:"DIGIY MÉTIER LOC",
+          fcfa:8000,
+          eur:15,
+          desc:"Option facultative : logiciel LOC pour disponibilités, demandes, logements, clients et suivi opérationnel.",
+          bonus:["Logiciel métier LOC","Disponibilités","Demandes et clients","Suivi opérationnel"]
         },
         {
           code:"E1",
@@ -794,7 +781,6 @@
       const COMMON = [
         "Carte de visite complète",
         "QR et lien partageable",
-        "Logiciel métier LOC",
         "Disponibilités / demandes / messages selon logement",
         "Textes prêts",
         "Validation humaine",
@@ -874,8 +860,8 @@
         const noteEl = $("countryNote");
         if(noteEl){
           noteEl.innerHTML = country === "france"
-            ? "🇫🇷 France : règlement en euros par <strong>Sendwave</strong> vers le <strong>Wave Sénégal JB BEAUVILLE · +221 77 134 28 89</strong>. Grille pays, pas taux de change."
-            : "🇸🇳 Sénégal : règlement en FCFA par <strong>Wave direct</strong> vers <strong>JB BEAUVILLE · +221 77 134 28 89</strong>.";
+            ? "🇫🇷 France : DIGIY PRÉSENCE LOC à <strong>40 €</strong> ; DIGIY MÉTIER LOC à <strong>+15 €</strong> ; total <strong>55 €</strong>. Règlement Sendwave vers Wave Sénégal."
+            : "🇸🇳 Sénégal : DIGIY PRÉSENCE LOC à <strong>19 900 FCFA</strong> ; DIGIY MÉTIER LOC à <strong>+8 000 FCFA</strong> ; total <strong>27 900 FCFA</strong>.";
         }
 
         try{
@@ -891,23 +877,55 @@
       }
 
       function render(){
-        ["base","boost","reseau"].forEach(cat => {
-          const target = cat === "base" ? "baseOptions" : cat === "boost" ? "boostOptions" : "reseauOptions";
+        ["base","metier","boost","reseau"].forEach(cat => {
+          const target =
+            cat === "base" ? "baseOptions"
+            : cat === "metier" ? "metierOptions"
+            : cat === "boost" ? "boostOptions"
+            : "reseauOptions";
+
+          const presenceSelected = selected.has("PRESENCE");
+
           $(target).innerHTML = PLANS
             .filter(p => p.cat === cat)
-            .map(p => `
-              <button class="option ${selected.has(p.code) ? "active" : ""}" type="button" data-code="${p.code}">
-                <span class="code ${cat !== "base" ? "extra" : ""}">${p.code}</span>
-                <b>${p.name}</b>
-                <span class="amount">${money(p)}</span>
-                <span>${p.desc}</span>
-              </button>
-            `).join("");
+            .map(p => {
+              const unavailable = p.code === "METIER" && !presenceSelected;
+              const note = p.code === "METIER"
+                ? (country === "france"
+                    ? "Option facultative · +15 € / mois"
+                    : "Option facultative · +8 000 FCFA / mois")
+                : "";
+
+              return `
+                <button
+                  class="option ${selected.has(p.code) ? "active" : ""} ${unavailable ? "disabled" : ""}"
+                  type="button"
+                  data-code="${p.code}"
+                  ${unavailable ? "disabled" : ""}
+                >
+                  <span class="code ${cat !== "base" ? "extra" : ""}">${p.code}</span>
+                  <b>${p.name}</b>
+                  <span class="amount">${money(p)}</span>
+                  ${note ? `<span>${note}</span>` : ""}
+                  <span>${p.desc}</span>
+                </button>
+              `;
+            }).join("");
         });
 
         document.querySelectorAll(".option").forEach(b => {
           b.onclick = () => {
-            selected.has(b.dataset.code) ? selected.delete(b.dataset.code) : selected.add(b.dataset.code);
+            const code = b.dataset.code;
+
+            if(code === "METIER" && !selected.has("PRESENCE")) return;
+
+            if(selected.has(code)){
+              selected.delete(code);
+              if(code === "PRESENCE") selected.delete("METIER");
+            }else{
+              selected.add(code);
+            }
+
             update(true);
           };
         });
@@ -927,6 +945,11 @@ Pays / règlement : ${countryLabel()}
 
 Choix :
 ${choiceLines()}
+
+Doctrine LOC :
+- DIGIY PRÉSENCE : socle
+- DIGIY MÉTIER : option facultative
+- PRO CARNET, BOOST et RÉSEAU : séparés
 
 Total : ${total.label}
 
@@ -965,8 +988,8 @@ Je joins la capture / preuve de paiement à ce message.`;
         const total = totals();
 
         $("selectedBox").innerHTML = items.length
-          ? `<strong>${items.length} choix sélectionné${items.length > 1 ? "s" : ""}</strong><br>${countryLabel()}`
-          : `<strong>Aucun choix sélectionné</strong><br>Rien n’est précoché.`;
+          ? `<strong>${items.length} choix sélectionné${items.length > 1 ? "s" : ""}</strong><br>${selected.has("METIER") ? "Présence + logiciel métier" : selected.has("PRESENCE") ? "Présence seule" : "Option de visibilité séparée"}`
+          : `<strong>Aucun choix sélectionné</strong><br>Rien n’est précoché. Commence par DIGIY PRÉSENCE.`;
 
         $("choiceList").innerHTML = items.length
           ? items.map(p => `<div class="line"><span>${p.code} · ${p.name}</span><b>${money(p)}</b></div>`).join("")
@@ -994,7 +1017,14 @@ Je joins la capture / preuve de paiement à ce message.`;
             : "Après paiement Wave, envoie la capture ou la preuve par WhatsApp. DIGIY vérifie puis accompagne l’ouverture de la présence / visibilité LOC.";
         }
 
-        $("benefits").innerHTML = (items.length ? [...COMMON,...items.flatMap(p => p.bonus)] : [])
+        $("benefits").innerHTML = (items.length
+          ? [
+              ...COMMON,
+              ...items
+                .filter(p => p.code !== "METIER" || selected.has("METIER"))
+                .flatMap(p => p.bonus)
+            ]
+          : [])
           .slice(0,22)
           .map(x => `<li>✅ ${x}</li>`)
           .join("");
@@ -1060,6 +1090,13 @@ Je joins la capture / preuve de paiement à ce message.`;
   </script>
 </body>
 </html>
+
+
+
+
+
+
+
 
 
 
