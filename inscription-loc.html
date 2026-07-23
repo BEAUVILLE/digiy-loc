@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="robots" content="index,follow" />
   <meta name="theme-color" content="#155f43" />
-  <meta name="digiy-version" content="loc-presence-19900-france-45-fiche-moteur-8000-20260723" />
+  <meta name="digiy-version" content="loc-grille-pays-coherente-20260723-v2" />
   <title>Inscription LOC — Présence logement · France · Sénégal · DIGIY</title>
 
   <style>
@@ -524,20 +524,14 @@
     <section class="hero">
       <div>
         <h1>Je loue, je reste maître.</h1>
-        <p class="lead">
+        <p class="lead" id="heroLead">
           LOC aide propriétaire, résidence ou agence à rendre son activité visible.
-          Commence avec la Présence LOC à 19 900 FCFA au Sénégal ou 45 € en France :
-          carte de visibilité, QR, lien partageable, contact direct et présence sur le site.
-          Les niveaux 2A à 2E renforcent la visibilité selon le parc et conservent
-          leur propre grille commerciale dans chaque pays.
-          La fiche logements détaillée et le moteur LOC restent une option distincte
-          à +8 000 FCFA au Sénégal ou +15 € en France.
         </p>
 
         <div class="pills">
-          <span class="pill">Présence LOC · 19 900 FCFA / 45 €</span>
+          <span class="pill" id="pillPresence">Présence LOC</span>
           <span class="pill">2A à 2E · visibilité renforcée selon le parc</span>
-          <span class="pill">Fiche logements + moteur · +8 000 FCFA / +15 €</span>
+          <span class="pill" id="pillMetier">Fiche logements + moteur</span>
           <span class="pill">0% commission</span>
           <span class="pill gold-emphasis">Paiement avant activation</span>
         </div>
@@ -557,25 +551,14 @@
     </section>
 
     <section class="value-card" aria-label="Doctrine économique LOC">
-      <div class="value-code">PRÉSENCE LOC 19 900 FCFA / 45 € · 2A À 2E RENFORCÉS · FICHE + MOTEUR +8 000 FCFA / +15 €</div>
-      <h2>Commencer à 19 900 FCFA. Renforcer selon le parc.</h2>
-      <p>
-        La Présence LOC à 19 900 FCFA au Sénégal ou 45 € en France donne une carte de visibilité numérique,
-        un QR officiel, un lien partageable, le contact direct et une présence sur le site.
-        Elle ne comprend ni fiche logement détaillée, ni disponibilités, ni moteur de location.
-        Les niveaux 2A à 2E conservent leurs prix officiels comme niveaux de visibilité
-        et d’accompagnement renforcés selon la taille du parc. Les prix Sénégal et France
-        sont deux grilles commerciales distinctes, adaptées aux réalités économiques de chaque marché,
-        et non une conversion automatique au taux de change.
-        L’option à +8 000 FCFA au Sénégal ou +15 € en France ajoute la fiche logements détaillée,
-        les disponibilités, les demandes, les clients et le moteur LOC.
-        PRO CARNET reste séparé. BOOST et RÉSEAU exigent une formule LOC active.
-      </p>
+      <div class="value-code" id="valueCode">PRÉSENCE LOC · 2A À 2E RENFORCÉS · FICHE + MOTEUR</div>
+      <h2 id="valueTitle">Commencer simplement. Renforcer selon le parc.</h2>
+      <p id="valueText"></p>
       <div class="value-list" aria-label="Promesse LOC">
-        <span>Présence LOC · 19 900 FCFA / 45 €</span>
+        <span id="valuePresence">Présence LOC</span>
         <span>2A à 2D · visibilité renforcée selon le parc</span>
         <span>2E · visibilité grand parc</span>
-        <span>Fiche détaillée + moteur LOC · +8 000 FCFA / +15 €</span>
+        <span id="valueMetier">Fiche détaillée + moteur LOC</span>
       </div>
       <p class="value-quote">
         Les plateformes prennent une part sur la route. DIGIY LOC ouvre la route directe entre le client et le logement.
@@ -635,7 +618,7 @@
           </div>
           <div class="line">
             <span>Ajustement / remise</span>
-            <strong>0 FCFA</strong>
+            <strong id="adjustText">0 FCFA</strong>
           </div>
           <div class="line final">
             <span>Total</span>
@@ -667,7 +650,7 @@
 
           <div class="noteBox">
             <label for="paymentNote">📝 Note / preuve paiement</label>
-            <textarea id="paymentNote" placeholder="Ex : Présence LOC — 19 900 FCFA ; fiche logements + moteur ajoutés +8 000 FCFA ; total 27 900 FCFA — Mamadou Diop."></textarea>
+            <textarea id="paymentNote"></textarea>
             <div class="noteHelp">
               Cette note sera ajoutée dans le message WhatsApp/SMS pour identifier clairement le paiement.
             </div>
@@ -745,7 +728,7 @@
           cat:"base",
           name:"LOC 2D · 21 à 30 logements",
           fcfa:70000,
-          eur:99,
+          eur:119,
           desc:"Niveau de visibilité et d’accompagnement renforcé pour un parc de 21 à 30 logements. La fiche détaillée et le moteur restent dans l’option LOC.",
           bonus:["Visibilité LOC renforcée","QR officiel","Lien partageable","Contact direct","Accompagnement selon le parc"]
         },
@@ -754,7 +737,7 @@
           cat:"base",
           name:"LOC 2E · Plus de 30 logements",
           fcfa:100000,
-          eur:149,
+          eur:179,
           desc:"Niveau de visibilité et d’accompagnement grand parc. La fiche détaillée et le moteur restent dans l’option LOC.",
           bonus:["Visibilité LOC renforcée","QR officiel","Lien partageable","Contact direct","Accompagnement selon le parc"]
         },
@@ -772,7 +755,7 @@
           cat:"boost",
           name:"Boost Local",
           fcfa:5000,
-          eur:null,
+          eur:9,
           desc:"Petit projecteur local.",
           bonus:["Boost local"]
         },
@@ -781,7 +764,7 @@
           cat:"boost",
           name:"Boost Standard",
           fcfa:10000,
-          eur:null,
+          eur:18,
           desc:"Mise en avant renforcée.",
           bonus:["Visibilité renforcée"]
         },
@@ -790,7 +773,7 @@
           cat:"boost",
           name:"Boost Premium",
           fcfa:20000,
-          eur:null,
+          eur:35,
           desc:"Visibilité maximale.",
           bonus:["Priorité visibilité"]
         },
@@ -866,6 +849,71 @@
         return country === "france" ? "0 €" : "0 FCFA";
       }
 
+      /* ---- GRILLE PAYS : une seule source de vérité (PLANS) ----
+         Aucune conversion de devise : deux grilles commerciales distinctes.
+         Tout l'affichage ci-dessous se recalcule depuis PLANS selon le pays. */
+      function planOf(code){
+        return PLANS.find(p => p.code === code) || null;
+      }
+
+      function priceOf(code){
+        const plan = planOf(code);
+        return plan ? money(plan) : "—";
+      }
+
+      function countryName(){
+        return country === "france" ? "France" : "Sénégal";
+      }
+
+      function baseRange(){
+        const codes = ["2A","2B","2C","2D","2E"];
+        return priceOf(codes[0]) + " à " + priceOf(codes[codes.length - 1]);
+      }
+
+      function refreshCountryTexts(){
+        const presence = priceOf("PRESENCE");
+        const metier = "+" + priceOf("METIER");
+        const set = (id, text) => { const el = $(id); if(el) el.textContent = text; };
+
+        set("heroLead",
+          "LOC aide propriétaire, résidence ou agence à rendre son activité visible. "
+          + "Grille " + countryName() + " : commence avec la Présence LOC à " + presence
+          + " — carte de visibilité, QR, lien partageable, contact direct et présence sur le site. "
+          + "Les niveaux 2A à 2E renforcent la visibilité selon le parc, de " + baseRange() + ". "
+          + "La fiche logements détaillée et le moteur LOC restent une option distincte à " + metier + ".");
+
+        set("pillPresence", "Présence LOC · " + presence);
+        set("pillMetier", "Fiche logements + moteur · " + metier);
+
+        set("valueCode",
+          ("Présence LOC " + presence + " · 2A à 2E renforcés · fiche + moteur " + metier).toUpperCase());
+
+        set("valueTitle", "Commencer à " + presence + ". Renforcer selon le parc.");
+
+        set("valueText",
+          "La Présence LOC à " + presence + " donne une carte de visibilité numérique, un QR officiel, "
+          + "un lien partageable, le contact direct et une présence sur le site. "
+          + "Elle ne comprend ni fiche logement détaillée, ni disponibilités, ni moteur de location. "
+          + "Les niveaux 2A à 2E (" + baseRange() + ") sont des niveaux de visibilité et d’accompagnement "
+          + "renforcés selon la taille du parc. Les prix Sénégal et France sont deux grilles commerciales "
+          + "distinctes, adaptées aux recettes réelles de chaque marché, et non une conversion au taux de change. "
+          + "L’option à " + metier + " ajoute la fiche logements détaillée, les disponibilités, les demandes, "
+          + "les clients et le moteur LOC. PRO CARNET reste séparé. BOOST et RÉSEAU exigent une formule LOC active.");
+
+        set("valuePresence", "Présence LOC · " + presence);
+        set("valueMetier", "Fiche détaillée + moteur LOC · " + metier);
+        set("adjustText", zeroLabel());
+
+        const noteEl = $("paymentNote");
+        if(noteEl){
+          noteEl.placeholder = "Ex : Présence LOC — " + presence
+            + " ; fiche logements + moteur ajoutés " + metier + " — total "
+            + money({ fcfa:(planOf("PRESENCE").fcfa + planOf("METIER").fcfa),
+                      eur:(planOf("PRESENCE").eur + planOf("METIER").eur) })
+            + " — nom du loueur.";
+        }
+      }
+
       function chosen(){
         return PLANS.filter(p => selected.has(p.code));
       }
@@ -913,9 +961,12 @@
 
         const noteEl = $("countryNote");
         if(noteEl){
-          noteEl.innerHTML = country === "france"
-            ? "🇫🇷 France : Présence LOC <strong>45 €</strong> · 2A 49 € · 2B 59 € · 2C 79 € · 2D 99 € · 2E 149 €. Fiche logements + moteur : <strong>+15 €</strong>."
-            : "🇸🇳 Sénégal : Présence LOC <strong>19 900 FCFA</strong> · 2A 26 000 · 2B 35 000 · 2C 50 000 · 2D 70 000 · 2E 100 000 FCFA. Fiche logements + moteur : <strong>+8 000 FCFA</strong>.";
+          const flag = country === "france" ? "🇫🇷" : "🇸🇳";
+          const paliers = ["2A","2B","2C","2D","2E"]
+            .map(code => code + " " + priceOf(code)).join(" · ");
+          noteEl.innerHTML = flag + " " + countryName() + " : Présence LOC <strong>"
+            + priceOf("PRESENCE") + "</strong> · " + paliers
+            + ". Fiche logements + moteur : <strong>+" + priceOf("METIER") + "</strong>.";
         }
 
         try{
@@ -949,9 +1000,7 @@
                 ["R7","R15","R30"].includes(p.code);
               const unavailable = requiresPresence && !presenceSelected;
               const note = p.code === "METIER"
-                ? (country === "france"
-                    ? "Fiche logements + moteur · +15 € / mois"
-                    : "Fiche logements + moteur · +8 000 FCFA / mois")
+                ? "Fiche logements + moteur · +" + money(p) + " / mois"
                 : "";
 
               return `
@@ -1022,11 +1071,11 @@ Pays / règlement : ${countryLabel()}
 Choix :
 ${choiceLines()}
 
-Doctrine LOC :
-- Présence LOC : carte de visibilité à 19 900 FCFA au Sénégal ou 45 € en France
-- 2A à 2E : niveaux de visibilité renforcée selon le parc
+Doctrine LOC (grille ${countryName()}) :
+- Présence LOC : carte de visibilité à ${priceOf("PRESENCE")}
+- 2A à 2E : niveaux de visibilité renforcée selon le parc (${baseRange()})
 - Sans fiche détaillée ni moteur dans la visibilité seule
-- Fiche logements détaillée + moteur LOC : option facultative à +8 000 FCFA au Sénégal ou +15 € en France
+- Fiche logements détaillée + moteur LOC : option facultative à +${priceOf("METIER")}
 - PRO CARNET reste séparé
 - BOOST et RÉSEAU exigent une formule LOC active
 
@@ -1062,6 +1111,7 @@ Je joins la capture / preuve de paiement à ce message.`;
       }
 
       function update(scroll){
+        refreshCountryTexts();
         render();
         const items = chosen();
         const total = totals();
@@ -1169,6 +1219,86 @@ Je joins la capture / preuve de paiement à ce message.`;
   </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
