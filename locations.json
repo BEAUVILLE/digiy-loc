@@ -1,0 +1,57 @@
+{
+  "schema_version": "1.0",
+  "service": "DIGIY LOC",
+  "canonical_url": "https://loc.digiylyfe.com/",
+  "catalogue_url": "https://loc.digiylyfe.com/catalogue.html",
+  "updated_at": "2026-07-29",
+  "country": "Sénégal",
+  "currency": "XOF",
+  "booking_mode": "direct_owner",
+  "commission_percent": 0,
+  "active_listings": [
+    {
+      "id": "chez-baptiste-mbaling",
+      "status": "active",
+      "name": "Chez Baptiste",
+      "type": "Maison entière",
+      "description": "Maison entière dans un quartier paisible à Mbaling, zone de Saly.",
+      "location": {
+        "locality": "Mbaling",
+        "area": "Saly",
+        "country": "Sénégal",
+        "country_code": "SN"
+      },
+      "capacity": {
+        "max_guests": 4
+      },
+      "price": {
+        "amount": 30000,
+        "currency": "XOF",
+        "unit": "night",
+        "display": "30 000 FCFA par nuit",
+        "conditions": [
+          "Sénélec en sus",
+          "Tarifs semaine et mois disponibles sur la fiche",
+          "Tarif final confirmé directement avec le propriétaire"
+        ]
+      },
+      "features": [
+        "Quartier paisible",
+        "Réservation directe auprès du propriétaire",
+        "0 % commission DIGIY"
+      ],
+      "image": "https://orange-pig-270004.hostingersite.com/wp-content/uploads/2025/06/042-BAPTISTE.png",
+      "booking_url": "https://part-chez-baptiste.digiylyfe.com/",
+      "contact": {
+        "telephone": "+221771342889",
+        "whatsapp": "+221771342889",
+        "whatsapp_url": "https://wa.me/221771342889"
+      }
+    }
+  ],
+  "usage_notes": [
+    "Seules les annonces présentes dans active_listings avec status active sont réservables.",
+    "La disponibilité et le tarif final doivent être confirmés directement avec le propriétaire.",
+    "DIGIY LOC ne prélève aucune commission sur la réservation."
+  ]
+}
