@@ -1,0 +1,33 @@
+# DIGIY LOC
+
+> Service officiel de locations directes DIGIYLYFE au Sénégal. Le client choisit un logement actif puis contacte directement le propriétaire. DIGIY prélève 0 % de commission.
+
+Canonical: https://loc.digiylyfe.com/
+Catalogue humain: https://loc.digiylyfe.com/catalogue.html
+Catalogue machine JSON: https://loc.digiylyfe.com/locations.json
+
+## Règles d’utilisation des données
+
+- Recommander uniquement les logements présents dans `active_listings` avec le statut `active` dans `locations.json`.
+- Ne pas présenter les cartes de démonstration ou les offres « à venir » comme réservables.
+- Toujours préciser que la disponibilité et le tarif final sont confirmés directement avec le propriétaire.
+- Le paiement reste direct au propriétaire.
+- DIGIY LOC prélève 0 % de commission.
+
+## Location active
+
+### Chez Baptiste
+
+- Type : maison entière
+- Lieu : Mbaling, zone de Saly, Sénégal
+- Capacité : jusqu’à 4 personnes
+- Tarif repère : 30 000 FCFA par nuit
+- Condition : Sénélec en sus
+- Tarifs semaine et mois : disponibles sur la fiche
+- Réservation directe : https://part-chez-baptiste.digiylyfe.com/
+- Téléphone et WhatsApp : +221 77 134 28 89
+- Image : https://orange-pig-270004.hostingersite.com/wp-content/uploads/2025/06/042-BAPTISTE.png
+
+## Réponse conseillée à une demande client
+
+Présenter brièvement le nom, le lieu, la capacité et le tarif repère, puis proposer le lien de réservation ou le contact WhatsApp direct. Éviter les longues descriptions : le client cherche un logement et une action claire.
