@@ -1,0 +1,5615 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>DIGIY LOC — Logements directs Afrique, France, Diaspora</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="DIGIY LOC ouvre les logements locaux en contact direct : Sénégal, France, diaspora. Chambres, villas, appartements, gîtes, hôtels. Paiement direct, 0% commission.">
+  <meta name="theme-color" content="#07111b">
+  <meta name="digiy-version" content="loc-index-liens-controles-20260712">
+  <meta name="digiy-links-audit" content="ancres-ok-inscription-locale-lexique-local-20260712">
+  <meta name="digiy-bilingual-loc" content="fr-en-retour-fr-natif-20260620">
+  <script>
+    (function(){
+      try{
+        var p = new URLSearchParams(location.search);
+        var fromUrl = (p.get("lang") || "").toLowerCase();
+        var fromStore = "";
+        try{ fromStore = (localStorage.getItem("digiy_loc_lang_native_v1") || "").toLowerCase(); }catch(_){}
+        var lang = fromUrl === "en" ? "en" : (fromUrl === "fr" ? "fr" : (fromStore === "en" ? "en" : "fr"));
+        window.DIGIY_LOC_LANG = lang;
+        document.documentElement.setAttribute("lang", lang === "en" ? "en" : "fr");
+      }catch(_){
+        window.DIGIY_LOC_LANG = "fr";
+      }
+    })();
+  </script>
+  <link rel="canonical" href="https://loc.digiylyfe.com/">
+
+  <script>
+    window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
+    window.DIGIY_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#07111b;
+      --bg-2:#0d1b2a;
+      --card:#0f2235;
+      --card-2:#132b43;
+      --line:rgba(255,255,255,.10);
+      --line-2:rgba(148,163,184,.22);
+      --text:#f3f7fb;
+      --muted:#b8c8d7;
+      --soft:#8aa6be;
+      --brand:#eec87e;
+      --brand-2:#ffdc9a;
+      --sea:#67d2e6;
+      --ok:#21c17a;
+      --danger:#ff7f7f;
+      --gold:#fde68a;
+      --green:#bbf7d0;
+      --shadow:0 18px 45px rgba(0,0,0,.28);
+      --shadow-2:0 18px 44px rgba(15,23,42,.55);
+      --radius:24px;
+      --radius-sm:16px;
+      --max:1180px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --font: Outfit, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0;font-family:var(--font)}
+    html{scroll-behavior:smooth}
+    body{
+      min-height:100vh;
+      background:
+        radial-gradient(1200px 700px at 15% -10%, rgba(103,210,230,.15), transparent 42%),
+        radial-gradient(900px 500px at 100% 0%, rgba(238,200,126,.15), transparent 35%),
+        linear-gradient(180deg, #07111b 0%, #091522 20%, #0b1724 100%);
+      color:var(--text);
+      overflow-x:hidden;
+      padding:0;
+    }
+
+    img{max-width:100%;display:block}
+    a{text-decoration:none;color:inherit}
+    button,input,select{font:inherit}
+    button{cursor:pointer}
+    input,select,button{outline:none}
+
+    .app{
+      width:min(100%, var(--max));
+      margin:0 auto;
+      min-height:100vh;
+      padding:0 14px 28px;
+      position:relative;
+    }
+
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:120;
+      backdrop-filter:blur(14px);
+      background:linear-gradient(180deg, rgba(7,17,27,.92), rgba(7,17,27,.72));
+      border-bottom:1px solid rgba(255,255,255,.06);
+      margin:0 -14px;
+      padding:0 14px;
+    }
+
+    .topbar-inner{
+      width:min(100%, var(--max));
+      margin:0 auto;
+      min-height:74px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding-top:calc(8px + var(--safe-top));
+      padding-bottom:8px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width:0;
+    }
+
+    .brand-logo{
+      width:42px;
+      height:42px;
+      border-radius:14px;
+      background:#fff;
+      object-fit:cover;
+      flex:0 0 auto;
+      box-shadow:0 12px 28px rgba(0,0,0,.25);
+    }
+
+    .brand-meta{min-width:0}
+    .brand-kicker{
+      color:var(--brand);
+      font-size:11px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      font-weight:800;
+      margin-bottom:2px;
+    }
+    .brand-title{
+      font-size:15px;
+      font-weight:800;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .top-actions{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex:0 0 auto;
+    }
+
+    .pill-btn{
+      min-height:42px;
+      padding:0 14px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      font-size:13px;
+      font-weight:800;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      white-space:nowrap;
+    }
+
+    .pill-btn:hover{border-color:rgba(238,200,126,.45);color:var(--brand-2)}
+
+    .hero{
+      padding:18px 0 12px;
+    }
+
+    .hero-card{
+      position:relative;
+      overflow:hidden;
+      border-radius:30px;
+      min-height:430px;
+      border:1px solid rgba(255,255,255,.08);
+      background:
+        linear-gradient(180deg, rgba(8,18,28,.18), rgba(8,18,28,.72)),
+        url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1800&auto=format&fit=crop") center/cover no-repeat;
+      box-shadow:var(--shadow);
+      display:flex;
+      align-items:flex-end;
+    }
+
+    .hero-card::before{
+      content:"";
+      position:absolute; inset:0;
+      background:linear-gradient(180deg, rgba(4,10,17,.12) 0%, rgba(4,10,17,.45) 46%, rgba(4,10,17,.84) 100%);
+      pointer-events:none;
+    }
+
+    .hero-content{
+      position:relative;
+      z-index:2;
+      width:100%;
+      padding:26px 18px 20px;
+    }
+
+    .hero-eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(8,18,28,.34);
+      color:var(--brand-2);
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:12px;
+      font-weight:800;
+      backdrop-filter:blur(8px);
+      margin-bottom:14px;
+    }
+
+    .hero-title{
+      font-size:clamp(34px, 8vw, 58px);
+      line-height:.98;
+      letter-spacing:-.03em;
+      font-weight:900;
+      max-width:12ch;
+    }
+
+    .hero-sub{
+      margin:14px 0 18px;
+      max-width:44ch;
+      color:#e7f1f8;
+      font-size:16px;
+      line-height:1.6;
+      font-weight:500;
+    }
+
+    .hero-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-bottom:16px;
+    }
+
+    .btn{
+      min-height:52px;
+      padding:0 18px;
+      border-radius:16px;
+      border:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      font-weight:900;
+      transition:transform .18s ease, opacity .18s ease;
+    }
+    .btn:active{transform:translateY(1px) scale(.99)}
+    .btn-primary{
+      background:linear-gradient(180deg, var(--brand-2), var(--brand));
+      color:#102132;
+      box-shadow:0 12px 30px rgba(238,200,126,.25);
+    }
+    .btn-secondary{
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.12);
+      color:var(--text);
+      backdrop-filter:blur(8px);
+    }
+    .btn-ghost{
+      background:rgba(34,197,94,.13);
+      border:1px solid rgba(34,197,94,.4);
+      color:var(--green);
+    }
+
+    .hero-notes{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+
+    .note{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      min-height:34px;
+      padding:0 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.12);
+      color:#eef7ff;
+      font-size:12px;
+      font-weight:800;
+      backdrop-filter:blur(8px);
+    }
+
+    .section{
+      padding:12px 0;
+    }
+
+    .section-head{
+      display:flex;
+      align-items:end;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:12px;
+      flex-wrap:wrap;
+    }
+
+    .section-title{
+      font-size:26px;
+      line-height:1.05;
+      letter-spacing:-.02em;
+      font-weight:900;
+    }
+
+    .section-text{
+      margin-top:6px;
+      color:var(--muted);
+      font-size:15px;
+      line-height:1.55;
+      max-width:56ch;
+      font-weight:500;
+    }
+
+    .filters-card,
+    .contact-card,
+    .proof-card-wrap,
+    .message-card,
+    .examples-wrap,
+    .whatsapp-help{
+      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:24px;
+      box-shadow:var(--shadow-2);
+    }
+
+    .filters-card{
+      padding:14px;
+      position:sticky;
+      top:84px;
+      z-index:90;
+      backdrop-filter:blur(8px);
+    }
+
+    .chip-row{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-bottom:12px;
+    }
+
+    .chip{
+      min-height:42px;
+      padding:0 14px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      font-weight:800;
+      font-size:14px;
+      white-space:nowrap;
+      transition:.18s ease;
+    }
+    .chip:hover,
+    .chip.active{
+      background:rgba(238,200,126,.16);
+      color:var(--brand-2);
+      border-color:rgba(238,200,126,.34);
+    }
+
+    .filter-grid{
+      display:grid;
+      grid-template-columns:1.2fr .9fr auto auto;
+      gap:10px;
+    }
+
+    .control{
+      min-height:50px;
+      width:100%;
+      border-radius:14px;
+      border:1px solid var(--line-2);
+      background:rgba(2,6,23,.62);
+      color:var(--text);
+      padding:0 14px;
+      font-weight:800;
+    }
+
+    .control:focus{
+      border-color:rgba(238,200,126,.6);
+      box-shadow:0 0 0 4px rgba(238,200,126,.10);
+    }
+
+    .search-btn{
+      min-height:50px;
+      border-radius:14px;
+      border:none;
+      padding:0 16px;
+      font-weight:900;
+      background:linear-gradient(180deg, var(--brand-2), var(--brand));
+      color:#102132;
+      box-shadow:0 10px 22px rgba(250,204,21,0.18);
+      white-space:nowrap;
+    }
+
+    .search-btn.ghost{
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow:none;
+    }
+
+    .examples-wrap{
+      padding:16px;
+    }
+
+    .examples-grid{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0,1fr));
+      gap:12px;
+      margin-top:12px;
+    }
+
+    .example-card{
+      border-radius:20px;
+      border:1px solid rgba(255,255,255,.08);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02)),
+        radial-gradient(circle at top left, rgba(238,200,126,.10), transparent 45%);
+      padding:14px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      min-height:170px;
+    }
+
+    .example-kicker{
+      font-size:12px;
+      font-weight:900;
+      color:var(--brand-2);
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+
+    .example-title{
+      font-size:20px;
+      line-height:1.08;
+      font-weight:900;
+      letter-spacing:-.02em;
+    }
+
+    .example-text{
+      color:var(--muted);
+      line-height:1.55;
+      font-size:14px;
+      font-weight:500;
+      flex:1;
+    }
+
+    .example-actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .mini-btn{
+      min-height:40px;
+      padding:0 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      font-weight:800;
+      font-size:13px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+    }
+
+    .mini-btn.gold{
+      background:rgba(238,200,126,.12);
+      border-color:rgba(238,200,126,.28);
+      color:var(--brand-2);
+    }
+
+    .whatsapp-help{
+      padding:16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      flex-wrap:wrap;
+    }
+
+    .whatsapp-help-title{
+      font-size:22px;
+      font-weight:900;
+      letter-spacing:-.02em;
+    }
+
+    .whatsapp-help-text{
+      color:var(--muted);
+      line-height:1.6;
+      font-weight:500;
+      margin-top:6px;
+      max-width:52ch;
+    }
+
+    .whatsapp-help-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .quick-note-card{
+      margin-top:14px;
+      padding:16px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.03)),
+        radial-gradient(circle at top left, rgba(238,200,126,.10), transparent 38%);
+      border:1px solid rgba(238,200,126,.16);
+      border-radius:24px;
+      box-shadow:var(--shadow-2);
+    }
+
+    .quick-note-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:14px;
+      flex-wrap:wrap;
+      margin-bottom:12px;
+    }
+
+    .quick-note-title{
+      font-size:24px;
+      line-height:1.05;
+      font-weight:900;
+      letter-spacing:-.02em;
+    }
+
+    .quick-note-sub{
+      margin-top:7px;
+      color:var(--muted);
+      line-height:1.6;
+      font-weight:600;
+      max-width:60ch;
+    }
+
+    .quick-note-badge{
+      min-height:36px;
+      padding:0 12px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border:1px solid rgba(34,197,94,.34);
+      background:rgba(34,197,94,.10);
+      color:var(--green);
+      font-size:12px;
+      font-weight:900;
+      white-space:nowrap;
+    }
+
+    .quick-note-grid{
+      display:grid;
+      grid-template-columns:.9fr .8fr .7fr 1fr;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .quick-note-field{
+      display:grid;
+      gap:6px;
+    }
+
+    .quick-note-field label{
+      font-size:13px;
+      color:var(--muted);
+      font-weight:850;
+    }
+
+    .quick-note-input,
+    .quick-note-textarea{
+      width:100%;
+      min-height:50px;
+      border-radius:14px;
+      border:1px solid var(--line-2);
+      background:rgba(2,6,23,.72);
+      color:var(--text);
+      padding:0 14px;
+      font-weight:800;
+    }
+
+    .quick-note-textarea{
+      min-height:104px;
+      resize:vertical;
+      padding:12px 14px;
+      line-height:1.55;
+      grid-column:1/-1;
+    }
+
+    .quick-note-input:focus,
+    .quick-note-textarea:focus{
+      border-color:rgba(238,200,126,.58);
+      box-shadow:0 0 0 4px rgba(238,200,126,.10);
+    }
+
+    .quick-note-examples{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+
+    .quick-note-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin-top:12px;
+    }
+
+    .quick-note-status{
+      display:none;
+      margin-top:10px;
+      border-radius:16px;
+      padding:10px 12px;
+      border:1px solid rgba(34,197,94,.28);
+      background:rgba(34,197,94,.10);
+      color:var(--green);
+      font-weight:800;
+      line-height:1.5;
+    }
+
+    .quick-note-status.show{display:block}
+
+    .owner-callout{
+      margin-top:14px;
+      padding:14px;
+      border-radius:20px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.045);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .owner-callout-title{
+      font-size:18px;
+      font-weight:900;
+      letter-spacing:-.01em;
+    }
+
+    .owner-callout-text{
+      margin-top:5px;
+      color:var(--muted);
+      line-height:1.55;
+      font-weight:600;
+      max-width:58ch;
+    }
+
+    .contact-card{
+      margin-top:14px;
+      padding:16px;
+    }
+
+    .contact-title{
+      font-size:22px;
+      font-weight:900;
+      letter-spacing:-.02em;
+      margin-bottom:6px;
+    }
+
+    .contact-sub{
+      color:var(--muted);
+      line-height:1.6;
+      font-weight:500;
+      margin-bottom:12px;
+    }
+
+    .picked-line{
+      display:none;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:10px 12px;
+      border-radius:16px;
+      border:1px solid rgba(238,200,126,.26);
+      background:rgba(238,200,126,.08);
+      margin-bottom:12px;
+    }
+
+    .picked-line.show{display:flex}
+    .picked-title{
+      font-weight:900;
+      color:var(--brand-2);
+    }
+
+    .pick-clear{
+      min-height:38px;
+      padding:0 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      font-weight:800;
+    }
+
+    .lead-form{
+      display:grid;
+      grid-template-columns:repeat(4, minmax(0,1fr));
+      gap:10px;
+    }
+
+    .lead-form .full{grid-column:1/-1}
+    .field{
+      display:grid;
+      gap:6px;
+    }
+    .field label{
+      font-size:13px;
+      color:var(--muted);
+      font-weight:800;
+    }
+    .field input{
+      min-height:50px;
+      border-radius:14px;
+      border:1px solid var(--line-2);
+      background:rgba(2,6,23,.72);
+      color:var(--text);
+      padding:0 14px;
+      font-weight:800;
+    }
+
+    .form-note{
+      color:var(--muted);
+      font-size:13px;
+      font-weight:600;
+      margin-top:2px;
+    }
+
+    .results-bar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      margin:14px 0 10px;
+      color:var(--muted);
+      font-size:14px;
+      font-weight:700;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:16px;
+    }
+
+    .card{
+      overflow:hidden;
+      border-radius:24px;
+      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+      border:1px solid rgba(255,255,255,.08);
+      box-shadow:var(--shadow-2);
+      display:flex;
+      flex-direction:column;
+    }
+
+    .card.pinned{
+      border-color:rgba(238,200,126,.38);
+      box-shadow:0 18px 40px rgba(238,200,126,.08);
+    }
+
+    .card.opening{
+      border-style:dashed;
+      border-color:rgba(255,255,255,.16);
+    }
+
+    .card-headline{
+      padding:10px 12px 0;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+    }
+
+    .mini-top{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      min-height:34px;
+      padding:0 11px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:900;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.05);
+    }
+
+    .mini-top.gold{
+      color:var(--gold);
+      border-color:rgba(238,200,126,.38);
+      background:rgba(238,200,126,.08);
+    }
+
+    .photo{
+      position:relative;
+      aspect-ratio:16/10;
+      margin:10px 12px 0;
+      border-radius:18px;
+      overflow:hidden;
+      background:#102132;
+      border:1px solid rgba(255,255,255,.06);
+    }
+
+    .photo img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    .status{
+      position:absolute;
+      left:12px;
+      top:12px;
+      z-index:2;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      min-height:34px;
+      padding:0 12px;
+      border-radius:999px;
+      backdrop-filter:blur(10px);
+      font-size:12px;
+      font-weight:900;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(8,18,28,.42);
+    }
+
+    .status.ok{color:#dfffea}
+    .status.ok .dot{background:var(--ok)}
+    .status.off{color:#ffe5e5}
+    .status.off .dot{background:var(--danger)}
+    .status.warn{color:#fff6de}
+    .status.warn .dot{background:var(--brand)}
+
+    .dot{
+      width:9px;
+      height:9px;
+      border-radius:999px;
+      flex:0 0 auto;
+      box-shadow:0 0 0 5px rgba(255,255,255,.06);
+    }
+
+    .card-body{
+      padding:14px 14px 16px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      flex:1;
+    }
+
+    .name{
+      font-size:24px;
+      line-height:1.04;
+      font-weight:900;
+      letter-spacing:-.02em;
+    }
+
+    .zone{
+      color:var(--soft);
+      font-size:14px;
+      font-weight:800;
+      margin-top:4px;
+    }
+
+    .price{
+      color:var(--brand-2);
+      font-size:19px;
+      font-weight:900;
+      white-space:nowrap;
+    }
+
+    .price small{
+      color:var(--soft);
+      font-size:12px;
+      font-weight:700;
+    }
+
+    .top-row{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+
+    .meta-pill{
+      min-height:34px;
+      padding:0 11px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
+      color:#eff6fb;
+      font-size:12px;
+      font-weight:800;
+    }
+
+    .meta-pill.gold{
+      border-color:rgba(238,200,126,.28);
+      color:var(--gold);
+      background:rgba(238,200,126,.07);
+    }
+
+    .desc{
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.6;
+      font-weight:500;
+    }
+
+    .contact-box{
+      border-radius:16px;
+      border:1px solid rgba(34,197,94,.28);
+      background:rgba(6,78,59,.24);
+      padding:11px 12px;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    .contact-box .k{
+      font-size:13px;
+      font-weight:900;
+      color:var(--green);
+    }
+
+    .contact-box .v{
+      font-size:17px;
+      font-weight:900;
+      color:#ecfdf5;
+      letter-spacing:.2px;
+    }
+
+    .actions{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    .actions.three{
+      grid-template-columns:1fr 1fr 1fr;
+    }
+
+    .btn-card{
+      min-height:48px;
+      border-radius:16px;
+      border:none;
+      padding:0 14px;
+      font-size:14px;
+      font-weight:900;
+      display:inline-flex;
+      justify-content:center;
+      align-items:center;
+      text-align:center;
+      gap:8px;
+      transition:transform .18s ease, opacity .18s ease;
+      white-space:nowrap;
+    }
+    .btn-card:active{transform:scale(.99)}
+
+    .btn-wa{
+      background:linear-gradient(180deg, var(--brand-2), var(--brand));
+      color:#102132;
+      box-shadow:0 8px 18px rgba(238,200,126,.18);
+    }
+
+    .btn-choose{
+      background:rgba(34,197,94,.14);
+      color:var(--green);
+      border:1px solid rgba(34,197,94,.28);
+    }
+
+    .btn-fiche{
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      border:1px solid rgba(255,255,255,.10);
+    }
+
+    .btn-nd{
+      background:rgba(238,200,126,.08);
+      color:var(--gold);
+      border:1px solid rgba(238,200,126,.26);
+    }
+
+    .opening-title{
+      display:none;
+    }
+
+    .opening-title.show{
+      display:block;
+    }
+
+    .message-card{
+      padding:14px;
+      color:#e5e7eb;
+      line-height:1.6;
+      font-weight:800;
+    }
+
+    .message-card b{color:var(--brand-2)}
+
+    .proof-strip{
+      margin:16px 0 8px;
+    }
+
+    .proof-card-wrap{
+      padding:18px;
+      text-align:center;
+    }
+
+    .proof-card-wrap p{
+      color:var(--muted);
+      line-height:1.8;
+      font-weight:600;
+    }
+
+    .proof-card-wrap strong{color:var(--brand-2)}
+
+    footer{
+      margin-top:20px;
+      padding:14px 0 90px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:800;
+    }
+
+    footer span{color:var(--brand-2)}
+
+    .sticky-cta{
+      position:fixed;
+      left:0;
+      right:0;
+      bottom:0;
+      z-index:140;
+      padding:10px 12px calc(10px + var(--safe-bottom));
+      background:linear-gradient(180deg, rgba(7,17,27,0), rgba(7,17,27,.92) 18%, rgba(7,17,27,.98));
+      backdrop-filter:blur(10px);
+      pointer-events:none;
+    }
+
+    .sticky-cta-inner{
+      width:min(100%, var(--max));
+      margin:0 auto;
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+      pointer-events:auto;
+    }
+
+    .sticky-btn{
+      min-height:56px;
+      border-radius:18px;
+      font-weight:900;
+      box-shadow:var(--shadow);
+      text-align:center;
+      padding:0 16px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .sticky-btn.primary{
+      background:linear-gradient(180deg, var(--brand-2), var(--brand));
+      color:#102132;
+    }
+
+    .sticky-btn.secondary{
+      background:#102132;
+      border:1px solid rgba(255,255,255,.10);
+      color:var(--text);
+    }
+
+    .overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:14px;
+      z-index:9999;
+    }
+
+    .overlay.show{display:flex}
+
+    .panel{
+      width:100%;
+      max-width:860px;
+      border-radius:22px;
+      border:1px solid rgba(148,163,184,.35);
+      background:linear-gradient(135deg, rgba(2,6,23,.94), rgba(2,8,24,.94));
+      box-shadow:0 30px 80px rgba(0,0,0,.55);
+      overflow:hidden;
+      position:relative;
+    }
+
+    .panelTop{
+      padding:16px;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(250,204,21,.18), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(34,197,94,.14), transparent 50%),
+        rgba(2,6,23,.6);
+      border-bottom:1px solid rgba(148,163,184,.28);
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:flex-start;
+    }
+
+    .panelTitle{
+      font-size:18px;
+      font-weight:950;
+      color:#fde68a;
+      letter-spacing:.02em;
+    }
+
+    .panelSub{
+      margin-top:6px;
+      font-size:14px;
+      color:#e5e7eb;
+      font-weight:650;
+      line-height:1.55;
+      max-width:640px;
+    }
+
+    .panelClose{
+      background:rgba(15,23,42,.75);
+      border:1px solid rgba(148,163,184,.28);
+      color:#e5e7eb;
+      border-radius:999px;
+      padding:8px 12px;
+      font-weight:950;
+      white-space:nowrap;
+    }
+
+    .panelBody{
+      padding:16px;
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:14px;
+    }
+
+    .box{
+      border:1px solid rgba(148,163,184,.22);
+      background:rgba(2,6,23,.55);
+      border-radius:18px;
+      padding:14px;
+    }
+
+    .kicker{
+      font-size:12px;
+      font-weight:950;
+      color:#bbf7d0;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      opacity:.95;
+    }
+
+    .big{
+      margin-top:6px;
+      font-size:22px;
+      font-weight:950;
+      line-height:1.15;
+      color:#facc15;
+    }
+
+    .txt{
+      margin-top:10px;
+      font-size:14px;
+      color:#e5e7eb;
+      line-height:1.7;
+      font-weight:650;
+    }
+
+    .bul{
+      margin-top:10px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      font-size:14px;
+      color:#e5e7eb;
+      font-weight:650;
+      line-height:1.55;
+    }
+
+    .bul div{
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(148,163,184,.18);
+      background:rgba(15,23,42,.35);
+    }
+
+    .hi{
+      color:#fde68a;
+      font-weight:950;
+    }
+
+    .panelActions{
+      padding:14px 16px;
+      border-top:1px solid rgba(148,163,184,.22);
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      background:rgba(2,6,23,.55);
+    }
+
+    .pbtn{
+      border-radius:999px;
+      padding:10px 14px;
+      font-weight:950;
+      border:1px solid rgba(148,163,184,.22);
+      background:rgba(15,23,42,.55);
+      color:#e5e7eb;
+    }
+
+    .pbtn.gold{
+      border-color:rgba(250,204,21,.55);
+      background:rgba(250,204,21,.12);
+      color:#fde68a;
+    }
+
+    .pbtn.green{
+      border-color:rgba(34,197,94,.55);
+      background:rgba(34,197,94,.12);
+      color:#bbf7d0;
+    }
+
+    @media (max-width:980px){
+      .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .lead-form{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .examples-grid{grid-template-columns:1fr 1fr}
+    }
+
+    @media (max-width:820px){
+      .panelBody{grid-template-columns:1fr}
+      .filter-grid{grid-template-columns:1fr 1fr}
+    }
+
+    @media (max-width:640px){
+      .app{padding:0 12px 20px}
+      .hero-card{min-height:410px}
+      .hero-content{padding:22px 16px 18px}
+      .hero-title{font-size:clamp(30px, 10vw, 44px)}
+      .section-title{font-size:22px}
+      .grid{grid-template-columns:1fr}
+      .lead-form{grid-template-columns:1fr}
+      .filter-grid{grid-template-columns:1fr}
+      .filters-card{top:76px}
+      .quick-note-grid{grid-template-columns:1fr}
+      .top-actions .pill-btn:last-child{display:none}
+      .actions.three{grid-template-columns:1fr 1fr}
+      .actions.three .btn-fiche{grid-column:1/-1}
+      .examples-grid{grid-template-columns:1fr}
+    }
+
+    @media (prefers-reduced-motion:reduce){
+      *{scroll-behavior:auto}
+      .btn,.btn-card,.chip,.mini-btn{transition:none}
+    }
+  
+    /* DIGIY LOC — mobile lisible + menu bas */
+    .intent-wrap{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:12px;
+    }
+
+    .intent-card{
+      border-radius:24px;
+      border:1px solid rgba(255,255,255,.10);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.03)),
+        radial-gradient(circle at top left, rgba(238,200,126,.10), transparent 42%);
+      box-shadow:var(--shadow-2);
+      padding:15px;
+      min-height:168px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      gap:12px;
+    }
+
+    .intent-visual{
+      width:58px;
+      height:58px;
+      border-radius:20px;
+      display:grid;
+      place-items:center;
+      font-size:30px;
+      background:rgba(238,200,126,.11);
+      border:1px solid rgba(238,200,126,.22);
+    }
+
+    .intent-card h2{
+      font-size:21px;
+      line-height:1.08;
+      letter-spacing:-.02em;
+      font-weight:900;
+      margin:0 0 6px;
+    }
+
+    .intent-card p{
+      color:var(--muted);
+      line-height:1.55;
+      font-size:14px;
+      font-weight:600;
+    }
+
+    .intent-card .mini-btn{
+      width:100%;
+      min-height:44px;
+    }
+
+    .mobile-dock{
+      display:none;
+    }
+
+    @media(max-width:760px){
+      body{
+        font-size:17px;
+      }
+
+      .app{
+        padding:0 10px 112px;
+      }
+
+      .topbar-inner{
+        min-height:68px;
+      }
+
+      .brand-logo{
+        width:48px;
+        height:48px;
+        border-radius:17px;
+      }
+
+      .brand-kicker{
+        font-size:11px;
+      }
+
+      .brand-title{
+        font-size:17px;
+      }
+
+      .top-actions{
+        display:none;
+      }
+
+      .hero{
+        padding:12px 0 10px;
+      }
+
+      .hero-card{
+        min-height:390px;
+        border-radius:26px;
+      }
+
+      .hero-content{
+        padding:22px 16px 18px;
+      }
+
+      .hero-eyebrow{
+        font-size:12px;
+      }
+
+      .hero-title{
+        font-size:clamp(38px, 12vw, 52px);
+        line-height:.96;
+        max-width:10ch;
+      }
+
+      .hero-sub{
+        font-size:17px;
+        line-height:1.58;
+      }
+
+      .hero-actions{
+        display:grid;
+        grid-template-columns:1fr;
+      }
+
+      .hero-actions .btn{
+        width:100%;
+        min-height:58px;
+        font-size:16px;
+        border-radius:18px;
+      }
+
+      .hero-notes{
+        display:grid;
+        grid-template-columns:1fr;
+      }
+
+      .note{
+        min-height:40px;
+        font-size:13px;
+      }
+
+      .intent-wrap{
+        grid-template-columns:1fr;
+      }
+
+      .intent-card{
+        min-height:auto;
+        display:grid;
+        grid-template-columns:70px 1fr;
+        align-items:center;
+        gap:12px;
+        padding:15px;
+      }
+
+      .intent-visual{
+        width:70px;
+        height:70px;
+        font-size:34px;
+        grid-row:1 / span 2;
+      }
+
+      .intent-card h2{
+        font-size:22px;
+      }
+
+      .intent-card p{
+        font-size:15px;
+      }
+
+      .intent-card .mini-btn{
+        grid-column:1/-1;
+        min-height:52px;
+        border-radius:18px;
+        font-size:15px;
+      }
+
+      .section{
+        padding:10px 0;
+      }
+
+      .section-title,
+      .quick-note-title,
+      .whatsapp-help-title,
+      .contact-title{
+        font-size:clamp(25px, 7vw, 34px);
+        line-height:1.04;
+      }
+
+      .section-text,
+      .quick-note-sub,
+      .whatsapp-help-text,
+      .contact-sub,
+      .owner-callout-text{
+        font-size:16px;
+        line-height:1.6;
+      }
+
+      .examples-wrap,
+      .whatsapp-help,
+      .quick-note-card,
+      .contact-card,
+      .filters-card,
+      .proof-card-wrap,
+      .message-card{
+        border-radius:22px;
+        padding:16px;
+      }
+
+      .examples-grid{
+        grid-template-columns:1fr;
+      }
+
+      .example-card{
+        min-height:auto;
+        border-radius:20px;
+      }
+
+      .example-title{
+        font-size:22px;
+      }
+
+      .example-text{
+        font-size:15px;
+      }
+
+      .example-actions,
+      .whatsapp-help-actions,
+      .quick-note-actions{
+        display:grid;
+        grid-template-columns:1fr;
+      }
+
+      .mini-btn,
+      .btn{
+        min-height:52px;
+        border-radius:18px;
+        font-size:15px;
+      }
+
+      .quick-note-grid{
+        grid-template-columns:1fr;
+        gap:12px;
+      }
+
+      .quick-note-input,
+      .quick-note-textarea,
+      .control,
+      .field input{
+        min-height:54px;
+        font-size:16px;
+        border-radius:16px;
+      }
+
+      .quick-note-textarea{
+        min-height:118px;
+      }
+
+      .quick-note-examples{
+        display:grid;
+        grid-template-columns:1fr;
+      }
+
+      .owner-callout{
+        border-radius:20px;
+      }
+
+      .owner-callout-title{
+        font-size:21px;
+      }
+
+      .filters-card{
+        position:relative;
+        top:auto;
+      }
+
+      .chip-row{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+      }
+
+      .chip{
+        min-height:46px;
+        font-size:14px;
+      }
+
+      .filter-grid{
+        grid-template-columns:1fr;
+      }
+
+      .search-btn{
+        min-height:54px;
+        font-size:15px;
+        border-radius:16px;
+      }
+
+      .lead-form{
+        grid-template-columns:1fr;
+      }
+
+      .grid{
+        grid-template-columns:1fr;
+      }
+
+      .name{
+        font-size:26px;
+      }
+
+      .price{
+        font-size:21px;
+      }
+
+      .desc{
+        font-size:15px;
+      }
+
+      .contact-box .v{
+        font-size:18px;
+      }
+
+      .btn-card{
+        min-height:52px;
+        border-radius:18px;
+        font-size:15px;
+      }
+
+      .sticky-cta{
+        display:none;
+      }
+
+      footer{
+        padding-bottom:95px;
+      }
+
+      .mobile-dock{
+        position:fixed;
+        left:0;
+        right:0;
+        bottom:0;
+        z-index:100000;
+        display:block;
+        padding:8px 10px calc(8px + var(--safe-bottom));
+        background:linear-gradient(180deg, rgba(7,17,27,0), rgba(7,17,27,.94) 24%, rgba(7,17,27,.99));
+        backdrop-filter:blur(12px);
+      }
+
+      .mobile-dock-inner{
+        width:min(100%, var(--max));
+        margin:0 auto;
+        display:grid;
+        grid-template-columns:repeat(6,1fr);
+        gap:7px;
+        border:1px solid rgba(255,255,255,.12);
+        background:rgba(8,18,28,.94);
+        border-radius:22px;
+        padding:7px;
+        box-shadow:0 16px 44px rgba(0,0,0,.38);
+      }
+
+      .mobile-dock a{
+        min-height:56px;
+        border-radius:16px;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:center;
+        gap:3px;
+        color:rgba(243,247,251,.84);
+        font-size:11px;
+        font-weight:950;
+        border:1px solid rgba(255,255,255,.07);
+        text-align:center;
+        background:rgba(255,255,255,.04);
+      }
+
+      .mobile-dock a.primary{
+        color:#102132;
+        background:linear-gradient(180deg, var(--brand-2), var(--brand));
+      }
+
+      .mobile-dock strong{
+        font-size:19px;
+        line-height:1;
+      }
+
+      @media(max-width:430px){
+        .mobile-dock-inner{
+          gap:5px;
+          padding:6px;
+        }
+        .mobile-dock a{
+          min-height:54px;
+          font-size:10px;
+          border-radius:14px;
+        }
+        .mobile-dock strong{
+          font-size:18px;
+        }
+      }
+    }
+
+    @media(max-width:430px){
+      .hero-title{
+        font-size:38px;
+      }
+
+      .intent-card{
+        grid-template-columns:62px 1fr;
+      }
+
+      .intent-visual{
+        width:62px;
+        height:62px;
+        font-size:30px;
+      }
+
+      .chip-row{
+        grid-template-columns:1fr;
+      }
+    }
+
+  
+
+    /* ============================================================
+       DIGIY LOC — QR partageable façon EXPLORE
+       ============================================================ */
+    .qr-share-wrap{
+      margin-top:14px;
+      padding:16px;
+      border-radius:24px;
+      border:1px solid rgba(250,204,21,.25);
+      background:
+        radial-gradient(circle at top left, rgba(250,204,21,.12), transparent 42%),
+        linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.03));
+      box-shadow:var(--shadow-2);
+    }
+
+    .qr-share-grid{
+      display:grid;
+      grid-template-columns:1fr 290px;
+      gap:16px;
+      align-items:center;
+    }
+
+    .qr-share-kicker{
+      color:var(--brand-2);
+      font-size:12px;
+      font-weight:950;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      margin-bottom:8px;
+    }
+
+    .qr-share-title{
+      font-size:clamp(26px,4vw,40px);
+      line-height:1.04;
+      letter-spacing:-.035em;
+      font-weight:950;
+      margin:0;
+    }
+
+    .qr-share-text{
+      margin-top:10px;
+      color:var(--muted);
+      font-size:16px;
+      line-height:1.65;
+      font-weight:650;
+      max-width:62ch;
+    }
+
+    .qr-share-actions{
+      margin-top:14px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+
+    .qr-share-actions .btn{
+      min-height:52px;
+    }
+
+    .qr-share-box{
+      border-radius:22px;
+      background:#fff;
+      padding:16px;
+      display:grid;
+      place-items:center;
+      border:1px solid rgba(250,204,21,.30);
+    }
+
+    .qr-share-box img{
+      width:240px;
+      height:240px;
+      max-width:100%;
+      object-fit:contain;
+      border-radius:14px;
+    }
+
+    .qr-share-link{
+      margin-top:10px;
+      color:var(--brand-2);
+      font-size:12px;
+      line-height:1.45;
+      font-weight:900;
+      word-break:break-all;
+      text-align:center;
+    }
+
+    .qr-share-status{
+      display:none;
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(34,197,94,.34);
+      background:rgba(34,197,94,.10);
+      color:var(--green);
+      font-size:14px;
+      font-weight:850;
+    }
+
+    .qr-share-status.show{display:block}
+
+    @media(max-width:820px){
+      .qr-share-grid{grid-template-columns:1fr}
+      .qr-share-box{max-width:300px}
+      .qr-share-actions{display:grid;grid-template-columns:1fr}
+    }
+
+
+    /* ============================================================
+       DIGIY LOC — Camembert options fiche propriétaire
+       Simple inclus · Premium intervention · Extra réalisation
+       ============================================================ */
+    .digiy-options-fab{
+      position:fixed;
+      left:14px;
+      bottom:96px;
+      z-index:100050;
+      display:flex;
+      align-items:center;
+      gap:9px;
+      min-height:54px;
+      padding:0 16px;
+      border-radius:999px;
+      border:1px solid rgba(250,204,21,.42);
+      background:linear-gradient(135deg,rgba(250,204,21,.96),rgba(249,115,22,.96));
+      color:#111827;
+      font-weight:1000;
+      box-shadow:0 16px 38px rgba(0,0,0,.38),0 0 0 6px rgba(250,204,21,.08);
+      cursor:pointer;
+      touch-action:manipulation;
+    }
+
+    .digiy-options-fab span:first-child{
+      width:30px;
+      height:30px;
+      border-radius:999px;
+      display:grid;
+      place-items:center;
+      background:rgba(17,24,39,.12);
+      font-size:17px;
+    }
+
+    .digiy-options-panel{
+      position:fixed;
+      left:14px;
+      bottom:160px;
+      z-index:100049;
+      width:min(360px,calc(100vw - 28px));
+      border-radius:26px;
+      border:1px solid rgba(250,204,21,.30);
+      background:
+        radial-gradient(circle at 0% 0%,rgba(250,204,21,.18),transparent 42%),
+        radial-gradient(circle at 100% 100%,rgba(34,197,94,.16),transparent 42%),
+        linear-gradient(180deg,rgba(8,18,28,.98),rgba(2,6,23,.98));
+      box-shadow:0 24px 70px rgba(0,0,0,.55);
+      padding:14px;
+      transform:translateY(10px) scale(.98);
+      opacity:0;
+      pointer-events:none;
+      transition:.18s ease;
+    }
+
+    .digiy-options-panel.open{
+      opacity:1;
+      pointer-events:auto;
+      transform:translateY(0) scale(1);
+    }
+
+    .digiy-options-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:10px;
+      margin-bottom:10px;
+    }
+
+    .digiy-options-title{
+      font-size:19px;
+      line-height:1.08;
+      font-weight:1000;
+      letter-spacing:-.03em;
+      color:#fde68a;
+    }
+
+    .digiy-options-sub{
+      margin-top:5px;
+      color:#dbeafe;
+      font-size:13px;
+      line-height:1.45;
+      font-weight:760;
+    }
+
+    .digiy-options-close{
+      width:36px;
+      height:36px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.06);
+      color:#e5e7eb;
+      font-size:18px;
+      font-weight:1000;
+    }
+
+    .digiy-options-pie{
+      display:grid;
+      gap:8px;
+    }
+
+    .digiy-option-slice{
+      display:grid;
+      grid-template-columns:42px 1fr;
+      gap:10px;
+      align-items:center;
+      padding:11px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.055);
+    }
+
+    .digiy-option-dot{
+      width:42px;
+      height:42px;
+      border-radius:999px;
+      display:grid;
+      place-items:center;
+      font-size:20px;
+      font-weight:1000;
+      color:#111827;
+    }
+
+    .digiy-option-dot.simple{background:#bbf7d0;}
+    .digiy-option-dot.premium{background:#fde68a;}
+    .digiy-option-dot.extra{background:#f97316;color:#fff7ed;}
+
+    .digiy-option-name{
+      font-size:14px;
+      font-weight:1000;
+      color:#ffffff;
+    }
+
+    .digiy-option-text{
+      margin-top:3px;
+      color:#cbd5e1;
+      font-size:12.5px;
+      line-height:1.42;
+      font-weight:760;
+    }
+
+    .digiy-options-cta{
+      margin-top:10px;
+      display:grid;
+      grid-template-columns:1fr;
+      gap:8px;
+    }
+
+    .digiy-options-cta a{
+      min-height:48px;
+      border-radius:16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      text-align:center;
+      padding:10px 12px;
+      font-weight:1000;
+    }
+
+    .digiy-options-cta .wa{
+      background:rgba(34,197,94,.16);
+      border:1px solid rgba(34,197,94,.36);
+      color:#bbf7d0;
+    }
+
+    .digiy-options-cta .tarifs{
+      background:rgba(250,204,21,.12);
+      border:1px solid rgba(250,204,21,.34);
+      color:#fde68a;
+    }
+
+    @media(max-width:760px){
+      .digiy-options-fab{
+        left:10px;
+        right:10px;
+        bottom:94px;
+        justify-content:center;
+        min-height:52px;
+      }
+
+      .digiy-options-panel{
+        left:10px;
+        bottom:154px;
+        width:calc(100vw - 20px);
+      }
+    }
+
+
+    /* DIGIY LOC — Porte publique hôtel / chambre */
+    .hotel-demand-alert{
+      margin-top:12px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      min-height:38px;
+      padding:0 12px;
+      border-radius:999px;
+      border:1px solid rgba(34,197,94,.34);
+      background:rgba(34,197,94,.10);
+      color:var(--green);
+      font-size:12px;
+      font-weight:950;
+    }
+    .hotel-demand-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:10px;
+      margin-top:12px;
+    }
+    .hotel-demand-field{
+      display:grid;
+      gap:6px;
+    }
+    .hotel-demand-field.full{
+      grid-column:1/-1;
+    }
+    .hotel-demand-field label{
+      font-size:13px;
+      color:var(--muted);
+      font-weight:850;
+    }
+    .hotel-demand-input,
+    .hotel-demand-textarea{
+      width:100%;
+      min-height:50px;
+      border-radius:14px;
+      border:1px solid var(--line-2);
+      background:rgba(2,6,23,.72);
+      color:var(--text);
+      padding:0 14px;
+      font-weight:800;
+    }
+    .hotel-demand-textarea{
+      min-height:108px;
+      resize:vertical;
+      padding:12px 14px;
+      line-height:1.55;
+    }
+    .hotel-demand-input:focus,
+    .hotel-demand-textarea:focus{
+      border-color:rgba(238,200,126,.58);
+      box-shadow:0 0 0 4px rgba(238,200,126,.10);
+    }
+    .hotel-demand-examples{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+    .hotel-demand-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin-top:12px;
+    }
+    .hotel-demand-status{
+      display:none;
+      margin-top:10px;
+      border-radius:16px;
+      padding:10px 12px;
+      border:1px solid rgba(34,197,94,.28);
+      background:rgba(34,197,94,.10);
+      color:var(--green);
+      font-weight:850;
+      line-height:1.5;
+      white-space:pre-wrap;
+    }
+    .hotel-demand-status.show{display:block}
+    @media(max-width:760px){
+      .hotel-demand-grid{grid-template-columns:1fr}
+      .hotel-demand-examples,
+      .hotel-demand-actions{display:grid;grid-template-columns:1fr}
+    }
+
+
+
+    /* DIGIY LOC — switch FR/EN */
+    .langSwitch{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:5px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.055);
+      flex:0 0 auto;
+    }
+    .langSwitch button{
+      min-height:34px;
+      border:0;
+      border-radius:999px;
+      padding:0 10px;
+      color:var(--text);
+      background:transparent;
+      font-weight:1000;
+      font-size:12px;
+      letter-spacing:.02em;
+    }
+    .langSwitch button[aria-pressed="true"]{
+      background:linear-gradient(180deg, var(--brand-2), var(--brand));
+      color:#102132;
+      box-shadow:0 8px 18px rgba(238,200,126,.18);
+    }
+    @media(max-width:760px){
+      .topbar-inner{flex-wrap:wrap}
+      .langSwitch{margin-left:auto}
+      .langSwitch button{min-height:36px;padding:0 12px}
+    }
+
+
+    /* DIGIY LOC — ouverture internationale */
+    .territory-wrap{
+      margin-top:14px;
+      padding:16px;
+      border-radius:24px;
+      border:1px solid rgba(250,204,21,.24);
+      background:
+        radial-gradient(circle at top left, rgba(250,204,21,.12), transparent 42%),
+        radial-gradient(circle at bottom right, rgba(34,197,94,.10), transparent 40%),
+        linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.03));
+      box-shadow:var(--shadow-2);
+    }
+    .territory-kicker{
+      color:var(--brand-2);
+      font-size:12px;
+      font-weight:950;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      margin-bottom:8px;
+    }
+    .territory-title{
+      font-size:clamp(27px,4vw,42px);
+      line-height:1.04;
+      letter-spacing:-.035em;
+      font-weight:950;
+      margin:0;
+    }
+    .territory-text{
+      margin-top:10px;
+      color:var(--muted);
+      font-size:16px;
+      line-height:1.65;
+      font-weight:650;
+      max-width:68ch;
+    }
+    .territory-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:12px;
+      margin-top:14px;
+    }
+    .territory-card{
+      border-radius:20px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.045);
+      padding:14px;
+      min-height:150px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .territory-card strong{
+      color:var(--brand-2);
+      font-size:18px;
+      line-height:1.12;
+      font-weight:950;
+    }
+    .territory-card p{
+      color:var(--muted);
+      line-height:1.55;
+      font-size:14px;
+      font-weight:650;
+    }
+    .territory-card .mini-btn{
+      margin-top:auto;
+      width:100%;
+    }
+    @media(max-width:820px){
+      .territory-grid{grid-template-columns:1fr}
+    }
+
+</style>
+</head>
+
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="#top" aria-label="Retour en haut">
+        <img
+          class="brand-logo"
+          src="https://digiylyfe.net/wp-content/uploads/2026/03/digiylyfe_logo_qr.jpeg"
+          alt="DIGIYLYFE"
+          loading="lazy"
+        >
+        <div class="brand-meta">
+          <div class="brand-kicker">Afrique · France · Diaspora</div>
+          <div class="brand-title">DIGIY LOC · logements directs</div>
+        </div>
+      </a>
+
+      <div class="top-actions">
+        <a class="pill-btn" href="https://digiylyfe.com/">🌍 Site DIGIYLYFE</a>
+        <a class="pill-btn" href="https://digiy-hub.digiylyfe.com/">🧭 HUB DIGIY</a>
+        <a class="pill-btn" href="./inscription-loc.html">🧾 Inscription LOC</a>
+        <a class="pill-btn" href="./lexique-loc.html?v=lexique-loc-v2-mobile-20260607">🇸🇳 Lexique Wolof</a>
+        <a class="pill-btn" href="#results">Voir les lieux</a>
+        <a class="pill-btn" href="https://wa.me/221771342889" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+      </div>
+
+      <div class="langSwitch" aria-label="Choisir la langue / Choose language">
+        <button type="button" data-lang-btn="fr" onclick="digiySetLocLang('fr')" aria-label="Version française">🇫🇷 FR</button>
+        <button type="button" data-lang-btn="en" onclick="digiySetLocLang('en')" aria-label="English version">🇬🇧 EN</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="app" id="top">
+    <section class="hero">
+      <div class="hero-card">
+        <div class="hero-content">
+          <div class="hero-eyebrow">🏠 Hébergement local · Afrique · France · Diaspora</div>
+          <h1 class="hero-title">Logements locaux en contact direct</h1>
+          <p class="hero-sub">
+            Chambres, villas, appartements, gîtes et hôtels. Sénégal, France, diaspora :
+            tu vois le lieu, tu choisis, tu écris direct au bon contact.
+          </p>
+
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#results">Voir les logements</a>
+            <a class="btn btn-secondary" href="#territoires">🌍 Voir les territoires</a>
+            <a class="btn btn-secondary" href="#hotel-demande">🏨 Demander une chambre</a>
+            <a class="btn btn-secondary" href="#qr-partenaire">🔳 QR Partenaire</a>
+            <a class="btn btn-secondary" href="./lexique-loc.html?v=lexique-loc-v2-mobile-20260607">🇸🇳 Lexique Wolof LOC</a>
+            <a class="btn btn-secondary" href="https://wa.me/221771342889?text=Bonjour%20DIGIY,%20je%20cherche%20o%C3%B9%20dormir%20sur%20la%20Petite%20C%C3%B4te." target="_blank" rel="noopener noreferrer">WhatsApp direct</a>
+            <a class="btn btn-ghost" href="./inscription-loc.html">🧾 Inscrire mon logement</a>
+          </div>
+
+          <div class="hero-notes">
+            <span class="note">📍 Saly · Mbour · Sarlat · Arcachon</span>
+            <span class="note">🌍 Afrique · France · Diaspora</span>
+            <span class="note">💸 Paiement direct</span>
+            <span class="note">✅ 0% commission</span>
+            <span class="note">🌙 NDIMBAL / offres locales</span>
+            <span class="note">📲 WhatsApp direct</span>
+            <span class="note">🧾 Inscription pro LOC</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="territoires">
+      <div class="territory-wrap">
+        <div class="territory-kicker">DIGIY LOC · territoires ouverts</div>
+        <h2 class="territory-title">Saly est la preuve. La France et la diaspora ouvrent l’échelle.</h2>
+        <p class="territory-text">
+          DIGIY LOC ne doit pas être lu comme une simple page “Saly”. Saly reste le terrain vivant,
+          mais le module porte une méthode plus large : rendre un logement local visible, partageable,
+          contactable et payable directement, sans commission DIGIY.
+        </p>
+        <div class="territory-grid">
+          <article class="territory-card">
+            <strong>🇸🇳 Sénégal · preuve terrain</strong>
+            <p>Saly, Mbour, Ngaparou, Somone, Petite Côte, Dakar, AIBD : logements, hôtels, chambres et villas en contact direct.</p>
+            <a class="mini-btn gold" href="#results">Voir les lieux visibles</a>
+          </article>
+          <article class="territory-card">
+            <strong>🇫🇷 France · marché pro</strong>
+            <p>Sarlat, Arcachon, gîtes, chambres d’hôtes, locations saisonnières et petits hébergeurs qui veulent garder leur client.</p>
+            <a class="mini-btn" href="#note-rapide">Préparer une demande France</a>
+          </article>
+          <article class="territory-card">
+            <strong>🌍 Diaspora · pont direct</strong>
+            <p>Familles, voyageurs et clients peuvent retrouver un logement local fiable sans passer par une plateforme qui capte la relation.</p>
+            <a class="mini-btn" href="#hotel-demande">Demander un logement</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+
+    <section class="section" id="choix">
+      <div class="intent-wrap">
+        <article class="intent-card">
+          <div class="intent-visual">🏠</div>
+          <div>
+            <h2>Demander un logement</h2>
+            <p>Tu écris territoire, zone, dates, personnes et budget. DIGIY reçoit ta demande sur WhatsApp.</p>
+          </div>
+          <a class="mini-btn gold" href="#note-rapide">Faire ma demande</a>
+        </article>
+
+        <article class="intent-card">
+          <div class="intent-visual">🛏️</div>
+          <div>
+            <h2>Voir les logements</h2>
+            <p>Tu regardes les lieux visibles maintenant, puis tu écris au bon contact.</p>
+          </div>
+          <a class="mini-btn" href="#results">Voir les lieux</a>
+        </article>
+
+        <article class="intent-card">
+          <div class="intent-visual">🏨</div>
+          <div>
+            <h2>Chambre / Hôtel</h2>
+            <p>Tu poses arrivée, départ, personnes, petit déjeuner, resto ou transfert. L’hôtel confirme la disponibilité.</p>
+          </div>
+          <a class="mini-btn gold" href="#hotel-demande">Demander une chambre</a>
+        </article>
+
+        <article class="intent-card">
+          <div class="intent-visual">➕</div>
+          <div>
+            <h2>Proposer un logement</h2>
+            <p>Tu as un lieu au Sénégal, en France ou côté diaspora ? La fiche d’inscription active ta présence LOC dans l’architecture métiers DIGIY.</p>
+          </div>
+          <a class="mini-btn" href="./inscription-loc.html">Ouvrir l’inscription LOC</a>
+        </article>
+      </div>
+    </section>
+
+    
+    <section class="section" id="hotel-demande">
+      <div class="quick-note-card">
+        <div class="quick-note-top">
+          <div>
+            <div class="quick-note-title">🏨 Demander une chambre / hôtel</div>
+            <div class="quick-note-sub">
+              Le client prépare sa demande. DIGIY l’envoie proprement sur WhatsApp.
+              La disponibilité reste à confirmer par l’hôtel, la résidence, le gîte ou le propriétaire.
+            </div>
+            <div class="hotel-demand-alert">✅ Demande directe · paiement direct hôtel · 0% commission DIGIY</div>
+          </div>
+          <div class="quick-note-badge">Disponibilité à confirmer</div>
+        </div>
+
+        <div class="hotel-demand-grid">
+          <div class="hotel-demand-field">
+            <label for="hotelZone">Pays / zone souhaitée</label>
+            <input id="hotelZone" class="hotel-demand-input" type="text" placeholder="Ex : Saly, Mbour, Sarlat, Arcachon">
+          </div>
+
+          <div class="hotel-demand-field">
+            <label for="hotelArrival">Arrivée</label>
+            <input id="hotelArrival" class="hotel-demand-input" type="text" placeholder="Ex : ce soir, vendredi, 22 juin">
+          </div>
+
+          <div class="hotel-demand-field">
+            <label for="hotelDeparture">Départ</label>
+            <input id="hotelDeparture" class="hotel-demand-input" type="text" placeholder="Ex : demain, dimanche, 24 juin">
+          </div>
+
+          <div class="hotel-demand-field">
+            <label for="hotelPeople">Personnes</label>
+            <input id="hotelPeople" class="hotel-demand-input" type="text" placeholder="Ex : 2 adultes">
+          </div>
+
+          <div class="hotel-demand-field">
+            <label for="hotelRoomType">Type demandé</label>
+            <select id="hotelRoomType" class="hotel-demand-input">
+              <option>Chambre simple</option>
+              <option>Chambre double</option>
+              <option>Suite</option>
+              <option>Appartement</option>
+              <option>Villa</option>
+              <option>À proposer</option>
+            </select>
+          </div>
+
+          <div class="hotel-demand-field">
+            <label for="hotelBudget">Budget indicatif</label>
+            <input id="hotelBudget" class="hotel-demand-input" type="text" placeholder="Ex : 25 000 FCFA / 70 € / nuit">
+          </div>
+
+          <div class="hotel-demand-field">
+            <label for="hotelBreakfast">Petit déjeuner</label>
+            <select id="hotelBreakfast" class="hotel-demand-input">
+              <option>À préciser</option>
+              <option>Oui</option>
+              <option>Non</option>
+            </select>
+          </div>
+
+          <div class="hotel-demand-field">
+            <label for="hotelResto">Restaurant / table</label>
+            <select id="hotelResto" class="hotel-demand-input">
+              <option>À préciser</option>
+              <option>Oui, demander une table</option>
+              <option>Non</option>
+            </select>
+          </div>
+
+          <div class="hotel-demand-field">
+            <label for="hotelTransfer">Transfert AIBD / chauffeur</label>
+            <select id="hotelTransfer" class="hotel-demand-input">
+              <option>À préciser</option>
+              <option>Oui, besoin transfert</option>
+              <option>Non</option>
+            </select>
+          </div>
+
+          <div class="hotel-demand-field full">
+            <label for="hotelMessage">Message libre</label>
+            <textarea id="hotelMessage" class="hotel-demand-textarea" placeholder="Ex : Je cherche une chambre ou un gîte à Saly, Sarlat ou Arcachon, arrivée ce week-end, 2 personnes. Merci de confirmer la disponibilité."></textarea>
+          </div>
+        </div>
+
+        <div class="hotel-demand-examples" aria-label="Exemples demande hôtel">
+          <button class="mini-btn gold" type="button" data-hotel-example="soir-saly">Ce soir à Saly</button>
+          <button class="mini-btn" type="button" data-hotel-example="weekend-couple">Week-end couple</button>
+          <button class="mini-btn" type="button" data-hotel-example="famille-villa">Famille / villa</button>
+          <button class="mini-btn" type="button" data-hotel-example="aibd">Avec transfert AIBD</button>
+        </div>
+
+        <div class="hotel-demand-actions">
+          <button class="btn btn-primary" id="btnHotelWa" type="button">📲 Envoyer demande hôtel</button>
+          <a class="btn btn-secondary" href="#results">Voir les logements visibles</a>
+          <a class="btn btn-ghost" href="./inscription-loc.html">Inscrire hôtel / logement</a>
+        </div>
+
+        <div class="hotel-demand-status" id="hotelDemandStatus">Demande hôtel prête.</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="examples-wrap">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">3 exemples pour comprendre</h2>
+            <p class="section-text">
+              Trois portes suffisent pour initier le visiteur : une vraie fiche complète, une demande simple et une ouverture France/diaspora.
+              La suite se fait par inscription fluide, contact direct et activation propre dans l’architecture métiers de la Supa-Apps.
+            </p>
+          </div>
+        </div>
+
+        <div class="examples-grid">
+          <article class="example-card">
+            <div class="example-kicker">Exemple réel</div>
+            <div class="example-title">LOGEMENT PARTENAIRE · Saly</div>
+            <div class="example-text">
+              Vitrine complète avec lien public, QR, assistance WhatsApp DIGIY et paiement direct au propriétaire. Le client voit, comprend et contacte clairement.
+            </div>
+            <div class="example-actions">
+              <a class="mini-btn gold" href="https://loc.digiylyfe.com/" target="_blank" rel="noopener noreferrer">Ouvrir la fiche</a>
+              <a class="mini-btn" href="https://wa.me/221771342889?text=Bonjour%20DIGIY,%20je%20viens%20de%20la%20page%20LOC%20et%20je%20souhaite%20des%20informations%20sur%20CHEZ%20PARTENAIRE%20%C3%A0%20Saly." target="_blank" rel="noopener noreferrer">WhatsApp</a>
+            </div>
+          </article>
+
+          <article class="example-card">
+            <div class="example-kicker">Exemple demande</div>
+            <div class="example-title">Chambre simple · Mbour / Sarlat</div>
+            <div class="example-text">
+              Une personne cherche un coin propre ce soir : territoire, zone, budget, dates, puis message direct. Simple, terrain, sans commission.
+            </div>
+            <div class="example-actions">
+              <button class="mini-btn gold" type="button" data-example-zone="mbour" data-example-q="chambre mbour">Voir Mbour</button>
+              <a class="mini-btn" href="https://wa.me/221771342889?text=Bonjour%20DIGIY,%20je%20cherche%20une%20chambre%20simple%20%C3%A0%20Mbour%20pour%20ce%20soir.%20Budget%20:%20" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+            </div>
+          </article>
+
+          <article class="example-card">
+            <div class="example-kicker">Extension France</div>
+            <div class="example-title">Gîte / chambre · Sarlat ou Arcachon</div>
+            <div class="example-text">
+              Même logique : une fiche claire, un QR, un contact direct, paiement au propriétaire et 0% commission DIGIY.
+            </div>
+            <div class="example-actions">
+              <button class="mini-btn gold" type="button" onclick="document.getElementById('quickZone').value='Sarlat / Arcachon'; document.getElementById('quickMessage').value='Je cherche un logement à Sarlat ou Arcachon, dates à préciser, 2 personnes. Merci de proposer une disponibilité.'; location.hash='note-rapide';">Préparer demande</button>
+              <a class="mini-btn" href="https://wa.me/221771342889?text=Bonjour%20DIGIY,%20je%20cherche%20un%20logement%20%C3%A0%20Sarlat%20ou%20Arcachon.%20Dates%20:%20%20Budget%20:%20" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="whatsapp-help">
+        <div>
+          <div class="whatsapp-help-title">Tu ne trouves pas encore ton lieu ou ton territoire ?</div>
+          <div class="whatsapp-help-text">
+            Écris directement à DIGIY sur WhatsApp. Donne ton pays, ta zone, tes dates et ton budget, et on te répond simplement.
+          </div>
+        </div>
+        <div class="whatsapp-help-actions">
+          <a class="btn btn-primary" href="https://wa.me/221771342889?text=Bonjour%20DIGIY,%20je%20cherche%20un%20logement.%20Pays%20/%20zone%20:%20%20Dates%20:%20%20Budget%20:%20" target="_blank" rel="noopener noreferrer">📲 Écrire à DIGIY</a>
+          <a class="btn btn-secondary" href="tel:+221771342889">📞 Appeler</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="note-rapide">
+      <div class="quick-note-card">
+        <div class="quick-note-top">
+          <div>
+            <div class="quick-note-title">Note rapide logement · Sénégal / France / diaspora</div>
+            <div class="quick-note-sub">
+              Tu ne trouves pas encore ton logement ? Écris ce que tu cherches.
+              DIGIY reçoit ta demande sur WhatsApp et peut te répondre dès qu’un lieu correspond, au Sénégal, en France ou côté diaspora.
+            </div>
+          </div>
+          <div class="quick-note-badge">Même jeune, la demande ne se perd pas</div>
+        </div>
+
+        <div class="quick-note-grid">
+          <div class="quick-note-field">
+            <label for="quickZone">Pays / zone souhaitée</label>
+            <input id="quickZone" class="quick-note-input" type="text" placeholder="Ex : Saly, Mbour, Sarlat, Arcachon" autocomplete="off">
+          </div>
+
+          <div class="quick-note-field">
+            <label for="quickDates">Dates / nuits</label>
+            <input id="quickDates" class="quick-note-input" type="text" placeholder="Ex : 2 nuits, ce week-end">
+          </div>
+
+          <div class="quick-note-field">
+            <label for="quickPeople">Personnes</label>
+            <input id="quickPeople" class="quick-note-input" type="text" placeholder="Ex : 2 personnes">
+          </div>
+
+          <div class="quick-note-field">
+            <label for="quickBudget">Budget / jour</label>
+            <input id="quickBudget" class="quick-note-input" type="text" placeholder="Ex : 25 000 FCFA / 70 € / nuit">
+          </div>
+
+          <div class="quick-note-field" style="grid-column:1/-1">
+            <label for="quickMessage">Message libre</label>
+            <textarea id="quickMessage" class="quick-note-textarea" placeholder="Ex : Je cherche 2 nuits à Saly, Sarlat ou Arcachon pour 2 personnes, budget à préciser. Coin calme proche plage ou centre si possible."></textarea>
+          </div>
+        </div>
+
+        <div class="quick-note-examples" aria-label="Exemples de notes rapides">
+          <button class="mini-btn gold" type="button" data-note-example="Je cherche 2 nuits à Saly pour 2 personnes, budget 25 000 / 30 000 FCFA par jour.">2 nuits à Saly</button>
+          <button class="mini-btn" type="button" data-note-example="Je cherche une chambre simple ce soir à Mbour, budget 15 000 FCFA.">Ce soir à Mbour</button>
+          <button class="mini-btn" type="button" data-note-example="Je cherche un studio à Ngaparou pour une semaine, budget à discuter.">Studio à Ngaparou</button>
+          <button class="mini-btn" type="button" data-note-example="Je cherche une villa à Somone pour une famille, dates à confirmer, budget à discuter.">Villa à Somone</button>
+          <button class="mini-btn" type="button" data-note-example="Je connais un logement disponible à proposer sur DIGIY LOC.">Je connais un logement</button>
+        </div>
+
+        <div class="quick-note-actions">
+          <button class="btn btn-primary" id="btnQuickNoteWa" type="button">📲 Envoyer ma demande à DIGIY</button>
+          <a class="btn btn-secondary" href="#results">Voir les logements visibles</a>
+        </div>
+
+        <div class="quick-note-status" id="quickNoteStatus">Demande préparée.</div>
+
+        <div class="owner-callout">
+          <div>
+            <div class="owner-callout-title">Tu as un logement à proposer ?</div>
+            <div class="owner-callout-text">
+              Des visiteurs cherchent déjà où dormir. La fiche d’inscription LOC active ta présence dans l’architecture métiers DIGIY, puis tu reçois les demandes directement, sans commission DIGIY.
+            </div>
+          </div>
+          <div class="whatsapp-help-actions">
+            <a class="btn btn-ghost" href="./inscription-loc.html">🧾 Inscrire mon logement</a>
+            <a class="btn btn-secondary" href="https://wa.me/221771342889?text=Bonjour%20DIGIY,%20j%27ai%20un%20logement%20%C3%A0%20proposer%20sur%20DIGIY%20LOC." target="_blank" rel="noopener noreferrer">Parler à DIGIY</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="qr-partenaire">
+      <div class="qr-share-wrap">
+        <div class="qr-share-grid">
+          <div>
+            <div class="qr-share-kicker">QR partageable · LOGEMENT PARTENAIRE</div>
+            <h2 class="qr-share-title">La fiche Partenaire circule comme EXPLORE.</h2>
+            <div class="qr-share-text">
+              Scanne, copie ou partage la vitrine complète. Sur papier ou téléphone, le QR ouvre la fiche partenaire.
+              Sur téléphone, les boutons ouvrent directement la vitrine ou WhatsApp. Le client arrive côté public, sans PIN.
+            </div>
+
+            <div class="qr-share-actions">
+              <a
+                class="btn btn-primary"
+                href="https://loc.digiylyfe.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                🌍 Ouvrir la vitrine complète
+              </a>
+
+              <button class="btn btn-secondary" type="button" id="btnCopyPartenaireQr">
+                📋 Copier le lien
+              </button>
+
+              <a
+                class="btn btn-ghost"
+                href="https://wa.me/?text=Appartement%20CHEZ%20PARTENAIRE%20%E2%80%94%20Saly%20%C2%B7%20DIGIY%20LOC%0A%0A4%20personnes%20max%20%C2%B7%20quartier%20calme%20%C2%B7%20Wave%20direct%20propri%C3%A9taire%20%C2%B7%200%25%20commission.%0A%0A%F0%9F%91%89%20https%3A%2F%2Fpart-logement-partenaire.digiylyfe.com%2F"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                📤 Partager WhatsApp
+              </a>
+            </div>
+
+            <div class="qr-share-status" id="qrPartenaireStatus">
+              Lien copié.
+            </div>
+          </div>
+
+          <div>
+            <div class="qr-share-box">
+              <a
+                href="https://loc.digiylyfe.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Ouvrir la vitrine partenaire LOGEMENT PARTENAIRE"
+              >
+                <img
+                  src="https://quickchart.io/qr?size=280&text=https%3A%2F%2Fpart-logement-partenaire.digiylyfe.com%2F"
+                  alt="QR partageable LOGEMENT PARTENAIRE — Saly"
+                  width="280"
+                  height="280"
+                >
+              </a>
+            </div>
+
+            <div class="qr-share-link">
+              https://loc.digiylyfe.com/
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="filters-card">
+        <div class="chip-row" id="zoneChips">
+          <button class="chip active" type="button" data-zone="">Tous les territoires</button>
+          <button class="chip" type="button" data-zone="saly">Saly</button>
+          <button class="chip" type="button" data-zone="ngaparou">Ngaparou</button>
+          <button class="chip" type="button" data-zone="somone">Somone</button>
+          <button class="chip" type="button" data-zone="mbour">Mbour</button>
+          <button class="chip" type="button" data-zone="dakar">Dakar</button>
+          <button class="chip" type="button" data-zone="thies">Thiès</button>
+          <button class="chip" type="button" data-zone="sarlat">Sarlat</button>
+          <button class="chip" type="button" data-zone="arcachon">Arcachon</button>
+          <button class="chip" type="button" data-zone="diaspora">Diaspora</button>
+        </div>
+
+        <div class="filter-grid">
+          <input id="q" class="control" placeholder="Chercher un territoire, une zone, un lieu..." autocomplete="off">
+          <select id="kind" class="control">
+            <option value="">Type : Tout</option>
+            <option value="villa">Villa</option>
+            <option value="appartement">Appartement</option>
+            <option value="studio">Studio</option>
+            <option value="chambre">Chambre</option>
+            <option value="maison">Maison</option>
+          </select>
+          <button id="btnSearch" class="search-btn" type="button">🔎 Chercher</button>
+          <button id="btnReset" class="search-btn ghost" type="button">↩ Effacer</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="section">
+      <div class="contact-card">
+        <div class="contact-title">Écrire au bon contact</div>
+        <div class="contact-sub" id="pickedHint">Choisis un logement dans la liste 👇</div>
+
+        <div class="picked-line" id="pickLine">
+          <div class="picked-title" id="pickedTitle">Aucun lieu choisi</div>
+          <button type="button" class="pick-clear" id="pickClear">Changer</button>
+        </div>
+
+        <form id="locLeadForm" class="lead-form">
+          <input type="hidden" name="picked_room_slug" id="pickedRoomSlug">
+          <input type="hidden" name="picked_phone" id="pickedPhone">
+
+          <div class="field">
+            <label for="leadName">Votre prénom</label>
+            <input id="leadName" name="name" type="text" placeholder="Ex: Awa" autocomplete="given-name" required>
+          </div>
+
+          <div class="field">
+            <label for="leadDates">Dates</label>
+            <input id="leadDates" name="dates" type="text" placeholder="Ex: 12/03 - 18/03" required>
+          </div>
+
+          <div class="field">
+            <label for="leadPeople">Personnes</label>
+            <input id="leadPeople" name="people" type="number" min="1" placeholder="Ex: 2" required>
+          </div>
+
+          <div class="field">
+            <label for="leadBudget">Budget</label>
+            <input id="leadBudget" name="budget" type="text" placeholder="Ex: 25 000 FCFA / nuit">
+          </div>
+
+          <div class="field full">
+            <button class="search-btn" type="submit">📲 Écrire sur WhatsApp</button>
+            <div class="form-note">Message prêt. Tu n’as plus qu’à envoyer.</div>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section class="section" id="results">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">Les lieux visibles maintenant</h2>
+          <p class="section-text">Des logements publiés, lisibles vite, avec contact direct et fiche si tu veux voir plus. Saly est la preuve, les autres territoires s’ouvrent au fil des partenaires.</p>
+        </div>
+      </div>
+
+      <div class="results-bar">
+        <div><strong id="resultCount">1</strong> lieu(x) réel(s) visible(s)</div>
+        <div>Contact direct · Réponse simple · Paiement direct</div>
+      </div>
+      <div class="message-card" id="locTemperature" style="margin-top:12px">
+        🌡️ Température LOC : 1 lieu réel visible + 2 exemples utiles + ouverture France/diaspora. Les fiches réelles enrichissent la galerie quand elles sont disponibles.
+      </div>
+
+      <section id="grid" class="grid"></section>
+    </section>
+
+    <section class="proof-strip">
+      <div class="proof-card-wrap">
+        <p>
+          <strong>Saly · Mbour · Sarlat · Arcachon · Diaspora</strong><br>
+          Lieux réels ou territoires à activer. Hôtes locaux. Contact direct.<br>
+          Pas d’intermédiaire. Pas de commission.
+        </p>
+      </div>
+    </section>
+
+    <section class="section opening-title" id="openingTitle">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">2 exemples utiles</h2>
+          <p class="section-text">Deux cartes suffisent pour montrer l’esprit LOC sans transformer la vitrine en catalogue d’attente.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="openingGrid" class="grid" style="display:none"></section>
+
+
+    <section class="section" id="retours-digiy">
+      <div class="whatsapp-help">
+        <div>
+          <div class="whatsapp-help-title">Revenir dans la maison DIGIY</div>
+          <div class="whatsapp-help-text">
+            Cette page montre les logements directs. Pour comprendre DIGIYLYFE, ouvrir un autre territoire ou choisir un module, utilise les portes ci-dessous.
+          </div>
+        </div>
+        <div class="whatsapp-help-actions">
+          <a class="btn btn-secondary" href="https://digiylyfe.com/">🌍 Site DIGIYLYFE</a>
+          <a class="btn btn-primary" href="https://digiy-hub.digiylyfe.com/">🧭 HUB DIGIY</a>
+          <a class="btn btn-ghost" href="./inscription-loc.html">🧾 Inscription LOC</a>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div>DIGIY LOC • <span>façade publique</span> — Sénégal · France · Diaspora</div>
+      <div>0% commission • Paiement direct • Contact direct local</div>
+    </footer>
+  </div>
+
+
+  
+  <!-- DIGIY LOC — Camembert options fiche propriétaire -->
+  <button class="digiy-options-fab" id="digiyOptionsFab" type="button" aria-expanded="false" aria-controls="digiyOptionsPanel">
+    <span>🍕</span>
+    <strong>Options fiche propriétaire</strong>
+  </button>
+
+  <aside class="digiy-options-panel" id="digiyOptionsPanel" aria-hidden="true">
+    <div class="digiy-options-head">
+      <div>
+        <div class="digiy-options-title">Choisir le niveau de lumière</div>
+        <div class="digiy-options-sub">
+          Simple pour être visible. Premium pour mieux présenter. Extra pour une vraie vitrine partenaire.
+        </div>
+      </div>
+      <button class="digiy-options-close" id="digiyOptionsClose" type="button" aria-label="Fermer les options">×</button>
+    </div>
+
+    <div class="digiy-options-pie">
+      <div class="digiy-option-slice">
+        <div class="digiy-option-dot simple">1</div>
+        <div>
+          <div class="digiy-option-name">Fiche Simple · incluse</div>
+          <div class="digiy-option-text">
+            Présence dans la galerie LOC, photo, prix, zone, capacité et WhatsApp direct.
+          </div>
+        </div>
+      </div>
+
+      <div class="digiy-option-slice">
+        <div class="digiy-option-dot premium">2</div>
+        <div>
+          <div class="digiy-option-name">Fiche Premium · mise en page</div>
+          <div class="digiy-option-text">
+            Intervention DIGIY pour organiser la présentation, les photos, les tarifs et les boutons.
+          </div>
+        </div>
+      </div>
+
+      <div class="digiy-option-slice">
+        <div class="digiy-option-dot extra">3</div>
+        <div>
+          <div class="digiy-option-name">Fiche Extra · réalisation complète</div>
+          <div class="digiy-option-text">
+            Vitrine partenaire complète : QR cliquable, partage WhatsApp, storytelling et page qui circule.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="digiy-options-cta">
+      <a
+        class="wa"
+        href="https://wa.me/221771342889?text=Bonjour%20DIGIY%2C%20je%20veux%20conna%C3%AEtre%20les%20options%20fiche%20LOC%20%3A%20Simple%2C%20Premium%20ou%20Extra."
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        📲 Parler des options fiche
+      </a>
+
+      <a
+        class="tarifs"
+        href="./inscription-loc.html"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        📦 Voir les tarifs LOC
+      </a>
+    </div>
+  </aside>
+
+
+<nav class="mobile-dock" aria-label="Navigation rapide LOC">
+    <div class="mobile-dock-inner">
+      <a href="https://digiylyfe.com/"><strong>🌍</strong><span>Site</span></a>
+      <a href="https://digiy-hub.digiylyfe.com/"><strong>🧭</strong><span>HUB</span></a>
+      <a class="primary" href="#note-rapide"><strong>🏠</strong><span>Demander</span></a>
+      <a href="#results"><strong>🛏️</strong><span>Logements</span></a>
+      <a href="#territoires"><strong>🌍</strong><span>Monde</span></a>
+      <a href="./inscription-loc.html"><strong>🧾</strong><span>Inscrip.</span></a>
+    </div>
+  </nav>
+
+  <div class="sticky-cta">
+    <div class="sticky-cta-inner">
+      <a class="sticky-btn secondary" href="#results">Voir les lieux</a>
+      <a class="sticky-btn primary" href="./inscription-loc.html">🧾 Inscription LOC</a>
+      <a
+        class="sticky-btn secondary"
+        href="#note-rapide"
+      >
+        Note rapide
+      </a>
+    </div>
+  </div>
+
+  <div class="overlay" id="ndOverlay" aria-hidden="true">
+    <div class="panel" role="dialog" aria-modal="true" aria-label="Comprendre NDIMBAL">
+      <div class="panelTop">
+        <div>
+          <div class="panelTitle">🌙 NDIMBAL — le pouvoir des nuits offertes</div>
+          <div class="panelSub">
+            NDIMBAL n'est pas une commission ni un frais.
+            C'est une stratégie locale : tu restes plus longtemps, tu dépenses plus dans le quartier, et tout le monde respire mieux.
+          </div>
+        </div>
+        <button class="panelClose" type="button" id="ndClose">✕ Fermer</button>
+      </div>
+      <div class="panelBody">
+        <div class="box">
+          <div class="kicker">OFFRE OFFICIELLE</div>
+          <div class="big">2 nuits payées = 3e offerte</div>
+          <div class="txt">
+            Valable <span class="hi">du lundi au jeudi</span> selon disponibilité du logement NDIMBAL.
+            Objectif : pousser les séjours en semaine et faire tourner l’économie locale.
+          </div>
+          <div class="bul">
+            <div>✅ Tu gagnes <span class="hi">1 nuit</span> → tu restes plus longtemps.</div>
+            <div>✅ Tu consommes <span class="hi">1 jour de plus</span> dans le coin.</div>
+            <div>✅ Le logement gagne en <span class="hi">bouche-à-oreille</span>.</div>
+          </div>
+        </div>
+        <div class="box">
+          <div class="kicker">COMMENT REPÉRER ?</div>
+          <div class="txt">Dans la galerie, un logement NDIMBAL porte un badge dédié ou un propriétaire t’en parle directement.</div>
+          <div class="bul">
+            <div>1) Tu choisis tes dates.</div>
+            <div>2) Tu écris au propriétaire via WhatsApp.</div>
+            <div>3) Tu demandes : <span class="hi">“Je veux profiter de NDIMBAL”</span>.</div>
+          </div>
+        </div>
+      </div>
+      <div class="panelActions">
+        <button class="pbtn gold" type="button" id="ndClose2">✅ J’ai compris</button>
+        <button class="pbtn green" type="button" id="ndTalk">📲 Parler à DIGIY</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let __sb = null;
+    let __renderRetryTimer = null;
+    let ACTIVE_ZONE = "";
+
+    function getSb(){
+      if (__sb) return __sb;
+
+      try{
+        if (!window.supabase || typeof window.supabase.createClient !== "function"){
+          console.warn("[DIGIY LOC] Supabase CDN indisponible au chargement.");
+          return null;
+        }
+
+        __sb = window.supabase.createClient(
+          window.DIGIY_SUPABASE_URL,
+          window.DIGIY_SUPABASE_ANON_KEY,
+          {
+            auth: {
+              persistSession: false,
+              autoRefreshToken: false,
+              detectSessionInUrl: false,
+              storage: {
+                getItem: () => null,
+                setItem: () => {},
+                removeItem: () => {}
+              }
+            },
+            global: {
+              fetch: (...args) => fetch(...args)
+            }
+          }
+        );
+
+        return __sb;
+      }catch(e){
+        console.warn("[DIGIY LOC] createClient impossible:", e?.message || e);
+        return null;
+      }
+    }
+
+    function cleanPublicUrl(){
+      try{
+        const u = new URL(location.href);
+        let changed = false;
+
+        ["phone","tel","wa","owner_phone"].forEach((key) => {
+          if(u.searchParams.has(key)){
+            u.searchParams.delete(key);
+            changed = true;
+          }
+        });
+
+        ["identifiant"].forEach((key) => {
+          if(u.searchParams.has(key)){
+            u.searchParams.delete(key);
+            changed = true;
+          }
+        });
+
+        const slug = String(u.searchParams.get("slug") || u.searchParams.get("room_slug") || "").trim().toLowerCase();
+        if(/^loc-\d{7,}/.test(slug) || /\d{9,}/.test(slug)){
+          u.searchParams.delete("slug");
+          u.searchParams.delete("room_slug");
+          changed = true;
+        }
+
+        if(changed){
+          history.replaceState({}, "", u.pathname + u.search + u.hash);
+        }
+      }catch(_){}
+    }
+
+    cleanPublicUrl();
+
+    const grid = document.getElementById("grid");
+    const openingGrid = document.getElementById("openingGrid");
+    const openingTitle = document.getElementById("openingTitle");
+    const resultCount = document.getElementById("resultCount");
+
+    const TEAM_WA = "+221771342889";
+    const PUBLIC_BASE_URL = "https://loc.digiylyfe.com/";
+    const PUBLIC_FICHE_URL = "https://loc.digiylyfe.com/fiche.html";
+    const FEATURED_PUBLIC_URL = "";
+    const NDIMBAL_RULE = "2 nuits payées = 3e offerte (Lun-Jeu)";
+    const OCCUPANCY_VIEW = "v_loc_pin_occupancy_today";
+    const CARD_STORE = new Map();
+
+    function norm(s){
+      return String(s || "").trim().toLowerCase();
+    }
+
+    function canonicalRoomSlug(obj){
+      return String(obj?.room_slug || obj?.slug || "").trim();
+    }
+
+    function canonicalLegacySlug(obj){
+      return String(obj?.legacy_slug || obj?.slug || "").trim();
+    }
+
+    function escapeHtml(str){
+      return String(str ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    function escapeAttr(str){
+      return escapeHtml(str).replaceAll("`","&#096;");
+    }
+
+    function digiyLocCurrentLang(){
+      try{
+        const p = new URLSearchParams(location.search);
+        const fromUrl = (p.get("lang") || "").toLowerCase();
+        if(fromUrl === "en") return "en";
+        if(fromUrl === "fr") return "fr";
+        return (localStorage.getItem("digiy_loc_lang_native_v1") || "fr").toLowerCase() === "en" ? "en" : "fr";
+      }catch(_){ return "fr"; }
+    }
+
+    function digiyLocIsEnglish(){
+      return digiyLocCurrentLang() === "en";
+    }
+
+    function digiyLocLocalizeWaMessage(message){
+      if(!digiyLocIsEnglish()) return String(message || "");
+      return String(message || "")
+        .replace(/Bonjour DIGIY 👋/g, "Hello DIGIY 👋")
+        .replace(/Bonjour 👋/g, "Hello 👋")
+        .replace(/Bonjour DIGIY/g, "Hello DIGIY")
+        .replace(/Je cherche un logement\./g, "I am looking for accommodation.")
+        .replace(/Ma demande rapide :/g, "My quick request:")
+        .replace(/Message libre :/g, "Free message:")
+        .replace(/Merci de m’aider si un lieu correspond\./g, "Please help me if a place matches.")
+        .replace(/Je vous contacte via DIGIY LOC\./g, "I am contacting you through DIGIY LOC.")
+        .replace(/Identifiant : à préciser/g, "Identifier: to be confirmed")
+        .replace(/Identifiant :/g, "Identifier:")
+        .replace(/Prénom :/g, "First name:")
+        .replace(/à préciser/g, "to be confirmed")
+        .replace(/non précisé/g, "not specified")
+        .replace(/Personnes :/g, "Guests:")
+        .replace(/Budget :/g, "Budget:")
+        .replace(/Dates :/g, "Dates:")
+        .replace(/Je cherche ([^\n]+) à ([^\n]+) pour ([^,\n]+), budget environ ([^\n]+) \/ jour\./g, "I am looking for $1 in $2 for $3, budget around $4 per day.")
+        .replace(/Je veux en savoir plus sur NDIMBAL/g, "I want to know more about NDIMBAL")
+        .replace(/Je veux une fiche LOC pour mon logement/g, "I want a LOC page for my place");
+    }
+
+    function openWa(phone, message){
+      const txt = encodeURIComponent(digiyLocLocalizeWaMessage(message || ""));
+      const digits = String(phone || "").replace(/\D/g, "");
+      if (!digits) return;
+      window.open("https://wa.me/" + digits + (txt ? "?text=" + txt : ""), "_blank", "noopener,noreferrer");
+    }
+
+    function fillQuickNoteExample(text){
+      const quickMessage = document.getElementById("quickMessage");
+      if (!quickMessage) return;
+      quickMessage.value = String(text || "").trim();
+      quickMessage.focus();
+    }
+
+    function showQuickNoteStatus(message){
+      const box = document.getElementById("quickNoteStatus");
+      if (!box) return;
+      box.textContent = message || "Demande préparée.";
+      box.classList.add("show");
+    }
+
+    function buildQuickLocMessage(){
+      const zone = document.getElementById("quickZone")?.value?.trim() || "à préciser";
+      const dates = document.getElementById("quickDates")?.value?.trim() || "à préciser";
+      const people = document.getElementById("quickPeople")?.value?.trim() || "à préciser";
+      const budget = document.getElementById("quickBudget")?.value?.trim() || "à préciser";
+      const free = document.getElementById("quickMessage")?.value?.trim() || "";
+
+      const baseLine = `Je cherche ${dates} à ${zone} pour ${people}, budget environ ${budget} / jour.`;
+      return [
+        "Bonjour DIGIY 👋",
+        "Je cherche un logement.",
+        "",
+        "Ma demande rapide :",
+        baseLine,
+        free ? "" : null,
+        free ? "Message libre :" : null,
+        free || null,
+        "",
+        "Merci de m’aider si un lieu correspond."
+      ].filter(Boolean).join("\n");
+    }
+
+    function sendQuickLocNote(){
+      const message = buildQuickLocMessage();
+      openWa(TEAM_WA, message);
+      showQuickNoteStatus("Demande ouverte dans WhatsApp. Même si la galerie est jeune, ta recherche ne se perd pas.");
+    }
+
+    function buildCardKey(source, p){
+      const raw = canonicalRoomSlug(p) || canonicalLegacySlug(p) || p?.title || "item";
+      return `${source}:${encodeURIComponent(String(raw))}`;
+    }
+
+    function setCardData(source, p){
+      const key = buildCardKey(source, p);
+      CARD_STORE.set(key, {
+        room_slug: canonicalRoomSlug(p),
+        slug: canonicalRoomSlug(p),
+        legacy_slug: canonicalLegacySlug(p),
+        title: p.title || "Logement",
+        whatsapp: p.whatsapp || "",
+        phone: p.phone || "",
+        address_label: p.address_label || "",
+        cover: pickCover(p),
+        kind: p.kind || computeKind(p),
+        desc: p.desc || "",
+        public_url: p.public_url || "",
+        type_logement: p.type_logement || "",
+        is_official_partner: !!p.is_official_partner,
+        prix_nuit: p.prix_nuit ?? null,
+        personnes_max: p.personnes_max ?? null
+      });
+      return key;
+    }
+
+    const FEATURED_PIN = null;
+
+    const OPENING_ZONES = [
+      {
+        title:"Saly Centre — exemple à activer",
+        room_slug:"exemple-saly-centre-a-activer",
+        slug:"exemple-saly-centre-a-activer",
+        legacy_slug:"exemple-saly-centre-a-activer",
+        address_label:"Saly Centre",
+        kind:"Appartement • Chambre",
+        whatsapp:TEAM_WA,
+        cover:"https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80",
+        desc:"Exemple utile : un lieu simple, bien situé, avec prix clair, WhatsApp direct et fiche propre. Pas encore une réservation confirmée."
+      },
+      {
+        title:"Mbour — chambre petit budget",
+        room_slug:"exemple-mbour-chambre-budget",
+        slug:"exemple-mbour-chambre-budget",
+        legacy_slug:"exemple-mbour-chambre-budget",
+        address_label:"Mbour",
+        kind:"Chambre • Budget clair",
+        whatsapp:TEAM_WA,
+        cover:"https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1400&q=80",
+        desc:"Exemple utile : chambre simple pour ce soir ou demain, contact rapide, paiement direct au propriétaire."
+      }
+    ];
+
+    function computeKind(row){
+      const type = norm(row.type_logement || "");
+      if (type.includes("villa")) return "Villa • Direct propriétaire";
+      if (type.includes("studio")) return "Studio • Direct propriétaire";
+      if (type.includes("appartement")) return "Appartement • Direct propriétaire";
+      if (type.includes("chambre")) return "Chambre • Direct propriétaire";
+      if (type.includes("maison")) return "Maison • Direct propriétaire";
+
+      const t = norm(row.title || row.nom || "");
+      if (t.includes("villa")) return "Villa • Direct propriétaire";
+      if (t.includes("studio")) return "Studio • Direct propriétaire";
+      if (t.includes("appart")) return "Appartement • Direct propriétaire";
+      if (t.includes("chambre")) return "Chambre • Direct propriétaire";
+      if (t.includes("maison")) return "Maison • Direct propriétaire";
+
+      return "Location • Direct propriétaire";
+    }
+
+    function pickWhatsApp(row){
+      const wa = row.whatsapp || row.phone || "";
+      const digits = String(wa).replace(/\D/g, "");
+      if (digits.length >= 9) return wa;
+      return TEAM_WA;
+    }
+
+    function pickCover(row){
+      return row.cover || row.photo_url || "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80";
+    }
+
+    function isSafeLocPublicUrl(raw){
+      const v = String(raw || "").trim();
+      if(!v) return "";
+
+      try{
+        const u = new URL(v, PUBLIC_BASE_URL);
+        const host = u.hostname.toLowerCase();
+
+        const allowed =
+          host === "loc.digiylyfe.com" ||
+          host.endsWith(".loc.digiylyfe.com") ||
+          host === "part-logement-partenaire.digiylyfe.com" ||
+          host === "digiy-hub.digiylyfe.com" ||
+          host === "digiylyfe.com";
+
+        if(!allowed) return "";
+
+        ["phone","tel","wa","owner_phone","p_phone","whatsapp","client_phone","wave_phone","pin","pin4","token","session_token"].forEach(k => {
+          u.searchParams.delete(k);
+        });
+
+        const s = String(u.searchParams.get("slug") || u.searchParams.get("room_slug") || "").trim().toLowerCase();
+        if(/^loc-\d{7,}/.test(s) || /\d{9,}/.test(s)){
+          u.searchParams.delete("slug");
+          u.searchParams.delete("room_slug");
+        }
+
+        return u.toString();
+      }catch(_){
+        return "";
+      }
+    }
+
+    function ficheLinkFor(p){
+      const roomSlug = canonicalRoomSlug(p);
+      const title = norm(p && p.title);
+
+      if(
+        title === norm("LOGEMENT PARTENAIRE") ||
+        norm(roomSlug) === norm("logement-partenaire") ||
+        norm(p && p.legacy_slug) === norm("logement-partenaire")
+      ){
+        return FEATURED_PUBLIC_URL;
+      }
+
+      const official = isSafeLocPublicUrl(p && p.public_url);
+
+      if(official){
+        return official;
+      }
+
+      const u = new URL(PUBLIC_FICHE_URL);
+      if (roomSlug && !/^loc-\d{7,}/.test(String(roomSlug).toLowerCase()) && !/\d{9,}/.test(String(roomSlug))){
+        u.searchParams.set("slug", roomSlug);
+        u.searchParams.set("room_slug", roomSlug);
+      }else if(roomSlug){
+        /*
+          Même si l'identifiant est sensible, on reste dans la fiche LOC.
+          Le détail public résoudra ce qui est autorisé côté Supabase.
+          On ne renvoie jamais vers DRIVER ou un dashboard externe.
+        */
+        u.searchParams.set("slug", roomSlug);
+      }
+      return u.toString();
+    }
+
+    const ndOverlay = document.getElementById("ndOverlay");
+
+    function openNdimbal(){
+      ndOverlay.classList.add("show");
+      ndOverlay.setAttribute("aria-hidden", "false");
+    }
+
+    function closeNdimbal(){
+      ndOverlay.classList.remove("show");
+      ndOverlay.setAttribute("aria-hidden", "true");
+    }
+
+    document.getElementById("ndClose").addEventListener("click", closeNdimbal);
+    document.getElementById("ndClose2").addEventListener("click", closeNdimbal);
+    ndOverlay.addEventListener("click", (e) => {
+      if (e.target === ndOverlay) closeNdimbal();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeNdimbal();
+    });
+    document.getElementById("ndTalk").addEventListener("click", () => {
+      openWa(TEAM_WA, `Bonjour DIGIY 👋\nJe veux en savoir plus sur NDIMBAL (${NDIMBAL_RULE}).`);
+    });
+
+    document.querySelectorAll("[data-note-example]").forEach(btn => {
+      btn.addEventListener("click", () => fillQuickNoteExample(btn.getAttribute("data-note-example")));
+    });
+
+    document.getElementById("btnQuickNoteWa")?.addEventListener("click", sendQuickLocNote);
+
+    async function logReservationIntent(pin){
+      const sb = getSb();
+      if (!sb) return;
+
+      try{
+        await sb.from("loc_reservation_requests").insert({
+          pin_slug: canonicalRoomSlug(pin) || canonicalLegacySlug(pin) || null,
+          logement_title: pin.title || null,
+          owner_phone: pickWhatsApp(pin) || null
+        });
+      }catch(e){
+        console.warn("[DIGIY LOC] logReservationIntent ignored:", e?.message || e);
+      }
+    }
+
+    async function reserveNow(pin){
+      const hydrated = await hydratePublicContact(pin);
+      const wa = pickWhatsApp(hydrated);
+      const title = hydrated.title || "ce logement";
+      const roomSlug = canonicalRoomSlug(hydrated);
+
+      const isPartenaire =
+        norm(title).includes("chez partenaire") ||
+        norm(roomSlug) === norm("logement-partenaire") ||
+        norm(hydrated?.legacy_slug) === norm("logement-partenaire");
+
+      const msg = isPartenaire
+        ? [
+            "Bonjour, je viens de DIGIY LOC.",
+            "Je suis intéressé par Appartement LOGEMENT PARTENAIRE — Saly.",
+            "Dates souhaitées :",
+            "Nombre de personnes :",
+            "Budget :",
+            "Lien vitrine : " + FEATURED_PUBLIC_URL
+          ].join("\n")
+        : [
+            `Bonjour, je souhaite réserver / avoir des infos pour "${title}" via DIGIY LOC.`,
+            roomSlug ? `Identifiant : ${roomSlug}` : ""
+          ].filter(Boolean).join("\n");
+
+      await logReservationIntent(hydrated);
+      openWa(wa, msg);
+    }
+
+    function pickLocForWhatsApp(pin){
+      const title = pin?.title || "Logement";
+      const roomSlug = canonicalRoomSlug(pin);
+
+      document.getElementById("pickedHint").textContent = "Logement sélectionné ✅";
+      document.getElementById("pickLine").classList.add("show");
+      document.getElementById("pickedTitle").textContent = title;
+      document.getElementById("pickedRoomSlug").value = roomSlug;
+
+      /*
+        On ne pose pas le téléphone dans la page depuis la galerie.
+        Au moment d'envoyer, le contact public est résolu via RPC fiche.
+      */
+      document.getElementById("pickedPhone").value = "";
+      document.getElementById("contact").scrollIntoView({ behavior:"smooth", block:"start" });
+    }
+
+    document.getElementById("pickClear").addEventListener("click", () => {
+      document.getElementById("pickedHint").textContent = "Choisis un logement dans la liste 👇";
+      document.getElementById("pickLine").classList.remove("show");
+      document.getElementById("pickedTitle").textContent = "Aucun lieu choisi";
+      document.getElementById("pickedRoomSlug").value = "";
+      document.getElementById("pickedPhone").value = "";
+    });
+
+    document.getElementById("locLeadForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const pickedRoomSlug = document.getElementById("pickedRoomSlug").value.trim();
+      let pickedPhone = document.getElementById("pickedPhone").value.trim();
+      const form = e.currentTarget;
+
+      if(!pickedPhone && pickedRoomSlug){
+        if(norm(pickedRoomSlug) === norm("logement-partenaire")){
+          pickedPhone = TEAM_WA;
+        }else{
+          const room = await fetchPublicRoomBySlug(pickedRoomSlug);
+          pickedPhone = room?.whatsapp_phone || room?.call_phone || "";
+        }
+      }
+
+      if(!pickedPhone) pickedPhone = TEAM_WA;
+
+      const name = (form.elements.namedItem("name")?.value || "").trim();
+      const dates = (form.elements.namedItem("dates")?.value || "").trim();
+      const people = (form.elements.namedItem("people")?.value || "").trim();
+      const budget = (form.elements.namedItem("budget")?.value || "").trim();
+
+      const msg = [
+        "Bonjour 👋",
+        "Je vous contacte via DIGIY LOC.",
+        pickedRoomSlug ? `Identifiant : ${pickedRoomSlug}` : "Identifiant : à préciser",
+        `Prénom : ${name || "à préciser"}`,
+        `Dates : ${dates || "à préciser"}`,
+        `Personnes : ${people || "à préciser"}`,
+        `Budget : ${budget || "non précisé"}`
+      ].join("\n");
+
+      openWa(pickedPhone, msg);
+    });
+
+    async function fetchPublicRoomBySlug(roomSlug){
+      const sb = getSb();
+      const slug = String(roomSlug || "").trim();
+
+      if(!sb || !slug) return null;
+
+      try{
+        const { data, error } = await sb.rpc("digiy_loc_public_room_by_slug", { p_slug: slug });
+
+        if(error){
+          console.warn("[DIGIY LOC] digiy_loc_public_room_by_slug error:", error.message);
+          return null;
+        }
+
+        if(data && data.ok && data.room){
+          return data.room;
+        }
+
+        return null;
+      }catch(e){
+        console.warn("[DIGIY LOC] fetchPublicRoomBySlug exception:", e?.message || e);
+        return null;
+      }
+    }
+
+    async function hydratePublicContact(pin){
+      const roomSlug = canonicalRoomSlug(pin);
+
+      if(!roomSlug) return pin;
+
+      if(pin && pin.__public_detail_loaded) return pin;
+
+      const room = await fetchPublicRoomBySlug(roomSlug);
+      if(!room) return pin;
+
+      const isPartenaire = isPartenaireLike(pin);
+      const whatsapp = isPartenaire
+        ? TEAM_WA
+        : (room.whatsapp_phone || room.call_phone || pin.whatsapp || "");
+      const phone = isPartenaire
+        ? (pin.phone || room.call_phone || room.whatsapp_phone || "")
+        : (room.call_phone || room.whatsapp_phone || pin.phone || "");
+
+      Object.assign(pin, {
+        whatsapp,
+        phone,
+        title: pin.title || room.nom || "",
+        address_label: pin.address_label || [room.quartier, room.city].filter(Boolean).join(" • ") || room.adresse || "",
+        desc: pin.desc || room.tagline || room.description || "",
+        prix_nuit: pin.prix_nuit ?? room.prix_nuit ?? null,
+        prix_semaine: pin.prix_semaine ?? room.prix_semaine ?? null,
+        prix_mois: pin.prix_mois ?? room.prix_mois ?? null,
+        personnes_max: pin.personnes_max ?? room.personnes_max ?? null,
+        type_logement: pin.type_logement || room.type_logement || "",
+        __public_detail_loaded: true
+      });
+
+      return pin;
+    }
+
+    async function fetchOccupancyToday(){
+      const sb = getSb();
+      if (!sb) return new Map();
+
+      try{
+        const { data, error } = await sb
+          .from(OCCUPANCY_VIEW)
+          .select("pin_slug,is_occupied_today");
+
+        if (error) return new Map();
+
+        const m = new Map();
+        (data || []).forEach(r => {
+          if (r && r.pin_slug){
+            m.set(String(r.pin_slug), !!r.is_occupied_today);
+          }
+        });
+        return m;
+      }catch(_){
+        return new Map();
+      }
+    }
+
+    async function fetchLocPins(){
+      const sb = getSb();
+      if (!sb){
+        return { ok:false, rows:[], error:"supabase_unavailable" };
+      }
+
+      try{
+        const { data, error } = await sb.rpc("digiy_loc_public_gallery");
+
+        if (error){
+          console.warn("[DIGIY LOC] digiy_loc_public_gallery error:", error.message);
+          return { ok:false, rows:[], error:error.message };
+        }
+
+        const normalized = (data || []).map(row => {
+          const address = [row.quartier, row.city].filter(Boolean).join(" • ") || row.city || row.quartier || "Sénégal";
+          const cover =
+            row.photo_url ||
+            (Array.isArray(row.gallery_urls) && row.gallery_urls[0]) ||
+            "";
+
+          return {
+            id: row.id || "",
+            title: row.nom || "",
+            room_slug: row.slug || "",
+            slug: row.slug || "",
+            legacy_slug: row.slug || "",
+            address_label: address,
+            kind: computeKind(row),
+            /*
+              La galerie ne transporte plus phone/owner_phone.
+              Le contact public est résolu au clic via digiy_loc_public_room_by_slug.
+            */
+            whatsapp: "",
+            phone: "",
+            cover,
+            photo_url: cover,
+            desc: row.tagline || row.description || "",
+            public_url: "",
+            type_logement: row.type_logement || "",
+            prix_nuit: row.prix_nuit ?? null,
+            prix_semaine: null,
+            prix_mois: null,
+            personnes_max: row.personnes_max ?? null,
+            is_official_partner: !!row.is_featured,
+            is_featured: !!row.is_featured
+          };
+        }).filter(row =>
+          String(row.room_slug || "").trim() &&
+          String(row.title || "").trim()
+        );
+
+        return { ok:true, rows:normalized, error:null };
+      }catch(e){
+        console.warn("[DIGIY LOC] fetchLocPins exception:", e?.message || e);
+        return { ok:false, rows:[], error:e?.message || "unknown_error" };
+      }
+    }
+
+    function isPartenaireLike(p){
+      const hay = [
+        p && p.title,
+        p && p.nom,
+        p && p.room_slug,
+        p && p.slug,
+        p && p.legacy_slug,
+        p && p.address_label,
+        p && p.desc
+      ].map(norm).join(" ");
+
+      return hay.includes("partenaire") || hay.includes("logement-partenaire");
+    }
+
+    function placeOfficialPartnerFirst(list){
+      const out = [];
+      const seen = new Set();
+
+      /*
+        DIGIY LOC — Partenaire vedette garanti.
+        LOGEMENT PARTENAIRE reste visible une seule fois : la carte officielle.
+        Si Supabase renvoie aussi le logement partenaire, on évite le doublon public.
+      */
+      if (FEATURED_PIN){
+        out.push(FEATURED_PIN);
+        seen.add(norm(canonicalRoomSlug(FEATURED_PIN)));
+      }
+
+      for (const p of (list || [])){
+        if (isPartenaireLike(p)) continue;
+
+        const s = norm(canonicalRoomSlug(p));
+        const t = norm(p && p.title);
+        const key = s || t;
+        if (!key || seen.has(key)) continue;
+
+        out.push(p);
+        seen.add(key);
+      }
+
+      return out.sort((a,b) => {
+        const af = (a.is_official_partner || a.is_featured || isPartenaireLike(a)) ? 1 : 0;
+        const bf = (b.is_official_partner || b.is_featured || isPartenaireLike(b)) ? 1 : 0;
+        return bf - af;
+      });
+    }
+
+    function applyFilters(list){
+      const q = norm(document.getElementById("q").value);
+      const kind = norm(document.getElementById("kind").value);
+      const zone = norm(ACTIVE_ZONE);
+
+      return list.filter(p => {
+        const title = norm(p.title || "");
+        const city = norm(p.address_label || "");
+        const k = norm(p.kind || computeKind(p));
+        const roomSlug = norm(canonicalRoomSlug(p));
+
+        if (zone && !(city.includes(zone) || title.includes(zone) || roomSlug.includes(zone))) return false;
+        if (q && !(title.includes(q) || city.includes(q) || roomSlug.includes(q))) return false;
+        if (kind && !k.includes(kind)) return false;
+        return true;
+      });
+    }
+
+    function formatNightPrice(p){
+      const n = Number(p?.prix_nuit);
+      if (Number.isFinite(n) && n > 0){
+        return `${n.toLocaleString("fr-FR")} F`;
+      }
+      return "Prix sur demande";
+    }
+
+    function occupancyStatusText(occupancyKnown, isOccupied){
+      if (!occupancyKnown) return { cls:"warn", txt:"Disponibilité à confirmer" };
+      if (isOccupied) return { cls:"off", txt:"Complet aujourd’hui" };
+      return { cls:"ok", txt:"Disponible aujourd’hui" };
+    }
+
+    function cardTemplate(p, occMap){
+      const title = p.title || "Logement";
+      const roomSlug = canonicalRoomSlug(p);
+      const legacySlug = canonicalLegacySlug(p);
+      const city = p.address_label || "Zone à préciser";
+      const hasKnownPublicContact = !!String(p.whatsapp || p.phone || "").replace(/\D/g, "");
+      const wa = pickWhatsApp(p);
+      const cover = pickCover(p);
+      const ficheUrl = ficheLinkFor(p);
+      const cardKey = setCardData("live", p);
+
+      const isPartenaireCard = isPartenaireLike(p);
+      const isPinned = !!p.is_official_partner || !!p.is_featured || isPartenaireCard;
+      const contactLabel = isPartenaireCard
+        ? "Assistance DIGIY pour le logement partenaire"
+        : (hasKnownPublicContact ? "WhatsApp propriétaire" : "Contact direct au choix");
+
+      const occupancyKnown = !!occMap && (
+        (roomSlug && occMap.has(roomSlug)) ||
+        (legacySlug && occMap.has(legacySlug))
+      );
+      const isOccupied = occupancyKnown && (
+        (roomSlug && occMap.get(roomSlug) === true) ||
+        (legacySlug && occMap.get(legacySlug) === true)
+      );
+
+      const status = occupancyStatusText(occupancyKnown, isOccupied);
+
+      const meta = [];
+      if (p.type_logement) meta.push(`<span class="meta-pill">${escapeHtml(p.type_logement)}</span>`);
+      if (p.personnes_max) meta.push(`<span class="meta-pill">👥 ${escapeHtml(p.personnes_max)} pers.</span>`);
+      meta.push(`<span class="meta-pill gold">0% commission</span>`);
+      if (isPinned){
+        meta.push(`<span class="meta-pill gold">⭐ Partenaire vedette</span>`);
+        meta.push(`<span class="meta-pill gold">🎥 Vidéo · QR · Wave</span>`);
+      }
+
+      return `
+        <article class="card ${isPinned ? "pinned" : ""}">
+          <div class="card-headline">
+            ${isPartenaireCard ? `<div class="mini-top gold">🏆 LOGEMENT PARTENAIRE</div>` : (isPinned ? `<div class="mini-top gold">⭐ Partenaire vedette</div>` : `<div class="mini-top">🏠 Logement local</div>`)}
+          </div>
+
+          <div class="photo">
+            <span class="status ${status.cls}"><span class="dot"></span>${escapeHtml(status.txt)}</span>
+            <img
+              loading="lazy"
+              alt="${escapeHtml(title)}"
+              src="${escapeAttr(cover)}"
+              onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80';"
+            >
+          </div>
+
+          <div class="card-body">
+            <div class="top-row">
+              <div>
+                <div class="name">${escapeHtml(title)}</div>
+                <div class="zone">📍 ${escapeHtml(city)}</div>
+              </div>
+              <div class="price">${escapeHtml(formatNightPrice(p))}<br><small>/ nuit</small></div>
+            </div>
+
+            <div class="meta">${meta.join("")}</div>
+
+            <div class="desc">${escapeHtml(p.desc || "Contact direct propriétaire. Paiement direct. Réponse simple et rapide.")}</div>
+
+            <div class="contact-box">
+              <div class="k">${isPartenaireCard ? "WhatsApp assistance" : "WhatsApp direct"}</div>
+              <div class="v">${escapeHtml(contactLabel)}</div>
+            </div>
+
+            <div class="actions three">
+              <button class="btn-card btn-wa" type="button" data-action="reserve" data-card-key="${escapeAttr(cardKey)}">📲 WhatsApp</button>
+              <button class="btn-card btn-choose" type="button" data-action="choose" data-card-key="${escapeAttr(cardKey)}">✅ Je veux ce lieu</button>
+              <a class="btn-card btn-fiche" href="${escapeAttr(ficheUrl)}" target="_blank" rel="noopener noreferrer">${isPinned ? "🌍 Vitrine complète" : "👁 Voir la fiche"}</a>
+            </div>
+
+            <div class="actions">
+              <button class="btn-card btn-nd" type="button" data-action="ndimbal">🌙 NDIMBAL — Comprendre</button>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function openingCardTemplate(p){
+      const title = p.title || "Zone en ouverture";
+      const city = p.address_label || "Zone à préciser";
+      const kind = p.kind || "Location";
+      const cover = pickCover(p);
+      const cardKey = setCardData("opening", p);
+
+      return `
+        <article class="card opening">
+          <div class="card-headline">
+            <div class="mini-top">🚧 Exemple à activer</div>
+          </div>
+
+          <div class="photo">
+            <span class="status warn"><span class="dot"></span>Activation en cours</span>
+            <img
+              loading="lazy"
+              alt="${escapeHtml(title)}"
+              src="${escapeAttr(cover)}"
+              onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80';"
+            >
+          </div>
+
+          <div class="card-body">
+            <div class="top-row">
+              <div>
+                <div class="name">${escapeHtml(title)}</div>
+                <div class="zone">📍 ${escapeHtml(city)}</div>
+              </div>
+              <div class="price">Exemple<br><small>à confirmer</small></div>
+            </div>
+
+            <div class="meta">
+              <span class="meta-pill">${escapeHtml(kind)}</span>
+              <span class="meta-pill">Contact équipe DIGIY</span>
+            </div>
+
+            <div class="desc">${escapeHtml(p.desc || "DIGIY peut t'aider à chercher un logement dans ce secteur.")}</div>
+
+            <div class="contact-box">
+              <div class="k">WhatsApp DIGIY</div>
+              <div class="v">${escapeHtml(TEAM_WA)}</div>
+            </div>
+
+            <div class="actions">
+              <button class="btn-card btn-choose" type="button" data-action="choose" data-card-key="${escapeAttr(cardKey)}">✅ Choisir la zone</button>
+              <button class="btn-card btn-wa" type="button" data-action="reserve" data-card-key="${escapeAttr(cardKey)}">📲 Écrire à DIGIY</button>
+            </div>
+
+            <div class="actions">
+              <button class="btn-card btn-nd" type="button" data-action="ndimbal">🌙 NDIMBAL — Comprendre</button>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function scheduleRenderRetry(){
+      if (__renderRetryTimer) return;
+      __renderRetryTimer = setTimeout(() => {
+        __renderRetryTimer = null;
+        render();
+      }, 1200);
+    }
+
+    async function render(){
+      CARD_STORE.clear();
+
+      const previewPins = FEATURED_PIN ? [FEATURED_PIN] : [];
+      const previewOpening = OPENING_ZONES;
+      const previewTotal = previewPins.length + previewOpening.length;
+      const temperature = document.getElementById("locTemperature");
+
+      resultCount.textContent = String(previewPins.length);
+      grid.innerHTML = previewPins.map(p => cardTemplate(p, new Map())).join("");
+      openingTitle.classList.add("show");
+      openingGrid.style.display = "grid";
+      openingGrid.innerHTML = previewOpening.map(p => openingCardTemplate(p)).join("");
+      if (temperature){
+        temperature.textContent = `🌡️ Température LOC : ${previewPins.length} lieu réel visible + ${previewOpening.length} exemples à activer. Les fiches réelles enrichissent la galerie quand elles sont disponibles.`;
+      }
+
+      const sbReadyNow = !!getSb();
+      if (!sbReadyNow){
+        scheduleRenderRetry();
+      }
+
+      const [pinsRes, occMap] = await Promise.all([
+        fetchLocPins(),
+        fetchOccupancyToday()
+      ]);
+
+      let dbPins = [];
+      if (pinsRes.ok){
+        dbPins = (pinsRes.rows || []).map(p => ({ ...p, kind: computeKind(p) }));
+      }
+
+      const livePins = placeOfficialPartnerFirst(dbPins);
+      const filteredLive = applyFilters(livePins);
+      const filteredOpening = applyFilters(OPENING_ZONES);
+
+      const visibleLivePins = filteredLive;
+      const visibleLiveCount = visibleLivePins.length;
+      const totalPublicRepers = visibleLiveCount + filteredOpening.length;
+      resultCount.textContent = String(visibleLiveCount);
+
+      if (temperature){
+        if (!filteredLive.length){
+          const msg = livePins.length > 0
+            ? `🌡️ Température LOC : aucun autre lieu réel ne correspond au filtre. ${visibleLiveCount} lieu de référence reste visible + ${filteredOpening.length} exemple(s) à activer.`
+            : `🌡️ Température LOC : ${visibleLiveCount} lieu de référence + ${filteredOpening.length} exemple(s) à activer. Les fiches réelles s’ajoutent quand elles sont disponibles.`;
+          temperature.textContent = msg;
+        } else {
+          temperature.textContent = `🌡️ Température LOC : ${visibleLiveCount} lieu(x) réel(s) visible(s) + ${filteredOpening.length} exemple(s) à activer = ${totalPublicRepers} repère(s) au total.`;
+        }
+      }
+
+      grid.innerHTML = visibleLivePins.map(p => cardTemplate(p, occMap || new Map())).join("");
+
+      if (filteredOpening.length){
+        openingTitle.classList.add("show");
+        openingGrid.style.display = "grid";
+        openingGrid.innerHTML = filteredOpening.map(p => openingCardTemplate(p)).join("");
+      }
+    }
+
+    async function handleCardActionClick(event){
+      const btn = event.target.closest("[data-action]");
+      if (!btn) return;
+
+      const action = btn.getAttribute("data-action");
+      if (action === "ndimbal"){
+        openNdimbal();
+        return;
+      }
+
+      const key = btn.getAttribute("data-card-key");
+      if (!key) return;
+
+      const pin = CARD_STORE.get(key);
+      if (!pin) return;
+
+      if (action === "choose"){
+        pickLocForWhatsApp(pin);
+        return;
+      }
+
+      if (action === "reserve"){
+        await reserveNow(pin);
+      }
+    }
+
+    function applyExample(zone, query){
+      ACTIVE_ZONE = zone || "";
+      document.getElementById("q").value = query || "";
+
+      document.querySelectorAll("#zoneChips .chip").forEach(ch => {
+        ch.classList.toggle("active", (ch.getAttribute("data-zone") || "") === ACTIVE_ZONE);
+      });
+
+      render();
+      document.getElementById("results").scrollIntoView({ behavior:"smooth", block:"start" });
+    }
+
+    grid.addEventListener("click", handleCardActionClick);
+    openingGrid.addEventListener("click", handleCardActionClick);
+
+    document.getElementById("btnSearch").addEventListener("click", render);
+    document.getElementById("btnReset").addEventListener("click", () => {
+      document.getElementById("q").value = "";
+      document.getElementById("kind").value = "";
+      ACTIVE_ZONE = "";
+      document.querySelectorAll("#zoneChips .chip").forEach(ch => ch.classList.remove("active"));
+      const first = document.querySelector('#zoneChips .chip[data-zone=""]');
+      if (first) first.classList.add("active");
+      render();
+    });
+
+    document.getElementById("q").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") render();
+    });
+    document.getElementById("kind").addEventListener("change", render);
+
+    document.getElementById("zoneChips").addEventListener("click", (e) => {
+      const btn = e.target.closest(".chip");
+      if (!btn) return;
+      ACTIVE_ZONE = btn.getAttribute("data-zone") || "";
+      document.querySelectorAll("#zoneChips .chip").forEach(ch => ch.classList.remove("active"));
+      btn.classList.add("active");
+      render();
+    });
+
+    document.querySelectorAll("[data-example-zone]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        applyExample(
+          btn.getAttribute("data-example-zone") || "",
+          btn.getAttribute("data-example-q") || ""
+        );
+      });
+    });
+
+    render();
+  </script>
+
+<script>
+(function(){
+  "use strict";
+
+  const fab = document.getElementById("digiyOptionsFab");
+  const panel = document.getElementById("digiyOptionsPanel");
+  const close = document.getElementById("digiyOptionsClose");
+
+  if(!fab || !panel || !close) return;
+
+  function setOpen(on){
+    panel.classList.toggle("open", !!on);
+    panel.setAttribute("aria-hidden", on ? "false" : "true");
+    fab.setAttribute("aria-expanded", on ? "true" : "false");
+  }
+
+  fab.addEventListener("click", function(){
+    setOpen(!panel.classList.contains("open"));
+  });
+
+  close.addEventListener("click", function(){
+    setOpen(false);
+  });
+
+  document.addEventListener("keydown", function(event){
+    if(event.key === "Escape") setOpen(false);
+  });
+
+  document.addEventListener("click", function(event){
+    if(!panel.classList.contains("open")) return;
+    if(panel.contains(event.target) || fab.contains(event.target)) return;
+    setOpen(false);
+  });
+})();
+</script>
+
+
+<!-- ============================================================
+     DIGIY AUDIO — LOGEMENT
+     ============================================================ -->
+
+<script>
+(function(){
+  var isEn = (window.DIGIY_LOC_LANG === "en");
+  window.DIGIY_AUDIO_CONFIG = {
+    label: isEn ? "Listen to the LOC intro" : "Écouter l’intro LOC",
+    stopLabel: isEn ? "Stop" : "Arrêter",
+    text: isEn
+      ? "Welcome to DIGIY LOC. Here, you see a place, read the essentials, then contact the owner directly. No commission. No useless intermediary. To offer a place, the registration form is smooth: it activates your LOC presence inside the DIGIYLYFE business architecture. Direct, clear, human. DIGIYLYFE."
+      : "Bienvenue sur DIGIY LOC. Ici, tu vois un logement, tu lis l’essentiel, puis tu contactes directement le propriétaire. Pas de commission. Pas d’intermédiaire inutile. Pour proposer un lieu, la fiche d’inscription est fluide : elle active ta présence dans l’architecture métiers de la Supa-Apps. Direct, clair, humain. DIGIYLYFE.",
+    buttonBg: "linear-gradient(135deg,#d4af37,#b78b34)",
+    buttonColor: "#111827",
+    bottom: "24px",
+    left: "24px",
+    rate: isEn ? 0.90 : 0.82,
+    pitch: 1,
+    volume: 1,
+    zIndex: 99999,
+    shadow: "0 10px 30px rgba(0,0,0,.26)"
+  };
+})();
+</script>
+
+<style>
+#digiy-audio-btn{
+position:fixed;
+display:inline-flex;
+align-items:center;
+gap:12px;
+padding:16px 26px;
+border:none;
+border-radius:999px;
+cursor:pointer;
+font-family:'Outfit',Inter,sans-serif;
+font-weight:900;
+font-size:17px;
+line-height:1;
+-webkit-tap-highlight-color:transparent;
+user-select:none;
+transition:transform .18s ease,box-shadow .18s ease,opacity .18s ease;
+}
+#digiy-audio-btn:hover{
+transform:translateY(-2px);
+}
+#digiy-audio-btn:active{
+transform:scale(.97);
+}
+#digiy-audio-btn:disabled{
+opacity:.65;
+cursor:not-allowed;
+}
+#digiy-audio-btn .digiy-audio-ico{
+font-size:18px;
+line-height:1;
+}
+#digiy-audio-progress-wrap{
+position:fixed;
+left:0;
+right:0;
+bottom:0;
+height:3px;
+opacity:0;
+pointer-events:none;
+transition:opacity .25s ease;
+}
+#digiy-audio-progress{
+width:0%;
+height:100%;
+transition:width .18s linear;
+}
+@media (max-width:600px){
+#digiy-audio-btn{
+font-size:16px;
+padding:15px 22px;
+gap:11px;
+}
+#digiy-audio-btn .digiy-audio-ico{
+font-size:17px;
+}
+}
+</style>
+
+<button id="digiy-audio-btn" type="button" aria-label="Écouter l’intro LOC">
+  <span class="digiy-audio-ico">&#9654;</span>
+  <span class="digiy-audio-lbl">Écouter l’intro LOC</span>
+</button>
+
+<div id="digiy-audio-progress-wrap" aria-hidden="true">
+  <div id="digiy-audio-progress"></div>
+</div>
+
+<script>
+(function(){
+  var cfg = window.DIGIY_AUDIO_CONFIG || {};
+
+  var config = {
+    label: cfg.label || "Écouter DIGIY",
+    stopLabel: cfg.stopLabel || "Arrêter",
+    text: cfg.text || "Bienvenue sur DIGIYLYFE.",
+    buttonBg: cfg.buttonBg || "linear-gradient(135deg,#d4af37,#b78b34)",
+    buttonColor: cfg.buttonColor || "#111827",
+    bottom: cfg.bottom || "24px",
+    left: cfg.left || "24px",
+    rate: typeof cfg.rate === "number" ? cfg.rate : 0.82,
+    pitch: typeof cfg.pitch === "number" ? cfg.pitch : 1,
+    volume: typeof cfg.volume === "number" ? cfg.volume : 1,
+    zIndex: cfg.zIndex || 99999,
+    shadow: cfg.shadow || "0 8px 28px rgba(0,0,0,.24)"
+  };
+
+  var btn = document.getElementById("digiy-audio-btn");
+  var lbl = btn ? btn.querySelector(".digiy-audio-lbl") : null;
+  var ico = btn ? btn.querySelector(".digiy-audio-ico") : null;
+  var progressWrap = document.getElementById("digiy-audio-progress-wrap");
+  var progressBar = document.getElementById("digiy-audio-progress");
+
+  if (!btn || !lbl || !ico || !progressWrap || !progressBar) return;
+
+  btn.style.bottom = config.bottom;
+  btn.style.left = config.left;
+  btn.style.zIndex = String(config.zIndex);
+  btn.style.background = config.buttonBg;
+  btn.style.color = config.buttonColor;
+  btn.style.boxShadow = config.shadow;
+
+  progressWrap.style.zIndex = String(config.zIndex - 1);
+  progressWrap.style.background = "rgba(212,175,55,.2)";
+  progressBar.style.background = "linear-gradient(90deg,#d4af37,#b78b34)";
+
+  if (!("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)) {
+    btn.style.display = "none";
+    return;
+  }
+
+  var synth = window.speechSynthesis;
+  var utterance = null;
+  var playing = false;
+  var timer = null;
+  var launchId = 0;
+
+  function digiySpeakText(text){
+    return String(text || "")
+      .replace(/\bDIGIYLYFE\b/g, "diji laïfe")
+      .replace(/\bDIGIY\b/g, "diji i")
+      .replace(/\bLOC\b/g, "location")
+      .replace(/\bWave\b/g, "Ouève")
+      .replace(/\bWouève\b/g, "Ouève")
+      .replace(/\bWhatsApp\b/g, "Ouatsap")
+      .replace(/\bQR\b/g, "Q R")
+      .replace(/\bSMS\b/g, "S M S")
+      .replace(/\bFCFA\b/g, "F C F A")
+      .replace(/\bSénélec\b/g, "Sé né lek")
+      .replace(/0\s*%/g, "zéro pour cent")
+      .replace(/\bRESA\b/g, "réservation")
+      .replace(/\bRÉSA\b/g, "réservation");
+  }
+
+  function getFrenchVoice(){
+    var voices = synth.getVoices() || [];
+    if (!voices.length) return null;
+
+    return (
+      voices.find(function(v){ return /fr[-_]?FR/i.test(v.lang) && /google/i.test(v.name); }) ||
+      voices.find(function(v){ return /fr[-_]?FR/i.test(v.lang); }) ||
+      voices.find(function(v){ return /^fr/i.test(v.lang); }) ||
+      null
+    );
+  }
+
+  function getEnglishVoice(){
+    var voices = synth.getVoices() || [];
+    if (!voices.length) return null;
+
+    return (
+      voices.find(function(v){ return /en[-_]?US/i.test(v.lang) && /google/i.test(v.name); }) ||
+      voices.find(function(v){ return /en[-_]?US/i.test(v.lang); }) ||
+      voices.find(function(v){ return /^en/i.test(v.lang); }) ||
+      null
+    );
+  }
+
+  function setIdle(){
+    playing = false;
+    ico.innerHTML = "&#9654;";
+    lbl.textContent = config.label;
+    btn.setAttribute("aria-label", config.label);
+    clearInterval(timer);
+    timer = null;
+    progressWrap.style.opacity = "0";
+    progressBar.style.width = "0%";
+  }
+
+  function setPlaying(){
+    playing = true;
+    ico.innerHTML = "&#9632;";
+    lbl.textContent = config.stopLabel;
+    btn.setAttribute("aria-label", config.stopLabel);
+  }
+
+  function stop(){
+    clearInterval(timer);
+    timer = null;
+    try { synth.cancel(); } catch(e){}
+    utterance = null;
+    setIdle();
+  }
+
+  function startProgress(text, currentId){
+    var words = (text.trim().match(/\S+/g) || []).length;
+    var estimatedDuration = Math.max(2500, words * 520);
+    var elapsed = 0;
+
+    clearInterval(timer);
+    progressBar.style.width = "0%";
+    progressWrap.style.opacity = "1";
+
+    timer = setInterval(function(){
+      if (!playing || currentId !== launchId) {
+        clearInterval(timer);
+        timer = null;
+        return;
+      }
+      elapsed += 150;
+      var pct = Math.min((elapsed / estimatedDuration) * 100, 97);
+      progressBar.style.width = pct + "%";
+    }, 150);
+  }
+
+  function launch(){
+    launchId += 1;
+    var currentId = launchId;
+
+    try { synth.cancel(); } catch(e){}
+
+    var isEnAudio = (window.DIGIY_LOC_LANG === "en");
+    var spokenText = isEnAudio ? String(config.text || "") : digiySpeakText(config.text);
+    utterance = new SpeechSynthesisUtterance(spokenText);
+    utterance.lang = isEnAudio ? "en-US" : "fr-FR";
+    utterance.rate = config.rate;
+    utterance.pitch = config.pitch;
+    utterance.volume = config.volume;
+
+    var voice = isEnAudio ? getEnglishVoice() : getFrenchVoice();
+    if (voice) utterance.voice = voice;
+
+    utterance.onstart = function(){
+      if (currentId !== launchId) return;
+      setPlaying();
+      startProgress(spokenText, currentId);
+    };
+
+    utterance.onend = function(){
+      if (currentId !== launchId) return;
+      clearInterval(timer);
+      timer = null;
+      progressBar.style.width = "100%";
+      setTimeout(function(){
+        if (currentId === launchId) setIdle();
+      }, 250);
+    };
+
+    utterance.onerror = function(){
+      if (currentId !== launchId) return;
+      stop();
+    };
+
+    synth.speak(utterance);
+  }
+
+  function play(){
+    if (playing) return;
+
+    if (synth.speaking || synth.pending) {
+      try { synth.cancel(); } catch(e){}
+    }
+
+    var voices = synth.getVoices();
+    if (voices && voices.length) {
+      launch();
+      return;
+    }
+
+    var launched = false;
+
+    function handleVoicesChanged(){
+      if (launched) return;
+      launched = true;
+      synth.removeEventListener("voiceschanged", handleVoicesChanged);
+      launch();
+    }
+
+    synth.addEventListener("voiceschanged", handleVoicesChanged);
+
+    setTimeout(function(){
+      if (launched) return;
+      launched = true;
+      synth.removeEventListener("voiceschanged", handleVoicesChanged);
+      launch();
+    }, 700);
+  }
+
+  btn.addEventListener("click", function(){
+    if (playing) stop();
+    else play();
+  });
+
+  window.addEventListener("beforeunload", stop);
+
+  document.addEventListener("visibilitychange", function(){
+    if (document.hidden && playing) stop();
+  });
+
+  setIdle();
+})();
+</script>
+
+<!-- ============================================================
+     FIN DIGIY AUDIO — LOGEMENT
+     ============================================================ -->
+  
+<!-- DIGIY LOC — LOGEMENT PARTENAIRE partenaire vedette + QR partageable — 20260514 -->
+<!-- DIGIY LOC — filtre disponibilité façon Booking -->
+<script src="./assets/js/digiy-loc-filtre-dispo-booking.js?v=20260520"></script>
+  <script src="https://pro-action-digiy.digiylyfe.com/assets/js/digiy-retour-voix.js?v=retour-voix-20260606-v3" defer></script>
+
+<script>
+(function(){
+  "use strict";
+  const HOTEL_WA = "221771342889";
+
+  function byId(id){ return document.getElementById(id); }
+  function locLang(){ try{ return (window.DIGIY_LOC_LANG === "en" || new URLSearchParams(location.search).get("lang") === "en") ? "en" : "fr"; }catch(_){ return "fr"; } }
+  function isEn(){ return locLang() === "en"; }
+  function txt(fr,en){ return isEn() ? en : fr; }
+  function val(id){
+    const el = byId(id);
+    if(!el) return "";
+    if(el.tagName === "SELECT" && el.selectedOptions && el.selectedOptions[0]){
+      return String(el.selectedOptions[0].textContent || el.value || "").trim();
+    }
+    return String(el.value || "").trim();
+  }
+
+  function setVal(id, value){
+    const el = byId(id);
+    if(el) el.value = value;
+  }
+
+  function showHotelStatus(message){
+    const box = byId("hotelDemandStatus");
+    if(!box) return;
+    box.textContent = message;
+    box.classList.add("show");
+  }
+
+  function buildHotelMessage(){
+    const empty = txt("À préciser", "To be confirmed");
+    const lines = isEn() ? [
+      "Hello DIGIY, I am coming from DIGIY LOC.",
+      "I am looking for a room / accommodation.",
+      "",
+      "Desired area: " + (val("hotelZone") || empty),
+      "Arrival: " + (val("hotelArrival") || empty),
+      "Departure: " + (val("hotelDeparture") || empty),
+      "Guests: " + (val("hotelPeople") || empty),
+      "Requested type: " + (val("hotelRoomType") || "To propose"),
+      "Indicative budget: " + (val("hotelBudget") || empty),
+      "Breakfast: " + (val("hotelBreakfast") || empty),
+      "Restaurant / table: " + (val("hotelResto") || empty),
+      "AIBD transfer / driver: " + (val("hotelTransfer") || empty),
+      "",
+      "Message:",
+      val("hotelMessage") || "Please propose availability.",
+      "",
+      "Please confirm availability.",
+      "Direct payment to the hotel or residence. 0% DIGIY commission."
+    ] : [
+      "Bonjour DIGIY, je viens depuis DIGIY LOC.",
+      "Je cherche une chambre / hébergement.",
+      "",
+      "Pays / zone souhaitée : " + (val("hotelZone") || empty),
+      "Arrivée : " + (val("hotelArrival") || empty),
+      "Départ : " + (val("hotelDeparture") || empty),
+      "Personnes : " + (val("hotelPeople") || empty),
+      "Type demandé : " + (val("hotelRoomType") || "À proposer"),
+      "Budget indicatif : " + (val("hotelBudget") || empty),
+      "Petit déjeuner : " + (val("hotelBreakfast") || empty),
+      "Restaurant / table : " + (val("hotelResto") || empty),
+      "Transfert AIBD / chauffeur : " + (val("hotelTransfer") || empty),
+      "",
+      "Message :",
+      val("hotelMessage") || "Merci de proposer une disponibilité.",
+      "",
+      "Merci de confirmer la disponibilité.",
+      "Paiement direct à l’établissement. 0% commission DIGIY."
+    ];
+    return lines.join("\n");
+  }
+
+  function openHotelWhatsApp(){
+    const msg = buildHotelMessage();
+    showHotelStatus(txt("Demande préparée :\n\n", "Request prepared:\n\n") + msg);
+    const url = "https://wa.me/" + HOTEL_WA + "?text=" + encodeURIComponent(msg);
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
+
+  function applyHotelExample(name){
+    if(name === "soir-saly"){
+      setVal("hotelZone","Saly");
+      setVal("hotelArrival","ce soir");
+      setVal("hotelDeparture","demain");
+      setVal("hotelPeople","2 personnes");
+      setVal("hotelRoomType","Chambre double");
+      setVal("hotelBudget","25 000 / 40 000 FCFA");
+      setVal("hotelBreakfast","À préciser");
+      setVal("hotelResto","À préciser");
+      setVal("hotelTransfer","Non");
+      setVal("hotelMessage","Je cherche une chambre propre à Saly pour ce soir. Merci de confirmer la disponibilité.");
+    }
+
+    if(name === "weekend-couple"){
+      setVal("hotelZone","Saly / Ngaparou");
+      setVal("hotelArrival","vendredi");
+      setVal("hotelDeparture","dimanche");
+      setVal("hotelPeople","2 adultes");
+      setVal("hotelRoomType","Chambre double");
+      setVal("hotelBudget","budget à discuter");
+      setVal("hotelBreakfast","Oui");
+      setVal("hotelResto","Oui, demander une table");
+      setVal("hotelTransfer","À préciser");
+      setVal("hotelMessage","Week-end couple, chambre calme souhaitée, petit déjeuner si possible.");
+    }
+
+    if(name === "famille-villa"){
+      setVal("hotelZone","Somone / Ngaparou / Saly");
+      setVal("hotelArrival","à préciser");
+      setVal("hotelDeparture","à préciser");
+      setVal("hotelPeople","famille");
+      setVal("hotelRoomType","Villa");
+      setVal("hotelBudget","budget à discuter");
+      setVal("hotelBreakfast","À préciser");
+      setVal("hotelResto","Non");
+      setVal("hotelTransfer","À préciser");
+      setVal("hotelMessage","Je cherche une villa ou un grand logement pour une famille. Merci de proposer une disponibilité.");
+    }
+
+    if(name === "aibd"){
+      setVal("hotelZone","Saly");
+      setVal("hotelArrival","arrivée depuis AIBD");
+      setVal("hotelDeparture","à préciser");
+      setVal("hotelPeople","2 personnes");
+      setVal("hotelRoomType","À proposer");
+      setVal("hotelBudget","à préciser");
+      setVal("hotelBreakfast","À préciser");
+      setVal("hotelResto","À préciser");
+      setVal("hotelTransfer","Oui, besoin transfert");
+      setVal("hotelMessage","Je cherche une chambre avec possibilité de transfert depuis AIBD. Merci de confirmer disponibilité et chauffeur.");
+    }
+
+    showHotelStatus(txt("Exemple chargé. Vérifie puis envoie sur WhatsApp.", "Example loaded. Check it, then send on WhatsApp."));
+  }
+
+  document.addEventListener("click", function(e){
+    const hotelBtn = e.target.closest("#btnHotelWa");
+    if(hotelBtn){
+      e.preventDefault();
+      openHotelWhatsApp();
+      return;
+    }
+
+    const ex = e.target.closest("[data-hotel-example]");
+    if(ex){
+      e.preventDefault();
+      applyHotelExample(ex.getAttribute("data-hotel-example"));
+    }
+  });
+})();
+</script>
+
+
+<script>
+(function(){
+  "use strict";
+
+  const LANG_KEY = "digiy_loc_lang_native_v1";
+  const META = {
+    fr:{
+      title:"DIGIY LOC — Logements directs Afrique, France, Diaspora",
+      description:"DIGIY LOC ouvre les logements locaux en contact direct : Sénégal, France, diaspora. Chambres, villas, appartements, gîtes, hôtels. Paiement direct, 0% commission."
+    },
+    en:{"title": "DIGIY LOC — Direct housing across Africa, France and the diaspora", "description": "DIGIY LOC opens local housing with direct contact: Senegal, France, diaspora. Rooms, villas, apartments, guest houses, hotels. Direct payment, 0% commission."}
+  };
+  const TEXT = {"Petite Côte": "Petite Côte", "Dormir à Saly ce soir": "Sleep in Saly tonight", "🌍 Site DIGIYLYFE": "🌍 DIGIYLYFE site", "🧭 HUB DIGIY": "🧭 DIGIY HUB", "📦 Tarifs LOC": "📦 LOC prices", "🇸🇳 Lexique Wolof": "🇸🇳 Wolof lexicon", "Voir les lieux": "See places", "WhatsApp": "WhatsApp", "🏠 Hébergement local · Contact direct": "🏠 Local accommodation · Direct contact", "Chambres, villas, appartements. Disponibles maintenant sur la Petite Côte. Tu vois le lieu, tu choisis, tu écris direct.": "Rooms, villas, apartments. Available now on the Petite Côte. You see the place, choose, and write directly.", "Voir les logements": "See accommodation", "🏨 Demander une chambre": "🏨 Request a room", "🔳 QR Partenaire": "🔳 Partenaire QR", "🇸🇳 Lexique Wolof LOC": "🇸🇳 LOC Wolof lexicon", "WhatsApp direct": "Direct WhatsApp", "Voir les tarifs LOC": "See LOC prices", "📍 Saly · Ngaparou · Somone · Mbour": "📍 Saly · Ngaparou · Somone · Mbour", "💸 Paiement direct": "💸 Direct payment", "✅ 0% commission": "✅ 0% commission", "🌙 NDIMBAL disponible": "🌙 NDIMBAL available", "📲 WhatsApp direct": "📲 Direct WhatsApp", "Demander un logement": "Request accommodation", "Tu écris territoire, zone, dates, personnes et budget. DIGIY reçoit ta demande sur WhatsApp.": "You write the area, dates, guests and budget. DIGIY receives your request on WhatsApp.", "Faire ma demande": "Make my request", "Tu regardes les lieux visibles maintenant, puis tu écris au bon contact.": "You view the visible places, then write to the right contact.", "Chambre / Hôtel": "Room / Hotel", "Tu poses arrivée, départ, personnes, petit déjeuner, resto ou transfert. L’hôtel confirme la disponibilité.": "You enter arrival, departure, guests, breakfast, restaurant or transfer. The hotel confirms availability.", "Proposer un logement": "Offer accommodation", "Tu as un lieu au Sénégal, en France ou côté diaspora ? La fiche d’inscription active ta présence LOC dans l’architecture métiers DIGIY.": "Do you have a place? The registration form is smooth to activate your LOC presence inside the DIGIYLYFE business architecture.", "Voir les tarifs": "See prices", "🏨 Demander une chambre / hôtel": "🏨 Request a room / hotel", "Le client prépare sa demande. DIGIY l’envoie proprement sur WhatsApp. La disponibilité reste à confirmer par l’hôtel ou la résidence.": "The client prepares the request. DIGIY sends it cleanly on WhatsApp. Availability must still be confirmed by the hotel or residence.", "✅ Demande directe · paiement direct hôtel · 0% commission DIGIY": "✅ Direct request · direct hotel payment · 0% DIGIY commission", "Disponibilité à confirmer": "Availability to be confirmed", "Pays / zone souhaitée": "Desired area", "Arrivée": "Arrival", "Départ": "Departure", "Personnes": "Guests", "Type demandé": "Requested type", "Chambre simple": "Single room", "Chambre double": "Double room", "Suite": "Suite", "Appartement": "Apartment", "Villa": "Villa", "À proposer": "To propose", "Budget indicatif": "Indicative budget", "Petit déjeuner": "Breakfast", "À préciser": "To be confirmed", "Oui": "Yes", "Non": "No", "Restaurant / table": "Restaurant / table", "Oui, demander une table": "Yes, request a table", "Transfert AIBD / chauffeur": "AIBD transfer / driver", "Oui, besoin transfert": "Yes, transfer needed", "Message libre": "Free message", "Ce soir à Saly": "Tonight in Saly", "Week-end couple": "Couple weekend", "Famille / villa": "Family / villa", "Avec transfert AIBD": "With AIBD transfer", "📲 Envoyer demande hôtel": "📲 Send hotel request", "Voir les logements visibles": "See visible accommodation", "Proposer un hôtel / logement": "Offer a hotel / accommodation", "Demande hôtel prête.": "Hotel request ready.", "3 exemples pour comprendre": "2 examples to understand", "Trois portes suffisent pour initier le visiteur : une vraie fiche complète, une demande simple et une ouverture France/diaspora. La suite se fait par inscription fluide, contact direct et activation propre dans l’architecture métiers de la Supa-Apps.": "Two doors are enough to guide the visitor: one full real page and one simple request to send. The next step is smooth registration, direct contact and clean activation inside the DIGIYLYFE business architecture.", "Exemple réel": "Real example", "LOGEMENT PARTENAIRE · Saly": "LOGEMENT PARTENAIRE · Saly", "Vitrine complète avec lien public, QR, assistance WhatsApp DIGIY et paiement direct au propriétaire. Le client voit, comprend et contacte clairement.": "Full showcase with public link, QR, DIGIY WhatsApp assistance and direct payment to the owner. The client sees, understands and contacts clearly.", "Ouvrir la fiche": "Open the page", "Exemple demande": "Request example", "Chambre simple · Mbour / Sarlat": "Single room · Mbour", "Une personne cherche un coin propre ce soir : territoire, zone, budget, dates, puis message direct. Simple, terrain, sans commission.": "Someone is looking for a clean place tonight: area, budget, dates, then direct message. Simple, practical, commission-free.", "Voir Mbour": "See Mbour", "Tu ne trouves pas encore ton lieu ou ton territoire ?": "Can’t find your place yet?", "Écris directement à DIGIY sur WhatsApp. Donne ton pays, ta zone, tes dates et ton budget, et on te répond simplement.": "Write directly to DIGIY on WhatsApp. Give your area, dates and budget, and we reply simply.", "📲 Écrire à DIGIY": "📲 Write to DIGIY", "📞 Appeler": "📞 Call", "Note rapide logement · Sénégal / France / diaspora": "Quick accommodation note", "Tu ne trouves pas encore ton logement ? Écris ce que tu cherches. DIGIY reçoit ta demande sur WhatsApp et peut te répondre dès qu’un lieu correspond.": "Can’t find accommodation yet? Write what you need. DIGIY receives your request on WhatsApp and can reply when a place matches.", "Même jeune, la demande ne se perd pas": "Even early, the request is not lost", "Dates / nuits": "Dates / nights", "Budget / jour": "Budget / day", "2 nuits à Saly": "2 nights in Saly", "Ce soir à Mbour": "Tonight in Mbour", "Studio à Ngaparou": "Studio in Ngaparou", "Villa à Somone": "Villa in Somone", "Je connais un logement": "I know a place", "📲 Envoyer ma demande à DIGIY": "📲 Send my request to DIGIY", "Demande préparée.": "Request prepared.", "Tu as un logement à proposer ?": "Do you have accommodation to offer?", "Des visiteurs cherchent déjà où dormir. La fiche d’inscription LOC active ta présence dans l’architecture métiers DIGIY, puis tu reçois les demandes directement, sans commission DIGIY.": "Visitors are already looking for places to sleep. The LOC registration form is smooth: it activates your presence inside the DIGIYLYFE business architecture, then you receive requests directly, with no DIGIY commission.", "Parler à DIGIY": "Talk to DIGIY", "QR partageable · LOGEMENT PARTENAIRE": "Shareable QR · LOGEMENT PARTENAIRE", "La fiche Partenaire circule comme EXPLORE.": "The Partenaire page circulates like EXPLORE.", "Scanne, copie ou partage la vitrine complète. Sur papier ou téléphone, le QR ouvre la fiche partenaire. Sur téléphone, les boutons ouvrent directement la vitrine ou WhatsApp. Le client arrive côté public, sans PIN.": "Scan, copy or share the full showcase. On paper, the QR opens the partner page. On phone, the buttons open the showcase or WhatsApp directly. The client arrives on the public side, without PIN.", "🌍 Ouvrir la vitrine complète": "🌍 Open the full showcase", "📋 Copier le lien": "📋 Copy link", "📤 Partager WhatsApp": "📤 Share on WhatsApp", "Lien copié.": "Link copied.", "Tous les territoires": "All areas", "Type : Tout": "Type: All", "Studio": "Studio", "Chambre": "Room", "Maison": "House", "🔎 Chercher": "🔎 Search", "↩ Effacer": "↩ Clear", "Écrire au bon propriétaire": "Write to the right owner", "Écrire au bon contact": "Write to the right contact", "Choisis un logement dans la liste 👇": "Choose accommodation in the list 👇", "Aucun lieu choisi": "No place selected", "Changer": "Change", "Votre prénom": "Your first name", "Dates": "Dates", "Budget": "Budget", "📲 Écrire sur WhatsApp": "📲 Write on WhatsApp", "Message prêt. Tu n’as plus qu’à envoyer.": "Message ready. You only need to send it.", "Les lieux visibles maintenant": "Places visible now", "Des logements publiés, lisibles vite, avec contact direct et fiche si tu veux voir plus. Saly est la preuve, les autres territoires s’ouvrent au fil des partenaires.": "Published accommodation, quick to read, with direct contact and a page if you want to see more.", "lieu(x) réel(s) visible(s)": "real place(s) visible", "Contact direct · Réponse simple · Paiement direct": "Direct contact · Simple reply · Direct payment", "🌡️ Température LOC : 1 lieu réel visible + 2 exemples utiles + ouverture France/diaspora. Les fiches réelles enrichissent la galerie quand elles sont disponibles.": "🌡️ LOC temperature: 1 real place visible + 2 useful examples. Real pages enrich the gallery when available.", "Lieux réels. Hôtes locaux. Contact direct.": "Real places. Local hosts. Direct contact.", "Pas d’intermédiaire. Pas de commission.": "No intermediary. No commission.", "2 exemples utiles": "2 useful examples", "Deux cartes suffisent pour montrer l’esprit LOC sans transformer la vitrine en catalogue d’attente.": "Two cards are enough to show the LOC spirit without turning the showcase into a waiting catalog.", "Revenir dans la maison DIGIY": "Return to the DIGIY house", "Cette page montre les logements directs. Pour comprendre DIGIYLYFE, ouvrir un autre territoire ou choisir un module, utilise les portes ci-dessous.": "This page shows accommodation. To understand DIGIYLYFE or choose a module, use the doors below.", "façade publique": "public facade", "— Sénégal → Afrique": "— Senegal → Africa", "0% commission • Paiement direct • Contact direct local": "0% commission • Direct payment • Short bridge to the real world", "DIGIY LOC — Camembert options fiche propriétaire": "DIGIY LOC — Owner page option wheel", "Options fiche propriétaire": "Owner page options", "Choisir le niveau de lumière": "Choose the level of visibility", "Simple pour être visible. Premium pour mieux présenter. Extra pour une vraie vitrine partenaire.": "Simple to be visible. Premium to present better. Extra for a full partner showcase.", "Fiche Simple · incluse": "Simple page · included", "Présence dans la galerie LOC, photo, prix, zone, capacité et WhatsApp direct.": "Presence in the LOC gallery, photo, price, area, capacity and direct WhatsApp.", "Fiche Premium · mise en page": "Premium page · layout", "Intervention DIGIY pour organiser la présentation, les photos, les tarifs et les boutons.": "DIGIY intervention to organize the presentation, photos, prices and buttons.", "Fiche Extra · réalisation complète": "Extra page · full build", "Vitrine partenaire complète : QR cliquable, partage WhatsApp, storytelling et page qui circule.": "Full partner showcase: clickable QR, WhatsApp sharing, storytelling and a page that circulates.", "📲 Parler des options fiche": "📲 Discuss page options", "📦 Voir les tarifs LOC": "📦 See LOC prices", "Site": "Site", "HUB": "HUB", "Demander": "Request", "Logements": "Places", "Wolof": "Wolof", "Tarifs": "Prices", "Note rapide": "Quick note", "🌙 NDIMBAL — le pouvoir des nuits offertes": "🌙 NDIMBAL — the power of offered nights", "NDIMBAL n'est pas une commission ni un frais. C'est une stratégie locale : tu restes plus longtemps, tu dépenses plus dans le quartier, et tout le monde respire mieux.": "NDIMBAL is not a commission or a fee. It is a local strategy: you stay longer, spend more in the neighborhood, and everyone breathes better.", "✕ Fermer": "✕ Close", "OFFRE OFFICIELLE": "OFFICIAL OFFER", "2 nuits payées = 3e offerte": "2 paid nights = 3rd night offered", "Valable": "Valid", "du lundi au jeudi": "from Monday to Thursday", "selon disponibilité du logement NDIMBAL. Objectif : pousser les séjours en semaine et faire tourner l’économie locale.": "depending on NDIMBAL accommodation availability. Goal: encourage weekday stays and support the local economy.", "✅ Tu gagnes": "✅ You gain", "1 nuit": "1 night", "→ tu restes plus longtemps.": "→ you stay longer.", "✅ Tu consommes": "✅ You consume", "1 jour de plus": "1 more day", "dans le coin.": "in the area.", "✅ Le logement gagne en": "✅ The accommodation gains", "bouche-à-oreille": "word of mouth", "COMMENT REPÉRER ?": "HOW TO SPOT IT?", "Dans la galerie, un logement NDIMBAL porte un badge dédié ou un propriétaire t’en parle directement.": "In the gallery, NDIMBAL accommodation has a dedicated badge or an owner tells you directly.", "1) Tu choisis tes dates.": "1) You choose your dates.", "2) Tu écris au propriétaire via WhatsApp.": "2) You write to the owner via WhatsApp.", "3) Tu demandes :": "3) You ask:", "“Je veux profiter de NDIMBAL”": "“I want to use NDIMBAL”", "✅ J’ai compris": "✅ I understand", "📲 Parler à DIGIY": "📲 Talk to DIGIY", "▶": "▶", "Écouter l’intro LOC": "Listen to the LOC intro", "Arrêter": "Stop", "Appartement LOGEMENT PARTENAIRE — Saly": "LOGEMENT PARTENAIRE Apartment — Saly", "Saly · quartier calme": "Saly · quiet neighborhood", "Appartement • Direct propriétaire • Vitrine complète": "Apartment • Direct owner • Full showcase", "Appartement • Assistance DIGIY • Vitrine complète": "Apartment • DIGIY assistance • Full showcase", "Appartement confortable à Saly pour 4 personnes max. Quartier calme, Sénélec en sus, paiement Wave direct propriétaire. La vitrine complète contient tarifs, QR, vidéo et réservation guidée.": "Comfortable apartment in Saly for up to 4 guests. Quiet neighborhood, Senelec extra, direct owner Wave payment. The full showcase includes prices, QR, video and guided booking.", "Appartement confortable à Saly pour 4 personnes max. Quartier calme, Sénélec en sus. Assistance WhatsApp DIGIY pour la mise en relation, puis paiement Wave direct au propriétaire. La vitrine complète contient tarifs, QR, vidéo et réservation guidée.": "Comfortable apartment in Saly for up to 4 guests. Quiet neighborhood, Senelec extra. DIGIY provides WhatsApp assistance for the introduction, then Wave payment goes directly to the owner. The full showcase includes prices, QR, video and guided booking.", "Saly Centre — exemple à activer": "Saly Center — example to activate", "Appartement • Chambre": "Apartment • Room", "Exemple utile : un lieu simple, bien situé, avec prix clair, WhatsApp direct et fiche propre. Pas encore une réservation confirmée.": "Useful example: a simple, well-located place, clear price, direct WhatsApp and clean page. Not a confirmed booking yet.", "Mbour — chambre petit budget": "Mbour — budget room", "Chambre • Budget clair": "Room • Clear budget", "Exemple utile : chambre simple pour ce soir ou demain, contact rapide, paiement direct au propriétaire.": "Useful example: simple room for tonight or tomorrow, quick contact, direct payment to the owner.", "Complet aujourd’hui": "Full today", "Disponible maintenant": "Available now", "Disponible aujourd’hui": "Available today", "Contact direct": "Direct contact", "WhatsApp propriétaire": "Owner WhatsApp", "WhatsApp assistance": "WhatsApp assistance", "Assistance DIGIY pour le logement partenaire": "DIGIY assistance for le logement partenaire", "Contact direct au choix": "Direct contact choice", "⭐ Partenaire vedette": "⭐ Featured partner", "🎥 Vidéo · QR · Wave": "🎥 Video · QR · Wave", "🏆 LOGEMENT PARTENAIRE": "🏆 LOGEMENT PARTENAIRE", "🏠 Logement local": "🏠 Local accommodation", "/ nuit": "/ night", "Contact direct propriétaire. Paiement direct. Réponse simple et rapide.": "Direct owner contact. Direct payment. Simple and fast reply.", "✅ Je veux ce lieu": "✅ I want this place", "🌍 Vitrine complète": "🌍 Full showcase", "👁 Voir la fiche": "👁 See page", "🌙 NDIMBAL — Comprendre": "🌙 NDIMBAL — Understand", "Zone en ouverture": "Opening area", "Zone à préciser": "Area to confirm", "Location": "Rental", "🚧 Exemple à activer": "🚧 Example to activate", "Activation en cours": "Activation in progress", "Exemple": "Example", "à confirmer": "to confirm", "Contact équipe DIGIY": "DIGIY team contact", "DIGIY peut t'aider à chercher un logement dans ce secteur.": "DIGIY can help you look for accommodation in this area.", "WhatsApp DIGIY": "DIGIY WhatsApp", "✅ Choisir la zone": "✅ Choose area", "pers.": "guests", "0% commission": "0% commission"};
+  const ATTR = {"Retour en haut": "Back to top", "Ex : Saly, Mbour, Sarlat, Arcachon": "E.g.: Saly, Ngaparou, Mbour", "Ex : ce soir, vendredi, 22 juin": "E.g.: tonight, Friday, June 22", "Ex : demain, dimanche, 24 juin": "E.g.: tomorrow, Sunday, June 24", "Ex : 2 adultes": "E.g.: 2 adults", "Ex : 25 000 FCFA / 70 € / nuit": "E.g.: 25,000 / 40,000 FCFA", "Ex : Je cherche une chambre calme à Saly, arrivée ce soir, départ dimanche, 2 personnes. Petit déjeuner souhaité. Merci de confirmer la disponibilité.": "E.g.: I am looking for a quiet room in Saly, arrival tonight, departure Sunday, 2 people. Breakfast wanted. Please confirm availability.", "Exemples demande hôtel": "Hotel request examples", "Ex : 2 nuits, ce week-end": "E.g.: 2 nights, this weekend", "Ex : 2 personnes": "E.g.: 2 people", "Ex : 25 000 / 30 000 FCFA": "E.g.: 25,000 / 30,000 FCFA", "Ex : Je cherche 2 nuits à Saly pour 2 personnes, budget 25 000 / 30 000 FCFA par jour. Coin calme proche plage si possible.": "E.g.: I am looking for 2 nights in Saly for 2 people, budget 25,000 / 30,000 FCFA per day. Quiet place near the beach if possible.", "Exemples de notes rapides": "Quick note examples", "Ouvrir la vitrine partenaire LOGEMENT PARTENAIRE": "Open the LOGEMENT PARTENAIRE partner showcase", "QR partageable LOGEMENT PARTENAIRE — Saly": "Shareable QR LOGEMENT PARTENAIRE — Saly", "Chercher un territoire, une zone, un lieu...": "Search an area, a place...", "Ex: Awa": "E.g.: Awa", "Ex: 12/03 - 18/03": "E.g.: 12/03 - 18/03", "Ex: 2": "E.g.: 2", "Ex: 25 000 FCFA / nuit": "E.g.: 25,000 FCFA / night", "Fermer les options": "Close options", "Navigation rapide LOC": "Quick LOC navigation", "Comprendre NDIMBAL": "Understand NDIMBAL", "Écouter l’intro LOC": "Listen to the LOC intro", "Version française": "French version", "English version": "English version"};
+
+  function getLang(){
+    try{
+      const p = new URLSearchParams(location.search);
+      const fromUrl = (p.get("lang") || "").toLowerCase();
+      if(fromUrl === "en") return "en";
+      if(fromUrl === "fr") return "fr";
+      const saved = (localStorage.getItem(LANG_KEY) || "").toLowerCase();
+      return saved === "en" ? "en" : "fr";
+    }catch(_){
+      return "fr";
+    }
+  }
+
+  function setPressed(lang){
+    document.querySelectorAll("[data-lang-btn]").forEach(btn => {
+      const on = btn.getAttribute("data-lang-btn") === lang;
+      btn.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+  }
+
+  function setMeta(lang){
+    const meta = META[lang] || META.fr;
+    document.documentElement.lang = lang === "en" ? "en" : "fr";
+    document.title = meta.title;
+    const desc = document.querySelector('meta[name="description"]');
+    if(desc) desc.setAttribute("content", meta.description);
+  }
+
+  function translateSmart(text){
+    if(!text) return text;
+    const exact = TEXT[text];
+    if(exact) return exact;
+
+    let out = text;
+
+    out = out
+      .replace(/lieu\(x\) réel\(s\) visible\(s\)/g, "real place(s) visible")
+      .replace(/lieu réel visible/g, "real place visible")
+      .replace(/lieux réels visibles/g, "real places visible")
+      .replace(/lieu de référence reste visible/g, "reference place remains visible")
+      .replace(/lieu de référence/g, "reference place")
+      .replace(/exemples à activer/g, "examples to activate")
+      .replace(/exemple\(s\) à activer/g, "example(s) to activate")
+      .replace(/repère\(s\) au total/g, "reference point(s) in total")
+      .replace(/aucun autre lieu réel ne correspond au filtre/g, "no other real place matches the filter")
+      .replace(/Les fiches réelles enrichissent la galerie quand elles sont disponibles/g, "Real pages enrich the gallery when available")
+      .replace(/Les fiches réelles s’ajoutent quand elles sont disponibles/g, "Real pages are added when available")
+      .replace(/Température LOC/g, "LOC temperature")
+      .replace(/Contact direct/g, "Direct contact")
+      .replace(/Réponse simple/g, "Simple reply")
+      .replace(/Paiement direct/g, "Direct payment")
+      .replace(/à activer/g, "to activate")
+      .replace(/à confirmer/g, "to confirm")
+      .replace(/\/ nuit/g, "/ night")
+      .replace(/personnes/g, "people")
+      .replace(/personne/g, "person")
+      .replace(/Lieu\(x\)/g, "Place(s)");
+
+    return out === text ? text : out;
+  }
+
+  function applyEnglish(root){
+    const scope = root || document.body;
+    if(!scope) return;
+
+    const walker = document.createTreeWalker(scope, NodeFilter.SHOW_TEXT, {
+      acceptNode(node){
+        const parent = node.parentElement;
+        if(!parent) return NodeFilter.FILTER_REJECT;
+        const tag = parent.tagName;
+        if(["SCRIPT","STYLE","NOSCRIPT","TEXTAREA"].includes(tag)) return NodeFilter.FILTER_REJECT;
+        const raw = node.nodeValue;
+        if(!raw || !raw.trim()) return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+
+    const nodes = [];
+    while(walker.nextNode()) nodes.push(walker.currentNode);
+
+    nodes.forEach(node => {
+      const raw = node.nodeValue;
+      const trimmed = raw.trim();
+      const translated = translateSmart(trimmed);
+      if(translated && translated !== trimmed){
+        node.nodeValue = raw.replace(trimmed, translated);
+      }
+    });
+
+    scope.querySelectorAll("[placeholder],[aria-label],[title],[alt]").forEach(el => {
+      ["placeholder","aria-label","title","alt"].forEach(attr => {
+        const val = el.getAttribute(attr);
+        if(!val) return;
+        const out = ATTR[val] || translateSmart(val);
+        if(out && out !== val) el.setAttribute(attr, out);
+      });
+    });
+  }
+
+  function applyLang(lang){
+    setMeta(lang);
+    setPressed(lang);
+    if(lang === "en") applyEnglish(document.body);
+  }
+
+  window.digiySetLocLang = function(lang){
+    try{
+      const u = new URL(location.href);
+      if(lang === "en"){
+        localStorage.setItem(LANG_KEY, "en");
+        u.searchParams.set("lang", "en");
+        location.replace(u.toString());
+        return;
+      }
+
+      localStorage.removeItem(LANG_KEY);
+      u.searchParams.set("lang", "fr");
+      location.replace(u.toString());
+    }catch(_){
+      if(lang === "en"){
+        try{ localStorage.setItem(LANG_KEY, "en"); }catch(__){}
+      }else{
+        try{ localStorage.removeItem(LANG_KEY); }catch(__){}
+      }
+      location.reload();
+    }
+  };
+
+  const lang = getLang();
+  window.DIGIY_LOC_LANG = lang;
+  applyLang(lang);
+
+  if(lang === "en"){
+    const observer = new MutationObserver(mutations => {
+      let changed = false;
+      for(const m of mutations){
+        if(m.addedNodes && m.addedNodes.length){ changed = true; break; }
+        if(m.type === "characterData"){ changed = true; break; }
+      }
+      if(changed){
+        setTimeout(() => applyEnglish(document.body), 40);
+      }
+    });
+    observer.observe(document.body, {childList:true, subtree:true, characterData:true});
+  }
+})();
+</script>
+
+
+<script>
+(function(){
+  function replaceExactText(fr,en){
+    if((window.DIGIY_LOC_LANG||"fr") !== "en") return;
+    var walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{
+      acceptNode:function(node){
+        var p=node.parentElement;
+        if(!p || ["SCRIPT","STYLE","NOSCRIPT","TEXTAREA"].includes(p.tagName)) return NodeFilter.FILTER_REJECT;
+        return node.nodeValue && node.nodeValue.indexOf(fr)>-1 ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+      }
+    });
+    var nodes=[];
+    while(walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(function(n){ n.nodeValue=n.nodeValue.split(fr).join(en); });
+  }
+  function attrReplace(fr,en){
+    if((window.DIGIY_LOC_LANG||"fr") !== "en") return;
+    document.querySelectorAll("[placeholder],[aria-label],[title],[alt]").forEach(function(el){
+      ["placeholder","aria-label","title","alt"].forEach(function(a){
+        var v=el.getAttribute(a);
+        if(v && v.indexOf(fr)>-1) el.setAttribute(a,v.split(fr).join(en));
+      });
+    });
+  }
+  var pairs=[
+    ["Afrique · France · Diaspora","Africa · France · Diaspora"],
+    ["DIGIY LOC · logements directs","DIGIY LOC · direct housing"],
+    ["🏠 Hébergement local · Afrique · France · Diaspora","🏠 Local accommodation · Africa · France · Diaspora"],
+    ["Logements locaux en contact direct","Local housing with direct contact"],
+    ["Chambres, villas, appartements, gîtes et hôtels. Sénégal, France, diaspora : tu vois le lieu, tu choisis, tu écris direct au bon contact.","Rooms, villas, apartments, guest houses and hotels. Senegal, France, diaspora: you see the place, choose, and write directly to the right contact."],
+    ["🌍 Voir les territoires","🌍 See territories"],
+    ["📍 Saly · Mbour · Sarlat · Arcachon","📍 Saly · Mbour · Sarlat · Arcachon"],
+    ["🌍 Afrique · France · Diaspora","🌍 Africa · France · Diaspora"],
+    ["🌙 NDIMBAL / offres locales","🌙 NDIMBAL / local offers"],
+    ["DIGIY LOC · territoires ouverts","DIGIY LOC · open territories"],
+    ["Saly est la preuve. La France et la diaspora ouvrent l’échelle.","Saly is the proof. France and the diaspora open the scale."],
+    ["DIGIY LOC ne doit pas être lu comme une simple page “Saly”. Saly reste le terrain vivant, mais le module porte une méthode plus large : rendre un logement local visible, partageable, contactable et payable directement, sans commission DIGIY.","DIGIY LOC should not be read as just a “Saly” page. Saly remains the living field proof, but the module carries a wider method: making local housing visible, shareable, contactable and payable directly, with 0% DIGIY commission."],
+    ["🇸🇳 Sénégal · preuve terrain","🇸🇳 Senegal · field proof"],
+    ["Saly, Mbour, Ngaparou, Somone, Petite Côte, Dakar, AIBD : logements, hôtels, chambres et villas en contact direct.","Saly, Mbour, Ngaparou, Somone, Petite Côte, Dakar, AIBD: housing, hotels, rooms and villas with direct contact."],
+    ["🇫🇷 France · marché pro","🇫🇷 France · pro market"],
+    ["Sarlat, Arcachon, gîtes, chambres d’hôtes, locations saisonnières et petits hébergeurs qui veulent garder leur client.","Sarlat, Arcachon, guest houses, seasonal rentals and small hosts who want to keep their client relationship."],
+    ["🌍 Diaspora · pont direct","🌍 Diaspora · direct bridge"],
+    ["Familles, voyageurs et clients peuvent retrouver un logement local fiable sans passer par une plateforme qui capte la relation.","Families, travelers and clients can find trusted local accommodation without going through a platform that captures the relationship."],
+    ["Préparer une demande France","Prepare a France request"],
+    ["Pays / zone souhaitée","Country / desired area"],
+    ["Tous les territoires","All territories"],
+    ["Chercher un territoire, une zone, un lieu...","Search a territory, area, place..."],
+    ["Saly est la preuve, les autres territoires s’ouvrent au fil des partenaires.","Saly is the proof; other territories open as partners join."],
+    ["Gîte / chambre · Sarlat ou Arcachon","Guest house / room · Sarlat or Arcachon"],
+    ["Même logique : une fiche claire, un QR, un contact direct, paiement au propriétaire et 0% commission DIGIY.","Same logic: a clear page, a QR, direct contact, payment to the owner and 0% DIGIY commission."],
+    ["Préparer demande","Prepare request"],
+    ["Monde","World"],
+    ["Sénégal · France · Diaspora","Senegal · France · Diaspora"],
+    ["Contact direct local","Local direct contact"]
+  ];
+  pairs.forEach(function(p){replaceExactText(p[0],p[1]); attrReplace(p[0],p[1]);});
+})();
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
