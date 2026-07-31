@@ -25,5 +25,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-# Déclenchement volontaire après création du workflow.
