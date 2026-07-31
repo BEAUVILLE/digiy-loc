@@ -1,1 +1,29 @@
-<!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="0;url=/"><title>DIGIY LOC</title></head><body><p>DIGIY LOC wordt geopend…</p><script>location.replace('/');</script><p><a href="/">Open DIGIY LOC</a></p></body></html>
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="refresh" content="0;url=/?lang=nl">
+  <meta name="robots" content="noindex,follow">
+  <title>DIGIY LOC — Nederlands</title>
+</head>
+<body>
+  <p>DIGIY LOC wordt in het Nederlands geopend…</p>
+  <script>
+    (() => {
+      const lang = "nl";
+      try {
+        localStorage.setItem("digiyLocLang", lang);
+        localStorage.setItem("digiy-lang", lang);
+      } catch (_) {}
+      const target = new URL("/", location.origin);
+      target.searchParams.set("lang", lang);
+      new URLSearchParams(location.search).forEach((value, key) => {
+        if (key !== "lang") target.searchParams.set(key, value);
+      });
+      location.replace(target.pathname + target.search + target.hash);
+    })();
+  </script>
+  <p><a href="/?lang=nl">Open DIGIY LOC</a></p>
+</body>
+</html>
