@@ -40,3 +40,5 @@ jobs:
           git add loc-i18n-inventory.json loc-i18n-audit.md
           git commit -m "LOC : mettre à jour l’inventaire international complet"
           git push origin HEAD:feature/loc-international-complet-v1
+
+# Deuxième push volontaire : le workflow existe désormais avant son déclenchement.
