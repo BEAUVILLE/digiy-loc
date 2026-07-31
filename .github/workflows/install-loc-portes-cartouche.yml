@@ -1,0 +1,42 @@
+name: Installer cartouche portes LOC
+
+on:
+  push:
+    branches:
+      - feature/loc-international-complet-v1
+    paths:
+      - "assets/js/digiy-loc-portes-cartouche.js"
+      - "tools/install_loc_portes_cartouche.py"
+      - ".github/workflows/install-loc-portes-cartouche.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/loc-international-complet-v1
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Accrocher la cartouche à index.html
+        run: python3 tools/install_loc_portes_cartouche.py
+
+      - name: Publier index.html mis à jour
+        run: |
+          if git diff --quiet -- index.html; then
+            echo "index.html déjà à jour"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "LOC : afficher la cartouche d’accès dans l’index"
+          git push origin HEAD:feature/loc-international-complet-v1
