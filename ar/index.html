@@ -1,1 +1,29 @@
-<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="0;url=/"><title>DIGIY LOC</title></head><body><p>جارٍ فتح DIGIY LOC…</p><script>location.replace('/');</script><p><a href="/">فتح DIGIY LOC</a></p></body></html>
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="refresh" content="0;url=/?lang=ar">
+  <meta name="robots" content="noindex,follow">
+  <title>ديجي لوك — العربية</title>
+</head>
+<body>
+  <p>جارٍ فتح ديجي لوك باللغة العربية…</p>
+  <script>
+    (() => {
+      const lang = "ar";
+      try {
+        localStorage.setItem("digiyLocLang", lang);
+        localStorage.setItem("digiy-lang", lang);
+      } catch (_) {}
+      const target = new URL("/", location.origin);
+      target.searchParams.set("lang", lang);
+      new URLSearchParams(location.search).forEach((value, key) => {
+        if (key !== "lang") target.searchParams.set(key, value);
+      });
+      location.replace(target.pathname + target.search + target.hash);
+    })();
+  </script>
+  <p><a href="/?lang=ar">فتح ديجي لوك</a></p>
+</body>
+</html>
