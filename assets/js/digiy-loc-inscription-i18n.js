@@ -19,12 +19,16 @@
   }
 
   const lang = currentLang();
-  if(lang === "fr") return;
-
+  const isFrench = lang === "fr";
   const DATA = window.DIGIY_LOC_INSCRIPTION_I18N || {D:{},FR:{}};
   const D = DATA.D;
   const FR = DATA.FR;
-  const T = D[lang];
+  const T = isFrench ? {
+    title: document.title, switchLabel: "Langue de l’inscription", requestDate: "Date de demande :",
+    fieldsWarning: "⚠️ Renseigne d’abord le nom, le téléphone, la ville et la résidence / activité.",
+    chooseWarning: "⚠️ Choisis la Présence LOC, un niveau 2A à 2E ou FIRST avant d’envoyer.",
+    noChoice: "Aucun choix", name: "Nom / responsable", phone: "Téléphone / WhatsApp", zone: "Zone / ville", activity: "Résidence / activité"
+  } : D[lang];
   if(!T) return;
 
   const PHRASES = Object.entries(FR).sort((a,b) => b[0].length - a[0].length);
@@ -48,6 +52,16 @@
       .replace(/Paiement Sendwave → Wave Sénégal/g, T.sendwave)
       .replace(/Date de demande\s*:/g, T.requestDate)
       .replace(/Tarif France à valider/g, lang === "en" ? "France price to confirm" : lang === "es" ? "Tarifa Francia por confirmar" : lang === "de" ? "Frankreich-Preis zu bestätigen" : lang === "it" ? "Tariffa Francia da confermare" : lang === "nl" ? "Frankrijk-tarief te bevestigen" : "سعر فرنسا يحتاج إلى تأكيد");
+
+    const dynamic = {
+      en:[["Grille ","Country price grid: "],["commence avec la Présence LOC à","starts with LOC Presence at"],["carte de visibilité, QR, lien partageable, contact direct et présence sur le site","visibility card, QR, shareable link, direct contact and presence on the site"],["Les niveaux 2A à 2E renforcent la visibilité selon le parc, de","Levels 2A to 2E strengthen visibility according to portfolio size, from"],["La fiche logements détaillée et le moteur LOC restent une option distincte à","The detailed accommodation page and LOC engine remain a separate option at"],["Commencer à","Start at"],["Renforcer selon le parc","Strengthen according to portfolio size"],["Elle ne comprend ni fiche logement détaillée, ni disponibilités, ni moteur de location","It includes neither a detailed accommodation page, availability nor a rental engine"],["Les prix Sénégal et France sont deux grilles commerciales distinctes","Senegal and France prices are two separate commercial grids"],["adaptées aux recettes réelles de chaque marché, et non une conversion au taux de change","adapted to each market's actual revenue, not a currency conversion"],["ajoute la fiche logements détaillée, les disponibilités, les demandes, les clients et le moteur LOC","adds the detailed accommodation page, availability, requests, clients and the LOC engine"],["PRO CARNET reste séparé","PRO CARNET remains separate"],["BOOST et RÉSEAU exigent une formule LOC active","BOOST and NETWORK require an active LOC plan"],["selon le parc","according to portfolio size"],["parc de","portfolio of"],["logements","accommodations"],["Plus de","More than"],["tarif à valider","price to confirm"]],
+      es:[["Grille ","Tarifario por país: "],["commence avec la Présence LOC à","empieza con Presencia LOC a"],["carte de visibilité, QR, lien partageable, contact direct et présence sur le site","tarjeta de visibilidad, QR, enlace compartible, contacto directo y presencia en el sitio"],["Les niveaux 2A à 2E renforcent la visibilité selon le parc, de","Los niveles 2A a 2E refuerzan la visibilidad según el parque, desde"],["La fiche logements détaillée et le moteur LOC restent une option distincte à","La ficha detallada y el motor LOC siguen siendo una opción separada a"],["Commencer à","Empezar a"],["Renforcer selon le parc","Reforzar según el parque"],["Elle ne comprend ni fiche logement détaillée, ni disponibilités, ni moteur de location","No incluye ficha detallada, disponibilidades ni motor de alquiler"],["Les prix Sénégal et France sont deux grilles commerciales distinctes","Los precios Senegal y Francia son dos tarifas comerciales distintas"],["adaptées aux recettes réelles de chaque marché, et non une conversion au taux de change","adaptadas a los ingresos reales de cada mercado, no una conversión de divisas"],["ajoute la fiche logements détaillée, les disponibilités, les demandes, les clients et le moteur LOC","añade la ficha detallada, disponibilidades, solicitudes, clientes y el motor LOC"],["PRO CARNET reste séparé","PRO CARNET permanece separado"],["BOOST et RÉSEAU exigent une formule LOC active","BOOST y RED requieren una fórmula LOC activa"],["selon le parc","según el parque"],["parc de","parque de"],["logements","alojamientos"],["Plus de","Más de"],["tarif à valider","tarifa por confirmar"]],
+      de:[["Grille ","Länderpreisliste: "],["commence avec la Présence LOC à","beginnt mit LOC Präsenz bei"],["carte de visibilité, QR, lien partageable, contact direct et présence sur le site","Sichtbarkeitskarte, QR, teilbarer Link, Direktkontakt und Präsenz auf der Website"],["Les niveaux 2A à 2E renforcent la visibilité selon le parc, de","Die Stufen 2A bis 2E verstärken die Sichtbarkeit je nach Bestand, von"],["La fiche logements détaillée et le moteur LOC restent une option distincte à","Die Detailseite und das LOC-System bleiben eine separate Option für"],["Commencer à","Start bei"],["Renforcer selon le parc","Je nach Bestand verstärken"],["Elle ne comprend ni fiche logement détaillée, ni disponibilités, ni moteur de location","Sie enthält weder Detailseite, Verfügbarkeiten noch Vermietungssystem"],["Les prix Sénégal et France sont deux grilles commerciales distinctes","Die Senegal- und Frankreich-Preise sind zwei getrennte Preislisten"],["adaptées aux recettes réelles de chaque marché, et non une conversion au taux de change","an die tatsächlichen Einnahmen jedes Marktes angepasst, keine Währungsumrechnung"],["ajoute la fiche logements détaillée, les disponibilités, les demandes, les clients et le moteur LOC","fügt Detailseite, Verfügbarkeiten, Anfragen, Kunden und LOC-System hinzu"],["PRO CARNET reste séparé","PRO CARNET bleibt getrennt"],["BOOST et RÉSEAU exigent une formule LOC active","BOOST und NETZWERK benötigen ein aktives LOC-Paket"],["selon le parc","je nach Bestand"],["parc de","Bestand von"],["logements","Unterkünften"],["Plus de","Mehr als"],["tarif à valider","Preis zu bestätigen"]],
+      it:[["Grille ","Listino paese: "],["commence avec la Présence LOC à","inizia con Presenza LOC a"],["carte de visibilité, QR, lien partageable, contact direct et présence sur le site","carta visibilità, QR, link condivisibile, contatto diretto e presenza sul sito"],["Les niveaux 2A à 2E renforcent la visibilité selon le parc, de","I livelli 2A a 2E rafforzano la visibilità secondo il parco, da"],["La fiche logements détaillée et le moteur LOC restent une option distincte à","La scheda dettagliata e il motore LOC restano un’opzione separata a"],["Commencer à","Iniziare a"],["Renforcer selon le parc","Rafforzare secondo il parco"],["Elle ne comprend ni fiche logement détaillée, ni disponibilités, ni moteur de location","Non include scheda dettagliata, disponibilità né motore di locazione"],["Les prix Sénégal et France sont deux grilles commerciales distinctes","I prezzi Senegal e Francia sono due listini commerciali distinti"],["adaptées aux recettes réelles de chaque marché, et non une conversion au taux de change","adattati ai ricavi reali di ogni mercato, non una conversione valutaria"],["ajoute la fiche logements détaillée, les disponibilités, les demandes, les clients et le moteur LOC","aggiunge scheda dettagliata, disponibilità, richieste, clienti e motore LOC"],["PRO CARNET reste séparé","PRO CARNET resta separato"],["BOOST et RÉSEAU exigent une formule LOC active","BOOST e RETE richiedono una formula LOC attiva"],["selon le parc","secondo il parco"],["parc de","parco di"],["logements","alloggi"],["Plus de","Più di"],["tarif à valider","tariffa da confermare"]],
+      nl:[["Grille ","Landentarief: "],["commence avec la Présence LOC à","begint met LOC Aanwezigheid voor"],["carte de visibilité, QR, lien partageable, contact direct et présence sur le site","zichtbaarheidskaart, QR, deelbare link, rechtstreeks contact en aanwezigheid op de site"],["Les niveaux 2A à 2E renforcent la visibilité selon le parc, de","Niveaus 2A tot 2E versterken zichtbaarheid volgens het aanbod, van"],["La fiche logements détaillée et le moteur LOC restent une option distincte à","De detailpagina en LOC-motor blijven een aparte optie voor"],["Commencer à","Beginnen bij"],["Renforcer selon le parc","Versterken volgens het aanbod"],["Elle ne comprend ni fiche logement détaillée, ni disponibilités, ni moteur de location","Ze bevat geen detailpagina, beschikbaarheid of verhuurmotor"],["Les prix Sénégal et France sont deux grilles commerciales distinctes","Senegal- en Frankrijk-prijzen zijn twee afzonderlijke commerciële tarieven"],["adaptées aux recettes réelles de chaque marché, et non une conversion au taux de change","aangepast aan de werkelijke inkomsten per markt, geen valutaconversie"],["ajoute la fiche logements détaillée, les disponibilités, les demandes, les clients et le moteur LOC","voegt detailpagina, beschikbaarheid, aanvragen, klanten en LOC-motor toe"],["PRO CARNET reste séparé","PRO CARNET blijft apart"],["BOOST et RÉSEAU exigent une formule LOC active","BOOST en NETWERK vereisen een actieve LOC-formule"],["selon le parc","volgens het aanbod"],["parc de","aanbod van"],["logements","accommodaties"],["Plus de","Meer dan"],["tarif à valider","tarief te bevestigen"]],
+      ar:[["Grille ","شبكة أسعار البلد: "],["commence avec la Présence LOC à","تبدأ بحضور LOC بسعر"],["carte de visibilité, QR, lien partageable, contact direct et présence sur le site","بطاقة ظهور وQR ورابط قابل للمشاركة واتصال مباشر وحضور على الموقع"],["Les niveaux 2A à 2E renforcent la visibilité selon le parc, de","تعزّز المستويات 2A إلى 2E الظهور حسب حجم العرض، من"],["La fiche logements détaillée et le moteur LOC restent une option distincte à","تبقى البطاقة التفصيلية ومحرك LOC خياراً منفصلاً بسعر"],["Commencer à","ابدأ بسعر"],["Renforcer selon le parc","عزّز حسب حجم العرض"],["Elle ne comprend ni fiche logement détaillée, ni disponibilités, ni moteur de location","لا تشمل بطاقة سكن تفصيلية ولا التوفر ولا محرك الإيجار"],["Les prix Sénégal et France sont deux grilles commerciales distinctes","أسعار السنغال وفرنسا شبكتان تجاريتان منفصلتان"],["adaptées aux recettes réelles de chaque marché, et non une conversion au taux de change","ملائمتان للإيرادات الحقيقية لكل سوق وليستا تحويلاً للعملة"],["ajoute la fiche logements détaillée, les disponibilités, les demandes, les clients et le moteur LOC","يضيف البطاقة التفصيلية والتوفر والطلبات والعملاء ومحرك LOC"],["PRO CARNET reste séparé","يبقى PRO CARNET منفصلاً"],["BOOST et RÉSEAU exigent une formule LOC active","يتطلب BOOST والشبكة صيغة LOC نشطة"],["selon le parc","حسب حجم العرض"],["parc de","عرض من"],["logements","مساكن"],["Plus de","أكثر من"],["tarif à valider","سعر يحتاج إلى تأكيد"]]
+    };
+    for(const [a,b] of (dynamic[lang] || [])) out = out.split(a).join(b);
     return out;
   }
 
@@ -142,7 +156,10 @@
   function updateDate(){
     const box=document.getElementById("dateBox");
     if(!box) return;
-    try{ box.textContent = `${T.requestDate} ${new Intl.DateTimeFormat(LOCALES[lang],{dateStyle:"full",timeStyle:"short"}).format(new Date())}`; }catch(_){}
+    try{
+      const next = `${T.requestDate} ${new Intl.DateTimeFormat(LOCALES[lang],{dateStyle:"full",timeStyle:"short"}).format(new Date())}`;
+      if(box.textContent !== next) box.textContent = next;
+    }catch(_){}
   }
 
   function apply(){
@@ -184,9 +201,12 @@
 
   setMeta();
   addSwitch();
-  apply();
-  setupOutbound();
-  let timer=0;
-  const obs=new MutationObserver(() => { clearTimeout(timer); timer=setTimeout(apply,35); });
-  obs.observe(document.body,{subtree:true,childList:true,characterData:true});
+  localizeLinks();
+  if(!isFrench){
+    apply();
+    setupOutbound();
+    let timer=0;
+    const obs=new MutationObserver(() => { clearTimeout(timer); timer=setTimeout(apply,60); });
+    obs.observe(document.body,{subtree:true,childList:true,characterData:true});
+  }
 })();
