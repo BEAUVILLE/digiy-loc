@@ -1,0 +1,41 @@
+name: Install LOC inscription i18n
+
+on:
+  push:
+    branches:
+      - feature/loc-international-complet-v1
+    paths:
+      - 'tools/install_loc_inscription_i18n.py'
+      - 'assets/js/digiy-loc-inscription-*.js'
+      - '.github/workflows/install-loc-inscription-i18n.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/loc-international-complet-v1
+      - name: Installer les scripts dans inscription-loc.html
+        run: python3 tools/install_loc_inscription_i18n.py
+      - name: Vérifier JavaScript
+        run: |
+          node --check assets/js/digiy-loc-inscription-data-a.js
+          node --check assets/js/digiy-loc-inscription-data-b.js
+          node --check assets/js/digiy-loc-inscription-data-c.js
+          node --check assets/js/digiy-loc-inscription-i18n.js
+          grep -q 'inscription internationale 7 langues' inscription-loc.html
+      - name: Commit du fichier généré
+        run: |
+          if git diff --quiet -- inscription-loc.html; then
+            echo 'Aucun changement à publier.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add inscription-loc.html
+          git commit -m 'LOC inscription : charger le moteur 7 langues'
+          git push origin HEAD:feature/loc-international-complet-v1
