@@ -6,16 +6,147 @@
 
   const T={"pageTitle":"DIGIY LOC — Reserve a sua estadia diretamente","brandSub":"Estadias diretas • 0% de comissão DIGIY","mainTitle":"Encontre a sua estadia","mainSub":"Destino, noites, viajantes: vá direto ao essencial.","destinationLabel":"Destino","destinationPlaceholder":"Saly, Mbour, Somone, Sarlat…","datesLabel":"Datas da estadia","datesPlaceholder":"Escolher as noites","travellersLabel":"Viajantes","searchButton":"Pesquisar","trustOne":"✓ Contacto direto","trustTwo":"✓ 0% de comissão DIGIY","trustThree":"✓ Pagamento ao profissional","resultsTitle":"Alojamentos recomendados","hostTitle":"Gere um alojamento?","hostCopy":"Receba pedidos diretamente e mantenha a relação com os seus clientes. A DIGIY não cobra comissão sobre as suas reservas.","hostButton":"Juntar-se à DIGIY LOC","footerText":"A DIGIY LOC não é uma agência imobiliária. A disponibilidade e as condições são confirmadas diretamente por cada anfitrião.","calendarTitle":"Escolher datas","calendarHelp":"Primeiro toque: chegada + 1 noite. Segundo toque: prolongue a estadia.","confirmDates":"Escolher estas datas","guestTitle":"Viajantes e quartos","rooms":"Quartos","roomsNote":"Número de quartos pretendidos","adults":"Adultos","adultsNote":"13 anos ou mais","children":"Crianças","childrenNote":"Dos 0 aos 12 anos","confirmGuests":"Confirmar","roomOne":"quarto","roomMany":"quartos","adultOne":"adulto","adultMany":"adultos","childOne":"criança","childMany":"crianças","nightOne":"noite","nightMany":"noites","verified":"Profissional verificado","perNight":"por noite","people":"pessoas","view":"Ver a ficha","contact":"WhatsApp direto","noResults":"Nenhum alojamento corresponde a este destino ou a este número de viajantes.","resultOne":"alojamento","resultMany":"alojamentos","whatsappIntro":"Olá, gostaria de informações sobre","whatsappDates":"Estadia","whatsappGuests":"Viajantes","close":"Fechar","featured":"Em destaque","directNote":"✓ Contacto e pagamento diretos ao profissional","openPage":"Abrir a ficha real"};
   const X={"Professionnel vérifié":"Profissional verificado","par nuit":"por noite","personnes":"pessoas","Voir la fiche":"Ver a ficha","WhatsApp direct":"WhatsApp direto","✓ Contact et paiement directs au professionnel":"✓ Contacto e pagamento diretos ao profissional","En tête":"Em destaque","Aucun hébergement ne correspond à cette destination ou à ce nombre de voyageurs.":"Nenhum alojamento corresponde a este destino ou a este número de viajantes.","Fermer":"Fechar","Mois précédent":"Mês anterior","Mois suivant":"Mês seguinte"};
+  const BASE_LANGS=["fr","en","es","de","it","nl","ar"];
   const q=()=>{try{return (new URLSearchParams(location.search).get("lang")||"").toLowerCase();}catch(_){return"";}};
   const stored=()=>{try{return (localStorage.getItem("digiyLocLang")||localStorage.getItem("digiy-lang")||"").toLowerCase();}catch(_){return"";}};
   const isPt=()=>q()==="pt" || (!q() && stored()==="pt");
 
-  function goPt(){try{localStorage.setItem("digiyLocLang","pt");localStorage.setItem("digiy-lang","pt");}catch(_){}const u=new URL(location.href);u.searchParams.set("lang","pt");location.assign(u.toString());}
-  function ensureButton(){const bar=document.querySelector(".lang-switch");if(!bar)return;let b=bar.querySelector('[data-lang="pt"]');if(!b){b=document.createElement("button");b.className="lang-btn";b.type="button";b.dataset.lang="pt";b.textContent="PT";b.setAttribute("aria-pressed","false");b.addEventListener("click",(e)=>{e.preventDefault();e.stopImmediatePropagation();goPt();},true);const es=bar.querySelector('[data-lang="es"]');if(es&&es.nextSibling)bar.insertBefore(b,es.nextSibling);else bar.appendChild(b);}if(isPt()){bar.querySelectorAll("button").forEach(x=>{x.classList.toggle("active",x===b);x.setAttribute("aria-pressed",x===b?"true":"false");});}}
-  function applyKeys(){if(!isPt())return;document.documentElement.lang="pt";document.documentElement.dir="ltr";document.title=T.pageTitle;document.querySelectorAll("[data-i18n]").forEach(n=>{const k=n.dataset.i18n;if(T[k]!==undefined)n.textContent=T[k];});document.querySelectorAll("[data-i18n-placeholder]").forEach(n=>{const k=n.dataset.i18nPlaceholder;if(T[k]!==undefined)n.placeholder=T[k];});document.querySelectorAll("[aria-label]").forEach(n=>{const a=n.getAttribute("aria-label");if(X[a])n.setAttribute("aria-label",X[a]);});}
-  function translateDynamic(root=document.body){if(!isPt()||!root)return;const skip=new Set(["SCRIPT","STYLE","NOSCRIPT","TEXTAREA"]);const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode(n){const p=n.parentElement;if(!p||skip.has(p.tagName))return NodeFilter.FILTER_REJECT;return n.nodeValue&&n.nodeValue.trim()?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT;}});const nodes=[];while(w.nextNode())nodes.push(w.currentNode);for(const n of nodes){let raw=n.nodeValue,t=raw.trim(),v=X[t]||null;if(v){n.nodeValue=raw.replace(t,v);continue;}let s=raw;s=s.replace(/\bchambre\b/g,"quarto").replace(/\bchambres\b/g,"quartos").replace(/\badulte\b/g,"adulto").replace(/\badultes\b/g,"adultos").replace(/\benfant\b/g,"criança").replace(/\benfants\b/g,"crianças").replace(/\bnuit\b/g,"noite").replace(/\bnuits\b/g,"noites");if(s!==raw)n.nodeValue=s;}root.querySelectorAll?.('a[href*="wa.me"]').forEach(a=>{try{const u=new URL(a.href);const m=u.searchParams.get("text");if(!m)return;let p=m.replace(/^Bonjour, je souhaite des informations sur/,"Olá, gostaria de informações sobre").replace(/\nSéjour:/g,"\nEstadia:").replace(/\nVoyageurs:/g,"\nViajantes:");if(p!==m){u.searchParams.set("text",p);a.href=u.toString();}}catch(_){}});}
-  function apply(){ensureButton();if(isPt()){applyKeys();translateDynamic(document.body);}}
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",apply,{once:true});else apply();
-  let timer=0;new MutationObserver(()=>{clearTimeout(timer);timer=setTimeout(apply,45);}).observe(document.documentElement,{childList:true,subtree:true,characterData:true});
-  setTimeout(apply,350);setTimeout(apply,800);
+  function goPt(){
+    try{localStorage.setItem("digiyLocLang","pt");localStorage.setItem("digiy-lang","pt");}catch(_){}
+    const u=new URL(location.href);
+    u.searchParams.set("lang","pt");
+    location.assign(u.toString());
+  }
+
+  function goLang(code){
+    code=String(code||"").toLowerCase();
+    if(!BASE_LANGS.includes(code)) return;
+    try{
+      localStorage.setItem("digiyLocLang",code);
+      localStorage.setItem("digiy-lang",code);
+    }catch(_){}
+    const u=new URL(location.href);
+    u.searchParams.set("lang",code);
+    location.assign(u.toString());
+  }
+
+  function wireExitButtons(bar){
+    if(!isPt()) return;
+    bar.querySelectorAll("button[data-lang]").forEach(btn=>{
+      const code=String(btn.dataset.lang||"").toLowerCase();
+      if(code==="pt" || !BASE_LANGS.includes(code) || btn.dataset.digiyPtExitWired==="1") return;
+      btn.dataset.digiyPtExitWired="1";
+      btn.addEventListener("click",e=>{
+        if(!isPt()) return;
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        goLang(code);
+      },true);
+    });
+  }
+
+  function ensureButton(){
+    const bar=document.querySelector(".lang-switch");
+    if(!bar)return;
+    let b=bar.querySelector('[data-lang="pt"]');
+    if(!b){
+      b=document.createElement("button");
+      b.className="lang-btn";
+      b.type="button";
+      b.dataset.lang="pt";
+      b.textContent="PT";
+      b.setAttribute("aria-pressed","false");
+      b.addEventListener("click",(e)=>{
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        goPt();
+      },true);
+      const es=bar.querySelector('[data-lang="es"]');
+      if(es&&es.nextSibling)bar.insertBefore(b,es.nextSibling);
+      else bar.appendChild(b);
+    }
+    if(isPt()){
+      wireExitButtons(bar);
+      bar.querySelectorAll("button").forEach(x=>{
+        x.classList.toggle("active",x===b);
+        x.setAttribute("aria-pressed",x===b?"true":"false");
+      });
+    }
+  }
+
+  function applyKeys(){
+    if(!isPt())return;
+    document.documentElement.lang="pt";
+    document.documentElement.dir="ltr";
+    document.title=T.pageTitle;
+    document.querySelectorAll("[data-i18n]").forEach(n=>{
+      const k=n.dataset.i18n;
+      if(T[k]!==undefined)n.textContent=T[k];
+    });
+    document.querySelectorAll("[data-i18n-placeholder]").forEach(n=>{
+      const k=n.dataset.i18nPlaceholder;
+      if(T[k]!==undefined)n.placeholder=T[k];
+    });
+    document.querySelectorAll("[aria-label]").forEach(n=>{
+      const a=n.getAttribute("aria-label");
+      if(X[a])n.setAttribute("aria-label",X[a]);
+    });
+  }
+
+  function translateDynamic(root=document.body){
+    if(!isPt()||!root)return;
+    const skip=new Set(["SCRIPT","STYLE","NOSCRIPT","TEXTAREA"]);
+    const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode(n){
+      const p=n.parentElement;
+      if(!p||skip.has(p.tagName))return NodeFilter.FILTER_REJECT;
+      return n.nodeValue&&n.nodeValue.trim()?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT;
+    }});
+    const nodes=[];
+    while(w.nextNode())nodes.push(w.currentNode);
+    for(const n of nodes){
+      let raw=n.nodeValue,t=raw.trim(),v=X[t]||null;
+      if(v){n.nodeValue=raw.replace(t,v);continue;}
+      let s=raw;
+      s=s.replace(/\bchambre\b/g,"quarto")
+         .replace(/\bchambres\b/g,"quartos")
+         .replace(/\badulte\b/g,"adulto")
+         .replace(/\badultes\b/g,"adultos")
+         .replace(/\benfant\b/g,"criança")
+         .replace(/\benfants\b/g,"crianças")
+         .replace(/\bnuit\b/g,"noite")
+         .replace(/\bnuits\b/g,"noites");
+      if(s!==raw)n.nodeValue=s;
+    }
+    root.querySelectorAll?.('a[href*="wa.me"]').forEach(a=>{
+      try{
+        const u=new URL(a.href);
+        const m=u.searchParams.get("text");
+        if(!m)return;
+        let p=m.replace(/^Bonjour, je souhaite des informations sur/,"Olá, gostaria de informações sobre")
+               .replace(/\nSéjour:/g,"\nEstadia:")
+               .replace(/\nVoyageurs:/g,"\nViajantes:");
+        if(p!==m){u.searchParams.set("text",p);a.href=u.toString();}
+      }catch(_){}
+    });
+  }
+
+  function apply(){
+    ensureButton();
+    if(isPt()){
+      applyKeys();
+      translateDynamic(document.body);
+    }
+  }
+
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",apply,{once:true});
+  else apply();
+
+  let timer=0;
+  new MutationObserver(()=>{
+    clearTimeout(timer);
+    timer=setTimeout(apply,45);
+  }).observe(document.documentElement,{childList:true,subtree:true,characterData:true});
+
+  setTimeout(apply,350);
+  setTimeout(apply,800);
 })();
