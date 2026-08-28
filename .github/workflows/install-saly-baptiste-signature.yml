@@ -1,0 +1,71 @@
+name: Install Chez Baptiste Saly signature
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/install-saly-baptiste-signature.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  install-saly-signature:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install shared Saly Carte Vitrine loader
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path("index.html")
+          marker = '<script src="https://digiylyfe.com/assets/digiy-saly-baptiste-signature-v1.js?v=20260828-v1" defer></script>'
+          if not path.exists():
+              raise SystemExit("index.html missing")
+          text = path.read_text(encoding="utf-8")
+          if "digiy-saly-baptiste-signature-v1.js" not in text:
+              if "</body>" not in text:
+                  raise SystemExit("No </body> marker")
+              head, tail = text.rsplit("</body>", 1)
+              text = head.rstrip() + "\n" + marker + "\n</body>" + tail
+              path.write_text(text, encoding="utf-8")
+              print("INSTALLED: index.html")
+          else:
+              print("OK already installed: index.html")
+          PY
+
+      - name: Verify LOC structure
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          text = Path("index.html").read_text(encoding="utf-8")
+          checks = {
+              "Saly source listing preserved": 'part-chez-baptiste.digiylyfe.com' in text,
+              "Sarlat source listing preserved": 'sarlat-chez-baptiste.digiylyfe.com' in text,
+              "Sarlat signature preserved": 'digiy-sarlat-baptiste-signature-v1.js' in text,
+              "Saly signature installed": 'digiy-saly-baptiste-signature-v1.js' in text,
+              "LOC 34/66 structure preserved": 'grid-template-columns:34% 66%' in text,
+          }
+          bad = [k for k,v in checks.items() if not v]
+          for k,v in checks.items(): print(('OK  ' if v else 'FAIL'), k)
+          if bad: raise SystemExit('Verification failed: ' + ', '.join(bad))
+          PY
+
+      - name: Commit installed loader
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "No page needed an update."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Install Chez Baptiste Saly card signature [skip ci]"
+          git push
