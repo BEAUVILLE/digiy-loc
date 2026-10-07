@@ -960,6 +960,44 @@
     });
   }
 
+  function updateRoomMachineMetadata(room, photos){
+    const title = roomTitle(room);
+    const city = roomCity(room);
+    const type = roomType(room);
+    const description = safe(room.description || room.desc || room.resume || room.summary);
+    const capacity = safe(room.personnes_max || room.capacity || room.capacite);
+    const canonicalUrl = location.href.split("#")[0];
+
+    document.title = title + " — DIGIY LOC";
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if(metaDescription) metaDescription.setAttribute("content", description || [type, city, "DIGIY LOC · contact direct · 0% commission"].filter(Boolean).join(" · "));
+    const canonical = document.querySelector('link[rel="canonical"]');
+    if(canonical) canonical.href = canonicalUrl;
+
+    const schema = {
+      "@context":"https://schema.org",
+      "@type":"LodgingBusiness",
+      "name":title,
+      "description":description || undefined,
+      "url":canonicalUrl,
+      "image":(photos || []).filter(Boolean),
+      "address":{"@type":"PostalAddress","addressLocality":city},
+      "additionalType":type || undefined,
+      "telephone":getContact(room) || undefined,
+      "occupancy":capacity ? {"@type":"QuantitativeValue","maxValue":Number(capacity) || capacity} : undefined
+    };
+    Object.keys(schema).forEach(key => schema[key] === undefined && delete schema[key]);
+
+    let jsonLd = document.getElementById("digiy-loc-schema");
+    if(!jsonLd){
+      jsonLd = document.createElement("script");
+      jsonLd.type = "application/ld+json";
+      jsonLd.id = "digiy-loc-schema";
+      document.head.appendChild(jsonLd);
+    }
+    jsonLd.textContent = JSON.stringify(schema);
+  }
+
   function renderRoom(room){
     CURRENT_ROOM = room;
     const title = roomTitle(room);
@@ -975,6 +1013,7 @@
     const uniquePhotos = [...new Set(photos)].filter(Boolean);
     const cover = uniquePhotos[0] || FALLBACK_IMG;
 
+    updateRoomMachineMetadata(room, uniquePhotos);
     CURRENT_CONTACT_WA = getContact(room);
 
     el.coverImg.src = cover;
