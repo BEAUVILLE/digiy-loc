@@ -65,3 +65,29 @@ booking notification integrations; those need separate staging tests.
 At creation time the V29 SQL fixtures had **not run**: this session
 had no isolated PostgreSQL server and GitHub workflow creation was
 blocked. Existing V26 CI successes do not validate these V29 tests.
+
+## Third distinct candidate: server-side status transitions
+
+`PULSE_STATUS_ACL_CANDIDATE.sql` restricts three additional,
+full-body-reviewed functions: `digiy_loc_pulse_mark_sent(uuid)`,
+`digiy_loc_pulse_mark_sent(uuid,text,text,text)`, and
+`digiy_loc_pulse_fail_backoff(uuid,text,text,text)`.
+They are postgres-owned SECURITY DEFINER and have explicit PUBLIC,
+anon and authenticated EXECUTE. The reviewed function bodies update
+notification delivery state without caller authorization. Keep all
+booking/owner-facing RPCs out of this blanket containment.
+
+A separate synthetic local fixture and runner are included:
+
+```sh
+V29_CI_ONLY=1 PGHOST=127.0.0.1 PGPORT=5432 PGUSER=postgres \
+  bash trust/sql/v29/run-pulse-status-ci.sh
+```
+
+**Release caution:** the PULSE VPS was reported stopped by the founder,
+not independently inspected. This does not automatically close database
+RPC access and does not confirm that other worker clients are absent.
+Leave the VPS stopped during read-only verification and testing; before
+any restart, validate its active source, role, RPC signatures, and
+delivery states. The three PULSE candidates are independent SQL
+proposals; none has been deployed.
