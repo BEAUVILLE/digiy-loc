@@ -77,6 +77,101 @@ avec comptes et données fictifs** :
 aucune dépense et aucune production modifiée. Il faut un staging
 isolé déjà autorisé pour exécuter les étapes 1–7.
 
-**Décision :** PR #36 sécurité et PR #37 contact restent toutes deux
-**en brouillon / non fusionnées**. Pas de redémarrage ou intégration
-PULSE/NDIMBAL ; aucune suppression de table ni de données.
+**Décision mise à jour :** PR #37 a été **fusionnée** le 2026-10-08
+(commit `9069cba2f51c04c0cca34ac7a88f1d15041f8990`) et le
+workflow GitHub Pages `37849939922` a réussi. Le rendu de
+`fiche.html` n'a pas été vérifié en navigation complète avec une
+fiche client réelle. **PR #36 reste BROUILLON / non fusionnée.**
+Pas de redémarrage ou intégration PULSE/NDIMBAL ; aucune suppression
+de table ni de données.
+
+## Révision terrain de la chaîne Saly/Sarlat — 2026-10-08 (lecture seule)
+
+### Entrées publiques réellement visibles
+
+- `https://loc.digiylyfe.com/` présente les deux adhérents
+  Chez Baptiste Saly et Sarlat ; les CTA **pointent vers leurs fiches
+  personnalisées**, respectivement `part-chez-baptiste.digiylyfe.com`
+  et `sarlat-chez-baptiste.digiylyfe.com`, et **non** vers
+  `loc.digiylyfe.com/fiche.html`.
+- Les deux pages de destination sont consultables publiquement
+  (texte/structure observés via récupération Web, pas une session
+  cliente authentifiée). Elles indiquent 0 % commission et
+  paiement direct **après confirmation du propriétaire**.
+- Conséquence : la correction PR #37 sécurise la **fiche générique**
+  et ses éventuels liens directs ; ses 10 tests navigateur isolés
+  ne testent PAS à eux seuls l'ensemble des calendriers Saly et Sarlat.
+- L'affirmation « fiche générique corrigée » n'est donc pas
+  interchangeable avec « tous les parcours de location validés ».
+
+### Chaîne MASTER Saly confirmée en source
+
+- `BEAUVILLE/part-chez-baptiste/index.html` définit
+  `MASTER_UNIT_ID` et lit en **GET anonyme** les états du
+  calendrier et les tarifs depuis les tables
+  `digiy_loc_master_unit_calendar`,
+  `digiy_loc_master_unit_prices`,
+  `digiy_loc_master_units`. Les messages WhatsApp
+  sont préparés pour le propriétaire et une demande publique
+  n'enregistre pas directement une réservation automatique.
+- `BEAUVILLE/part-chez-baptiste/gestion.html` utilise
+  `auth.signInWithOtp`/`auth.verifyOtp` et sélectionne le site
+  `saly-chez-baptiste`, puis appelle :
+  `digiy_loc_master_list_reservations_v1`,
+  `digiy_loc_master_save_reservation_v1`,
+  `digiy_loc_set_unit_calendar_state_v2`.
+- `BEAUVILLE/pro-espace/loc.html` utilise également les RPC MASTER
+  pour le carnet, les dates et l'enregistrement d'une réservation ;
+  cela ne prouve pas que chaque lien propriétaire déploie
+  exactement cette entrée pour Sarlat. Le fichier source Sarlat
+  n'a pas été rattaché avec certitude à un dépôt GitHub accessible.
+- `BEAUVILLE/pro-loc/index.html` et les Edge
+  `digiy-loc-owner-access` / `digiy-loc-magic-link`
+  constituent une **autre porte de droit d'adhésion** ;
+  ne pas la présenter comme la seule porte des fiches dédiées.
+
+### Droits réels lus dans le catalogue SQL (aucune écriture)
+
+- `anon` : SELECT sur
+  `digiy_loc_master_unit_calendar`,
+  `digiy_loc_master_unit_prices`,
+  `digiy_loc_master_units`, sous RLS.
+  La politique des unités limite les lignes publiques à
+  `is_active=true`. La visibilité publique des calendriers
+  et tarifs a des politiques `USING (true)`; elle doit être
+  assumée comme donnée publique non personnelle.
+- `authenticated` : SELECT des sites et réservations
+  via politiques `owner_id=auth.uid()` ;
+  les RPC MASTER réservation et calendrier sont exécutables
+  par `authenticated`, **pas par `anon`**.
+- Le SQL réel `digiy_loc_set_unit_calendar_state_v2`
+  vérifie la propriété, limite les états à
+  `available`, `occupied`, `closed`, et supprime
+  une ligne de calendrier lorsqu'une date redevient disponible.
+- Le snapshot de cette quatrième RPC a été ajouté aux tests
+  synthétiques V29 pour vérifier : refus d'un autre propriétaire,
+  refus d'un état invalide, fermeture/réouverture/occupation,
+  avant et après désactivation des triggers caducs.
+  **La preuve finale est le résultat du nouveau workflow CI**, pas
+  la seule présence du fichier de test.
+
+### Décision toujours ouverte sur l'annulation
+
+La fonction Edge `reservation-cancel` touche
+`digiy_reservations`, alors que Saly enregistre ses dossiers
+dans `digiy_loc_master_reservations` et le calendrier dans
+`digiy_loc_master_unit_calendar`. Une remise à `available`
+dans le calendrier n'est **pas équivalente** à l'annulation de
+la ligne de réservation MASTER. Il faut clarifier le parcours métier
+canonique, puis tester l'effet sur **les deux données** ensemble,
+en staging. Ne jamais lancer une annulation de client en production
+pour vérifier le raccordement.
+
+### Ce que cette revue ne prétend pas
+
+Elle n'a pas validé l'envoi d'un vrai code OTP/magic-link, une
+session propriétaire réelle, la réception WhatsApp, l'annulation
+complète, un paiement Wave/Sendwave, ni une réservation écrite
+en production. **Aucune branche Supabase staging n'existe**,
+aucun environnement payant n'a été créé. Les anciens PULSE et
+NDIMBAL restent caducs.
