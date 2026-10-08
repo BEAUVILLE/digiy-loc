@@ -1,0 +1,21 @@
+name: DIGIY TRUST V17 storage adapter tests
+on:
+  pull_request:
+    paths:
+      - "trust/**"
+      - ".github/workflows/trust-storage-adapter-tests.yml"
+  push:
+    paths:
+      - "trust/**"
+      - ".github/workflows/trust-storage-adapter-tests.yml"
+jobs:
+  storage-adapter:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node --test trust/supabase-storage-adapter.test.mjs trust/private-receiver.test.mjs trust/v14-storage-contract.test.mjs
