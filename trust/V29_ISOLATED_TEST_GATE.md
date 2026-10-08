@@ -93,3 +93,28 @@ deployment; do not test against real Supabase production.
 
 **Current result: preparation strengthened and read-only catalog
 preflight confirmed; executable V29 validation not yet available.**
+
+## Executed shell launcher validation in the current sandbox
+
+The four launcher scripts were copied from the current draft branch
+into a local inspection directory and were **actually executed** for
+safe, non-database checks:
+
+- `bash -n` succeeded on all four scripts (**4/4**).
+- With both required environment variables absent, all four scripts
+  refused to start (**4/4**).
+- With `V29_CI_ONLY=1` and a non-local `PGHOST`, all four scripts
+  refused to start (**4/4**).
+- With `PGHOST=127.0.0.1` and the opt-in flag missing, all four
+  scripts refused to start (**4/4**).
+
+**Total executed launcher assertions: 16/16 passed.** These are
+Bash guard/syntax checks only, not PostgreSQL fixtures, RPC privilege
+tests or booking non-regression tests. Existing safety notes about
+localhost forwarding still apply.
+
+PostgreSQL binaries `postgres`, `psql` and `initdb` remain
+unavailable in this sandbox, and an attempt to update the Debian package
+index failed because DNS resolution for `deb.debian.org` was
+unavailable. Therefore **0/4 actual PostgreSQL database suites have
+run**. No Supabase branch was created or any production SQL changed.
