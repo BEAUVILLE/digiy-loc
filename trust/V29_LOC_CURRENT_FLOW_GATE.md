@@ -175,3 +175,35 @@ complète, un paiement Wave/Sendwave, ni une réservation écrite
 en production. **Aucune branche Supabase staging n'existe**,
 aucun environnement payant n'a été créé. Les anciens PULSE et
 NDIMBAL restent caducs.
+
+## Audit annulation et dépendances — résultat du contrôle du fondateur
+
+**Retour terrain 2026-10-08 :** le fondateur confirme que le parcours
+propriétaire et les changements de dates fonctionnent. Cette validation
+n'est pas un test d'annulation d'une réservation nommée.
+
+**Analyse complémentaire et tests négatifs :**
+[`V29_MASTER_CANCELLATION_DEPENDENCIES.md`](V29_MASTER_CANCELLATION_DEPENDENCIES.md)
+documente avec les sources réelles de quatre fonctions SQL que :
+
+- `digiy_loc_set_unit_calendar_state_v2(...,'available')` supprime
+  des dates d'occupation du calendrier, sans modifier une réservation
+  enregistrée dans le carnet MASTER ;
+- la fonction de création MASTER ne teste pas les chevauchements
+  entre deux réservations ;
+- les tests fictifs `master-cancellation-gap-test.psql` et
+  `master-overlap-risk-test.psql` reproduisent ces deux comportements,
+  **avant et après** la neutralisation PULSE/NDIMBAL.
+
+**Attention aux résultats CI :** une suite verte sur ces deux sondes
+signifie que les limitations ont été *confirmées*, non réparées.
+La future annulation doit préserver l'historique client et recalculer
+les disponibilités sans toucher à une autre réservation active.
+Aucune écriture en production, aucun essai sur des données client.
+
+**Dépendance structurelle :** les fonctions `digiy_agent_enqueue`,
+`digiy_agent_job_status`, `digiy_market_apply_agent_result` et
+`get_all_modules_status` référencent encore
+`digiy_loc_pulse_outbox`. Ce constat **interdit une suppression
+globale de la table** sur simple similarité de nom avec l'ancien
+VPS PULSE, définitivement CADUC.
