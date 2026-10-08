@@ -22,7 +22,7 @@ export function makePrivateFeedbackStorage(db){
        (listing_id,overall_rating,cleanliness,comfort,welcome,comment,declared_stay,publication_consent,moderation_status,stay_verified)
        select u.id,$2,$3,$4,$5,$6,true,$7,'received',false
        from public.digiy_loc_master_units u where u.id=$1::uuid and u.is_active=true
-       returning id`;
+       `;
      const values=[record.listing_id,record.overall_rating,record.cleanliness,record.comfort,record.welcome,record.comment,record.publication_consent];
      const res=await db.query(sql,values);
      return res?.rows?.length===1;
