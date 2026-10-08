@@ -843,6 +843,7 @@
 
   function getContact(room){
     const value = safe(
+      room.whatsapp_phone ||
       room.whatsapp ||
       room.owner_whatsapp ||
       room.contact_whatsapp ||
