@@ -1,0 +1,20 @@
+name: DIGIY LOC direct owner WhatsApp regression
+on:
+  pull_request:
+    paths:
+      - "fiche.html"
+      - "tests/fiche-direct-owner.test.cjs"
+      - ".github/workflows/loc-direct-owner-contact.yml"
+permissions:
+  contents: read
+jobs:
+  direct-contact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Test direct owner contact from live fiche JS (no external API)
+        run: node --test tests/fiche-direct-owner.test.cjs
