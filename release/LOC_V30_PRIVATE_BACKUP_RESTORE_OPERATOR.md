@@ -11,6 +11,20 @@ Official Supabase references:
 - [Backup and test a restoration of a Supabase Platform project](https://supabase.com/docs/guides/self-hosting/restore-from-platform)
 - [Database backups](https://supabase.com/docs/guides/platform/backups)
 
+## Prepared private export helper (not executed)
+
+A **local-only interactive** script is now committed at [`release/tools/loc-v30-private-backup.sh`](tools/loc-v30-private-backup.sh). It refuses GitHub Actions/CI, refuses an URI without the exact digiy-core project reference, asks for the URI with terminal echo disabled, and only produces private roles/schema/data SQL files plus SHA-256 hashes.
+
+On an encrypted private Mac with Supabase CLI and Docker installed, **after personally verifying that FileVault (or the destination volume's encryption) is active**, the operator may run, from a local checkout of the V30 draft branch:
+
+```sh
+DIGIY_ENCRYPTED_STORAGE_CONFIRMED=YES bash release/tools/loc-v30-private-backup.sh
+```
+
+The backup location is created under `~/DIGIY_PRIVATE_BACKUPS/LOC_V30_<UTC timestamp>/`, never in the GitHub repository. Do not share the private output or connection URI.
+
+**This helper has not been run on the user's Mac.** Even when it succeeds, database restoration remains unverified and the production SQL release stays **NO-GO**.
+
 ## Operator steps (private computer only)
 
 1. On a trustworthy device with disk encryption and authorized access, install/check `supabase --version`, `supabase db dump --help`, `psql --version`. Verify Docker is working; Supabase CLI uses it to run database export. Do not install packages with unreviewed scripts.
