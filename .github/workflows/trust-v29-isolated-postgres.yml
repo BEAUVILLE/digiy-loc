@@ -1,0 +1,73 @@
+name: DIGIY SECURITY V29 isolated PostgreSQL
+on:
+  pull_request:
+    paths:
+      - "trust/sql/v29/**"
+      - "trust/V29_*.md"
+      - ".github/workflows/trust-v29-isolated-postgres.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  isolated-postgresql:
+    name: PostgreSQL ${{ matrix.postgres }} - four V29 suites
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        postgres: ["16", "17"]
+    services:
+      postgres:
+        image: postgres:${{ matrix.postgres }}
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - "127.0.0.1:5432:5432"
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install PostgreSQL client only
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Assert isolated test environment
+        env:
+          PGHOST: 127.0.0.1
+          PGPORT: "5432"
+          PGUSER: postgres
+        run: |
+          set -euo pipefail
+          test "$PGHOST" = "127.0.0.1"
+          psql -X -v ON_ERROR_STOP=1 -d postgres -Atc 'SELECT version()'
+          test "$(psql -X -d postgres -Atc "SELECT count(*) FROM pg_roles WHERE rolname='postgres' AND rolsuper")" = "1"
+      - name: Validate OUTBOX ACL candidate
+        env:
+          V29_CI_ONLY: "1"
+          PGHOST: 127.0.0.1
+          PGPORT: "5432"
+          PGUSER: postgres
+        run: bash trust/sql/v29/run-ci.sh
+      - name: Validate PULSE claim ACL candidate (retired, no runtime)
+        env:
+          V29_CI_ONLY: "1"
+          PGHOST: 127.0.0.1
+          PGPORT: "5432"
+          PGUSER: postgres
+        run: bash trust/sql/v29/run-pulse-ci.sh
+      - name: Validate PULSE status ACL candidate (retired, no runtime)
+        env:
+          V29_CI_ONLY: "1"
+          PGHOST: 127.0.0.1
+          PGPORT: "5432"
+          PGUSER: postgres
+        run: bash trust/sql/v29/run-pulse-status-ci.sh
+      - name: Validate targeted legacy trigger isolation
+        env:
+          V29_CI_ONLY: "1"
+          PGHOST: 127.0.0.1
+          PGPORT: "5432"
+          PGUSER: postgres
+        run: bash trust/sql/v29/run-trigger-ci.sh
