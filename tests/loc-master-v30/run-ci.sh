@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 # Hard CI guard: never permit running this runner against real Supabase/VPS.
+bash -n release/tools/loc-v30-private-backup.sh
 if [[ "${V30_CI_ONLY:-}" != "1" || "${PGHOST:-}" != "127.0.0.1" ||
       "${PGUSER:-}" != "postgres" || "${PGPORT:-}" != "5432" ]]; then
   echo 'V30 requires disposable local Docker PostgreSQL on 127.0.0.1:5432; refusing' >&2
