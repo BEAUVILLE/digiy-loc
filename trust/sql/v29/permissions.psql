@@ -41,12 +41,16 @@ $check$;
 
 SET LOCAL ROLE anon;
 SELECT pg_temp.expect_denied($q$select * from public.digiy_loc_outbox_claim_due(1,'forged-worker')$q$);
+SELECT pg_temp.expect_denied($q$select * from public.digiy_loc_outbox_claim_due()$q$);
+SELECT pg_temp.expect_denied($q$select * from public.digiy_loc_outbox_claim_due(2147483647)$q$);
 SELECT pg_temp.expect_denied($q$select public.digiy_loc_outbox_mark_sent('00000000-0000-4000-8000-000000000001')$q$);
 SELECT pg_temp.expect_denied($q$select public.digiy_loc_outbox_mark_failed('00000000-0000-4000-8000-000000000001','forged')$q$);
 RESET ROLE;
 
 SET LOCAL ROLE authenticated;
 SELECT pg_temp.expect_denied($q$select * from public.digiy_loc_outbox_claim_due(1,'forged-worker')$q$);
+SELECT pg_temp.expect_denied($q$select * from public.digiy_loc_outbox_claim_due()$q$);
+SELECT pg_temp.expect_denied($q$select * from public.digiy_loc_outbox_claim_due(2147483647)$q$);
 SELECT pg_temp.expect_denied($q$select public.digiy_loc_outbox_mark_sent('00000000-0000-4000-8000-000000000001')$q$);
 SELECT pg_temp.expect_denied($q$select public.digiy_loc_outbox_mark_failed('00000000-0000-4000-8000-000000000001','forged')$q$);
 RESET ROLE;
