@@ -1,0 +1,42 @@
+name: DIGIY TRUST V26 server permissions
+on:
+  pull_request:
+    paths: ["trust/**", ".github/workflows/trust-v26-permissions.yml"]
+  push:
+    branches: ["work/digiy-trust-v26-server-permissions"]
+    paths: ["trust/**", ".github/workflows/trust-v26-permissions.yml"]
+permissions:
+  contents: read
+jobs:
+  permissions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        postgres: ["16", "17"]
+    services:
+      postgres:
+        image: postgres:${{ matrix.postgres }}
+        env:
+          # Disposable CI service bound only to loopback; no stored password.
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports: ["127.0.0.1:5432:5432"]
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Candidate migration and rollback-only data tests (isolated database)
+        env:
+          PGHOST: 127.0.0.1
+          PGPORT: "5432"
+          PGUSER: postgres
+          V26_CI_ONLY: "1"
+        run: bash trust/sql/v26/run-ci.sh

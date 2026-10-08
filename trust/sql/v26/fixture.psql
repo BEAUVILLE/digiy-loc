@@ -1,0 +1,18 @@
+\set ON_ERROR_STOP on
+-- CI ONLY: fresh disposable database, never production. No real LOC data.
+create role anon nologin;
+create role authenticated nologin;
+create role authenticator nologin noinherit;
+create role service_role nologin bypassrls;
+revoke create on schema public from public;
+create table public.digiy_loc_master_units (
+  id uuid primary key, is_active boolean not null, owner_private_field text
+);
+alter table public.digiy_loc_master_units enable row level security;
+grant select on public.digiy_loc_master_units to anon, authenticated;
+create policy "loc units public active read" on public.digiy_loc_master_units
+  for select to anon using (is_active = true);
+-- Stand-in for existing owner policies; V26 must not change this definition.
+create policy "fixture owner read" on public.digiy_loc_master_units
+  for select to authenticated using (false);
+\ir ../v17_private_feedback_migration.sql

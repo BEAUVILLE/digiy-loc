@@ -1,0 +1,35 @@
+begin read only;
+select n.nspname,n.nspacl from pg_namespace n where nspname in ('public','digiy_trust_private');
+select c.relname,c.relrowsecurity,c.relforcerowsecurity,c.relacl,pg_get_userbyid(c.relowner) as owner from pg_class c join pg_namespace n on n.oid=c.relnamespace where (n.nspname='digiy_trust_private' or (n.nspname='public' and c.relname='digiy_loc_master_units'));
+select schemaname,tablename,policyname,permissive,roles,cmd,qual,with_check from pg_policies where schemaname='digiy_trust_private' or tablename='digiy_loc_master_units';
+select r.rolname,r.rolsuper,r.rolinherit,r.rolcreaterole,r.rolcreatedb,r.rolcanlogin,r.rolbypassrls,
+has_schema_privilege(r.oid,'digiy_trust_private','USAGE') as private_usage,
+has_table_privilege(r.oid,'digiy_trust_private.voluntary_feedback','SELECT') as private_select,
+has_table_privilege(r.oid,'digiy_trust_private.voluntary_feedback','INSERT') as private_insert,
+has_column_privilege(r.oid,'public.digiy_loc_master_units','id','SELECT') as unit_id_select,
+has_column_privilege(r.oid,'public.digiy_loc_master_units','is_active','SELECT') as unit_active_select
+from pg_roles r where rolname in ('anon','authenticated','authenticator','service_role','digiy_trust_server');
+select coalesce(r.rolname,'ALL') as role_name,s.setconfig from pg_db_role_setting s left join pg_roles r on r.oid=s.setrole where exists (select 1 from unnest(s.setconfig) c where c like 'pgrst.db_schemas=%');
+select tgname,pg_get_triggerdef(t.oid) as definition from pg_trigger t where tgrelid='digiy_trust_private.voluntary_feedback'::regclass and not tgisinternal;
+select conname,pg_get_constraintdef(oid) as definition from pg_constraint where conrelid='digiy_trust_private.voluntary_feedback'::regclass;
+-- Grants inherited by EVERY role via PUBLIC (NOINHERIT does not remove them).
+select count(*) as public_executable_definers
+from pg_proc p join pg_namespace n on n.oid=p.pronamespace
+where n.nspname not in ('pg_catalog','information_schema') and p.prosecdef
+  and exists (select 1 from aclexplode(coalesce(p.proacl,acldefault('f',p.proowner))) a
+              where a.grantee=0 and a.privilege_type='EXECUTE')
+  and exists (select 1 from aclexplode(coalesce(n.nspacl,acldefault('n',n.nspowner))) a
+              where a.grantee=0 and a.privilege_type='USAGE');
+select n.nspname,c.relname,a.privilege_type
+from pg_class c join pg_namespace n on n.oid=c.relnamespace
+cross join lateral aclexplode(coalesce(c.relacl,acldefault('r',c.relowner))) a
+where a.grantee=0 and c.relkind in ('r','v','m','p')
+  and n.nspname not in ('pg_catalog','information_schema');
+select pg_get_userbyid(defaclrole) as creator,defaclobjtype,defaclacl
+from pg_default_acl d join pg_namespace n on n.oid=d.defaclnamespace
+where nspname='digiy_trust_private';
+select column_name,data_type,is_nullable,column_default
+from information_schema.columns
+where table_schema='digiy_trust_private' and table_name='voluntary_feedback'
+order by ordinal_position;
+rollback;

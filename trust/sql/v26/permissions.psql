@@ -1,0 +1,140 @@
+\set ON_ERROR_STOP on
+-- Run only in the isolated CI database after fixture + V26 candidate.
+-- Every test row (including allowed inserts) is rolled back.
+begin;
+insert into public.digiy_loc_master_units values
+  ('00000000-0000-4000-8000-000000000001',true,'private owner value'),
+  ('00000000-0000-4000-8000-000000000002',false,'private owner value');
+
+create function pg_temp.expect_error(q text, expected_state text) returns void
+language plpgsql security invoker as $$
+begin
+  begin
+    execute q;
+  exception when others then
+    if sqlstate = expected_state then return; end if;
+    raise;
+  end;
+  raise exception 'Expected SQLSTATE %, query unexpectedly succeeded: %', expected_state, q;
+end $$;
+create function pg_temp.expect_rows(q text, expected_count integer) returns void
+language plpgsql security invoker as $$
+declare actual bigint;
+begin
+  execute q;
+  get diagnostics actual = row_count;
+  if actual <> expected_count then
+    raise exception 'Expected % rows, got % for %', expected_count, actual, q;
+  end if;
+end $$;
+
+do $$
+begin
+  if exists(select 1 from pg_roles where rolname='digiy_trust_server' and
+    (rolcanlogin or rolinherit or rolsuper or rolcreatedb or rolcreaterole or rolreplication or rolbypassrls)) then
+    raise exception 'Unsafe server role attributes';
+  end if;
+  if exists(select 1 from pg_auth_members where roleid='digiy_trust_server'::regrole or member='digiy_trust_server'::regrole) then
+    raise exception 'Unexpected role membership';
+  end if;
+  if not (select relrowsecurity from pg_class where oid='digiy_trust_private.voluntary_feedback'::regclass)
+     or not (select relrowsecurity from pg_class where oid='public.digiy_loc_master_units'::regclass) then
+    raise exception 'RLS disabled';
+  end if;
+  if (select count(*) from pg_policies where tablename='digiy_loc_master_units'
+      and policyname in ('fixture owner read','loc units public active read')) <> 2 then
+    raise exception 'Existing policies changed';
+  end if;
+end $$;
+
+set local role digiy_trust_server;
+\i :adapter_sql_file
+select pg_temp.expect_rows($q$execute trust_lookup('00000000-0000-4000-8000-000000000001')$q$,1);
+select pg_temp.expect_rows($q$execute trust_lookup('00000000-0000-4000-8000-000000000002')$q$,0);
+select pg_temp.expect_rows($q$execute trust_lookup('00000000-0000-4000-8000-000000000003')$q$,0);
+-- RLS hides inactive rows even when a caller omits the adapter WHERE clause.
+select pg_temp.expect_rows('select id,is_active from public.digiy_loc_master_units',1);
+select pg_temp.expect_error('select * from public.digiy_loc_master_units','42501');
+select pg_temp.expect_error('update public.digiy_loc_master_units set is_active=false','42501');
+select pg_temp.expect_error('delete from public.digiy_loc_master_units','42501');
+select pg_temp.expect_error('insert into public.digiy_loc_master_units values (gen_random_uuid(),true,null)','42501');
+execute trust_insert('00000000-0000-4000-8000-000000000001',5,null,4,3,'V26 fixture',false);
+\if :ROW_COUNT
+\else
+  \echo V26 active INSERT row count mismatch
+  \quit 1
+\endif
+execute trust_insert('00000000-0000-4000-8000-000000000002',5,null,null,null,'inactive',false);
+\if :ROW_COUNT
+  \echo V26 inactive INSERT row count mismatch
+  \quit 1
+\endif
+execute trust_insert('00000000-0000-4000-8000-000000000003',5,null,null,null,'unknown',false);
+\if :ROW_COUNT
+  \echo V26 unknown INSERT row count mismatch
+  \quit 1
+\endif
+select pg_temp.expect_error('select * from digiy_trust_private.voluntary_feedback','42501');
+select pg_temp.expect_error('update digiy_trust_private.voluntary_feedback set overall_rating=1','42501');
+select pg_temp.expect_error('delete from digiy_trust_private.voluntary_feedback','42501');
+select pg_temp.expect_error('truncate digiy_trust_private.voluntary_feedback','42501');
+select pg_temp.expect_error('create table digiy_trust_private.escalation(id int)','42501');
+-- Direct SQL bypassing adapter validation must still be rejected by RLS/CHECK.
+select pg_temp.expect_error($q$insert into digiy_trust_private.voluntary_feedback(listing_id,overall_rating)
+  values ('00000000-0000-4000-8000-000000000002',5)$q$,'42501');
+select pg_temp.expect_error($q$insert into digiy_trust_private.voluntary_feedback(listing_id,overall_rating)
+  values ('00000000-0000-4000-8000-000000000003',5)$q$,'42501');
+select pg_temp.expect_error($q$insert into digiy_trust_private.voluntary_feedback(listing_id,overall_rating,stay_verified)
+  values ('00000000-0000-4000-8000-000000000001',5,true)$q$,'42501');
+select pg_temp.expect_error($q$insert into digiy_trust_private.voluntary_feedback(listing_id,overall_rating,moderation_status)
+  values ('00000000-0000-4000-8000-000000000001',5,'published')$q$,'42501');
+select pg_temp.expect_error($q$insert into digiy_trust_private.voluntary_feedback(listing_id,overall_rating,declared_stay)
+  values ('00000000-0000-4000-8000-000000000001',5,false)$q$,'42501');
+select pg_temp.expect_error($q$insert into digiy_trust_private.voluntary_feedback(listing_id,overall_rating)
+  values ('00000000-0000-4000-8000-000000000001',5) returning id$q$,'42501');
+select pg_temp.expect_error($q$insert into digiy_trust_private.voluntary_feedback(id,listing_id,overall_rating)
+  values (gen_random_uuid(),'00000000-0000-4000-8000-000000000001',5)$q$,'42501');
+select pg_temp.expect_error($q$execute trust_insert('00000000-0000-4000-8000-000000000001',0,null,null,null,'bad score',false)$q$,'23514');
+select pg_temp.expect_error($q$execute trust_insert('00000000-0000-4000-8000-000000000001',5,null,null,null,repeat('x',1501),false)$q$,'23514');
+reset role;
+-- Remove superuser session authority for escalation tests. SET ROLE alone
+-- retains the admin session_user's ability to SET ROLE again.
+set session authorization digiy_trust_server;
+select pg_temp.expect_error('set role authenticated','42501');
+select pg_temp.expect_error('set role service_role','42501');
+select pg_temp.expect_error('set role authenticator','42501');
+reset session authorization;
+
+set local role anon;
+select pg_temp.expect_error('select * from digiy_trust_private.voluntary_feedback','42501');
+select pg_temp.expect_error($q$insert into digiy_trust_private.voluntary_feedback(listing_id,overall_rating)
+  values ('00000000-0000-4000-8000-000000000001',5)$q$,'42501');
+select pg_temp.expect_error('update digiy_trust_private.voluntary_feedback set overall_rating=1','42501');
+select pg_temp.expect_error('delete from digiy_trust_private.voluntary_feedback','42501');
+reset role;
+set local role authenticated;
+select pg_temp.expect_error('select * from digiy_trust_private.voluntary_feedback','42501');
+select pg_temp.expect_error($q$insert into digiy_trust_private.voluntary_feedback(listing_id,overall_rating)
+  values ('00000000-0000-4000-8000-000000000001',5)$q$,'42501');
+select pg_temp.expect_error('update digiy_trust_private.voluntary_feedback set overall_rating=1','42501');
+select pg_temp.expect_error('delete from digiy_trust_private.voluntary_feedback','42501');
+reset role;
+set local role service_role;
+select pg_temp.expect_error('select * from digiy_trust_private.voluntary_feedback','42501');
+select pg_temp.expect_error($q$insert into digiy_trust_private.voluntary_feedback(listing_id,overall_rating)
+  values ('00000000-0000-4000-8000-000000000001',5)$q$,'42501');
+reset role;
+do $$
+begin
+  if (select count(*) from digiy_trust_private.voluntary_feedback) <> 1 then raise exception 'Unexpected insert count'; end if;
+  if exists(select 1 from digiy_trust_private.voluntary_feedback where stay_verified or moderation_status <> 'received') then
+    raise exception 'Verification or publication leaked';
+  end if;
+end $$;
+rollback;
+do $$
+begin
+  if exists(select 1 from digiy_trust_private.voluntary_feedback)
+    or exists(select 1 from public.digiy_loc_master_units) then raise exception 'Rollback left test rows'; end if;
+end $$;
+select 'V26 PERMISSION TESTS PASSED; ZERO TEST ROWS REMAIN' as result;
