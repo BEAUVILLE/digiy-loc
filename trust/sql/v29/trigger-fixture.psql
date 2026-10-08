@@ -67,10 +67,21 @@ CREATE TRIGGER trg_digiy_loc_cancel_pulses
 CREATE TRIGGER trg_digiy_loc_reservation_to_pay
   AFTER UPDATE ON public.digiy_loc_reservations FOR EACH ROW
   EXECUTE FUNCTION public.v29_trace_trigger();
+-- Real catalog preflight checks the exact NDIMBAL trigger-function
+-- identity. Provide a harmless synthetic stub with that exact name.
+-- The body writes only to our trace table; NEVER real NDIMBAL records.
+CREATE FUNCTION public.digiy_loc_ndimbal_after_paid()
+RETURNS trigger LANGUAGE plpgsql SECURITY INVOKER AS $fn$
+BEGIN
+  INSERT INTO public.v29_trigger_trace(trigger_name,table_name,operation)
+  VALUES (TG_NAME,TG_TABLE_NAME,TG_OP);
+  RETURN NEW;
+END
+$fn$;
 CREATE TRIGGER trg_ndimbal_after_paid
   AFTER UPDATE OF payment_status ON public.digiy_loc_reservations
   FOR EACH ROW WHEN (NEW.payment_status='paid')
-  EXECUTE FUNCTION public.v29_trace_trigger();
+  EXECUTE FUNCTION public.digiy_loc_ndimbal_after_paid();
 CREATE TRIGGER trg_res_set_owner
   BEFORE INSERT OR UPDATE OF room_id ON public.digiy_loc_reservations
   FOR EACH ROW EXECUTE FUNCTION public.v29_trace_trigger();
