@@ -1,0 +1,43 @@
+name: DIGIY LOC MASTER V30 SQL isolation
+on:
+  pull_request:
+    paths:
+      - "supabase/candidates/LOC_MASTER_V30_CANDIDATE.sql"
+      - "tests/loc-master-v30/**"
+      - ".github/workflows/loc-master-v30-isolated.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  v30-master:
+    name: Disposable PostgreSQL ${{ matrix.pg }} / Saly and Sarlat
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        pg: ["16", "17"]
+    services:
+      postgres:
+        image: postgres:${{ matrix.pg }}
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports: ["127.0.0.1:5432:5432"]
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Execute fully synthetic migration candidate and tests
+        env:
+          V30_CI_ONLY: "1"
+          PGHOST: 127.0.0.1
+          PGPORT: "5432"
+          PGUSER: postgres
+        run: bash tests/loc-master-v30/run-ci.sh
