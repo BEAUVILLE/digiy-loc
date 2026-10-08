@@ -8,17 +8,22 @@ create schema if not exists public;
 grant usage on schema public to service_role, authenticated, anon;
 grant select,insert,update on public.digiy_trust_invitations to service_role;
 grant select,insert,update on public.digiy_trust_reviews to service_role;
+-- Emulate Supabase service_role RLS bypass on isolated PostgreSQL.
+alter role service_role bypassrls;
 -- No direct grants for anon/authenticated.
 do $$
 begin
  if has_table_privilege('anon','public.digiy_trust_invitations','SELECT') then raise exception 'anon leaked'; end if;
  if has_table_privilege('authenticated','public.digiy_trust_reviews','INSERT') then raise exception 'authenticated leaked'; end if;
  if has_function_privilege('anon','public.digiy_trust_submit_review_v1(text,text,jsonb)','EXECUTE') then raise exception 'anon RPC leaked'; end if;
+ if has_function_privilege('authenticated','public.digiy_trust_submit_review_v1(text,text,jsonb)','EXECUTE') then raise exception 'authenticated RPC leaked'; end if;
 end $$;
 insert into public.digiy_trust_invitations(source_module,source_reservation_id,professional_id,client_subject_hash,token_hash,expires_at)
 values ('loc','reservation-1','pro-1',repeat('a',64),repeat('b',64),now()+interval '1 day');
+set role service_role;
 select public.digiy_trust_submit_review_v1(repeat('b',64),repeat('a',64),'{"quality":5,"value_for_money":3}'::jsonb);
-do $$
+reset role;
+do $
 begin
  if (select count(*) from public.digiy_trust_reviews)<>1 then raise exception 'review missing'; end if;
  if (select count(*) from public.digiy_trust_invitations where consumed_at is not null)<>1 then raise exception 'not consumed'; end if;
