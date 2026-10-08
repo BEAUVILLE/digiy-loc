@@ -99,3 +99,20 @@ The founder identifies the historical high-volume PULSE/Outbox calls as loops ca
 **Operational decision: PULSE VPS stays stopped. Do not restart it, introduce it into Supabase, reconnect a worker, create a new PULSE bridge, or deploy any PULSE runtime, RPC integration, scheduled job, or webhook as part of V29.** There is no requirement to preserve a *future* PULSE connection. Historical `service_role` statements merely establish previous technical calls, and may represent loops.
 
 The existing PostgreSQL functions and public EXECUTE grants are already present; this security review may still prepare **isolated, non-deployed least-privilege ACL candidates** to contain existing permissions. Such review is **not** an instruction to reintroduce PULSE or to automatically grant any live server access. Changing or retiring existing functions requires dependency analysis, isolation tests and a separate, explicit approval. Keep payment, reservations, owners, LOC and DIGIY TRUST independent of this abandoned runtime.
+
+## Test-cluster compatibility fix
+
+PostgreSQL roles are **cluster-wide**: the original three independent fixture
+scripts each attempted to execute `CREATE ROLE anon`, `authenticated`,
+and `service_role`, which would fail after the first fixture in a shared
+disposable PostgreSQL server.
+
+All three fixtures now `\\ir ci-roles.psql`, which creates these roles only
+if absent and rejects unsafe pre-existing role attributes. Each runner
+continues to create its own separate disposable *database*. This is a
+fixture-only correction; it does not modify application auth or the
+production Supabase project.
+
+**Testing status:** repository static contract checks may pass, but the
+PostgreSQL fixtures have not been executed against a running ephemeral
+server in this session. Existing V26 CI successes are not V29 runtime tests.
