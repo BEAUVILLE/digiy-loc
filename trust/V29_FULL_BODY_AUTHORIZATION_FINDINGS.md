@@ -63,3 +63,9 @@ These are real historical statement counts and give strong evidence of past serv
 The 1-arg `digiy_loc_pulse_mark_sent(p_id uuid)` overload coexists with a 4-arg `digiy_loc_pulse_mark_sent(p_pulse_id uuid, p_provider text DEFAULT NULL, p_message_id text DEFAULT NULL, p_worker_id text DEFAULT NULL)`. Test calls to the 1-arg overload were changed to `p_id => ...::uuid` to resolve precisely by named argument and avoid any overload/default-argument ambiguity. This corrects the synthetic test; it does not change production functions.
 
 No V29 runtime PostgreSQL test execution has been completed in this environment.
+
+## Founder correction — historical calls were loops, not a reason to reactivate PULSE
+
+On 2026-10-08 the founder clarified that the unusually high PULSE/VPS call volume arose from loops due to an incorrect connection. Treat this as the operator's diagnosis; `pg_stat_statements` alone counts past statement invocations and does not distinguish expected usage from faulty loops. **Retract any inference that the large counters demonstrate a desirable active service or justify retaining/restarting the PULSE VPS integration.**
+
+Decision: **PULSE VPS remains stopped, with no reintroduction or connection to Supabase.** No background process, webhook, bridge, cron job, or new PULSE runtime should be introduced through V29. The existing Supabase RPC permissions are still a separate pre-existing exposure question and may be studied or staged as *non-deployed* ACL-only containment proposals; do not automatically deploy them or delete shared DB functions without confirming other consumers. This finding does not authorize changes to production.
