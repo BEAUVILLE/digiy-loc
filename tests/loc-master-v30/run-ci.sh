@@ -11,4 +11,5 @@ createdb "$PGDATABASE"
 psql -X -v ON_ERROR_STOP=1 -f tests/loc-master-v30/fixture.psql
 psql -X -v ON_ERROR_STOP=1 -f supabase/candidates/LOC_MASTER_V30_CANDIDATE.sql
 psql -X -v ON_ERROR_STOP=1 -f tests/loc-master-v30/contracts.psql
+bash tests/loc-master-v30/concurrency-ci.sh
 echo 'V30 MASTER synthetic cancel + overlap + owner permissions tests PASSED'
