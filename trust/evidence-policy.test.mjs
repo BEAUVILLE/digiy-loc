@@ -1,0 +1,11 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {assessEvidenceCandidate} from "./evidence-policy.mjs";
+const sample={sourceModule:"loc",sourceEventId:"stay:001",professionalId:"pro-1",clientSubjectId:"client-2",status:"completed",completedAt:"2026-09-01T12:00:00Z",evidenceSource:"claimed_independent",proofReference:"ref:001"};
+const check=x=>assessEvidenceCandidate(x,new Date("2026-10-08T12:00:00Z"));
+test("even plausible evidence cannot issue invitation",()=>assert.deepEqual(check(sample),{status:"requires_independent_attestor",reason:"independent_verification_required",canIssueInvitation:false}));
+test("every module fails closed",()=>{for(const sourceModule of ["loc","resto","driver","explore","build","commerce","jobs","carnet","bonne_affaire","resa","unknown","__proto__"])assert.equal(check({...sample,sourceModule}).canIssueInvitation,false);});
+test("owner and browser sources rejected",()=>{for(const evidenceSource of ["owner","professional","browser","client_form","public_api",""])assert.equal(check({...sample,evidenceSource}).reason,"untrusted_source");});
+test("booking states are not completed service",()=>{for(const status of ["confirmed","arrived","cancelled","no_show","paid","refunded"])assert.equal(check({...sample,status}).reason,"not_completed");});
+test("self review and future completion rejected",()=>{assert.equal(check({...sample,clientSubjectId:"pro-1"}).reason,"self_review");assert.equal(check({...sample,completedAt:"2030-01-01T00:00:00Z"}).reason,"invalid_completion");});
+test("missing references rejected",()=>{assert.equal(check({...sample,proofReference:""}).reason,"missing_proof_reference");assert.equal(check({...sample,sourceEventId:""}).reason,"invalid_sourceEventId");assert.equal(check(null).reason,"invalid_candidate");});
