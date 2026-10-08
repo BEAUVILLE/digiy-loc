@@ -1,0 +1,36 @@
+name: DIGIY LOC isolated browser staging
+on:
+  pull_request:
+    paths:
+      - "fiche.html"
+      - "tests/loc-browser.staging.spec.cjs"
+      - ".github/workflows/loc-browser-staging.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser-staging:
+    name: Browser staging / fiche + owner (fully mocked)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout DIGIY LOC from PR
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Checkout pinned owner landing HTML (public repository, readonly)
+        uses: actions/checkout@v4
+        with:
+          repository: BEAUVILLE/pro-loc
+          ref: 619cfc93db5d792a0b8ef161dacca2e7e38654cf
+          path: staging/pro-loc
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install isolated browser test tooling
+        run: |
+          npm install --no-save @playwright/test@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Browser test against actual HTML with network-mocked endpoints
+        run: npx playwright test tests/loc-browser.staging.spec.cjs --project=chromium --workers=1 --reporter=line
