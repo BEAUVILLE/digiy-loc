@@ -1,11 +1,11 @@
 # DIGIY SECURITY V29 — PostgreSQL 16/17 isolated validation
 
-**2026-10-08 | STATUS: 8/8 SYNTHETIC POSTGRESQL SUITES PASS; PRODUCTION NOT APPROVED.**
+**2026-10-08 | STATUS: 10/10 POSTGRESQL SUITES PASS (SYNTHETIC DATA); PRODUCTION NOT APPROVED.**
 
 ## Executed evidence
 
 GitHub Actions workflow:
-[**DIGIY SECURITY V29 isolated PostgreSQL**](https://github.com/BEAUVILLE/digiy-loc/actions/runs/37843794858)
+[**DIGIY SECURITY V29 isolated PostgreSQL**](https://github.com/BEAUVILLE/digiy-loc/actions/runs/37845239099)
 
 | Isolated synthetic test suite | PostgreSQL 16 | PostgreSQL 17 |
 | --- | --- | --- |
@@ -13,9 +13,10 @@ GitHub Actions workflow:
 | Retired PULSE claim ACL — `run-pulse-ci.sh` | PASS | PASS |
 | Retired PULSE status ACL — `run-pulse-status-ci.sh` | PASS | PASS |
 | Legacy PULSE + NDIMBAL trigger isolation — `run-trigger-ci.sh` | PASS | PASS |
+| Real LOC public/owner RPC SQL before + after retirement — `run-modern-ci.sh` | PASS | PASS |
 
-**8/8 actual SQL suites completed successfully**, with `psql -X
--v ON_ERROR_STOP=1` executing against four synthetic databases in
+**10/10 actual SQL suites completed successfully**, with `psql -X
+-v ON_ERROR_STOP=1` executing against five synthetic databases in
 each independent ephemeral PostgreSQL service. Runner jobs:
 
 - [PostgreSQL 16 — job 113539479470](https://github.com/BEAUVILLE/digiy-loc/actions/runs/37843794858/job/113539479470)
@@ -72,11 +73,15 @@ Earlier fixes, now exercised by the suite, include:
 
 ## Limits — NOT a production release certificate
 
-The suites use harmless **synthetic stub function bodies**, not
-copies of live business logic, and do not exercise current real LOC
-reservation, direct-payment, owner-management, multi-module, or
-concurrent notification behavior. They validate the specific ACL and
-legacy trigger-isolation contracts and rollback behavior.
+The legacy PULSE/NDIMBAL suites use harmless **synthetic stub function
+bodies**. The fifth suite uses the exact **2026-10-08 production SQL
+function definitions** of `digiy_loc_public_room_by_slug`,
+`digiy_loc_master_save_reservation_v1` and
+`digiy_loc_master_list_reservations_v1` on **synthetic schemas/data**.
+It proves their public and owner-facing SQL behavior before and after
+retiring the nine legacy triggers in isolation, **not** full live
+payment processing, actual browser integrations, wider booking modules,
+or concurrent notification behavior.
 
 Before authorizing production SQL, separately confirm on staging
 with synthetic bookings that the **modern** reservation, payment,
@@ -93,11 +98,47 @@ against real Supabase.
 
 A dedicated workflow lives at
 `.github/workflows/trust-v29-isolated-postgres.yml`, runs on pull
-requests, and tests both PostgreSQL 16 and 17. The four individual
+requests, and tests both PostgreSQL 16 and 17. The five individual
 runners are under `trust/sql/v29/`. They require
 `V29_CI_ONLY=1`, `PGHOST=127.0.0.1` and a verified **disposable**
 instance, and create separate synthetic test databases.
 
-**Final result: PostgreSQL synthetic V29 gate PASS (8/8); modern
-staging non-regression and production-deployment approval remain
-OPEN.**
+**Final result: PostgreSQL synthetic V29 gate PASS (10/10); selected
+public/owner SQL contracts replayed; end-to-end staging non-regression,
+payment and production-deployment approval remain OPEN.**
+
+## Real public + owner SQL replay — fifth suite
+
+[**Successful CI run 37845239099**](https://github.com/BEAUVILLE/digiy-loc/actions/runs/37845239099)
+ran **five suites per PostgreSQL version** (16, 17). The modern
+suite emitted explicit `V29 MODERN LOC PUBLIC + OWNER CONTRACTS PASSED`
+markers **before** and **after** deactivating old PULSE/NDIMBAL triggers.
+
+`trust/sql/v29/modern-contract-fixture.psql` replays exact SQL
+function definitions retrieved **read-only from production PostgreSQL**
+on 2026-10-08 for `digiy_loc_public_room_by_slug`,
+`digiy_loc_master_save_reservation_v1`, and
+`digiy_loc_master_list_reservations_v1`.
+All fixtures (owner IDs, room slugs, contacts and bookings) are
+synthetic; no live customer rows, access tokens or credentials were
+copied. These definitions are **dated source snapshots**, which must
+be compared again with production at release time.
+
+The verified SQL contracts include:
+
+- Public room visible with owner WhatsApp contact; hidden/missing
+  room refused.
+- Anonymous invocation of owner RPCs refused.
+- Missing authentication refused; foreign owner cannot read/write
+  another owner's unit.
+- Invalid stay dates / empty guest name refused.
+- Authorized owner saves a reservation and sees it on listing, with
+  three occupied calendar days.
+- Legacy trigger trace stays empty during modern master operations,
+  both before and after PULSE/NDIMBAL retirement.
+- Transaction rollback leaves no added synthetic reservations.
+
+**Still not tested:** the complete current browser + external direct
+payment/WhatsApp paths, all other LOC owner endpoints, and a production
+deployment. Do not call this a full staging pass. No production SQL
+or data changed, and no retired service was restarted.
