@@ -83,8 +83,15 @@ automatique. Aucune commande de déploiement n'est ajoutée à la CI.
 - `node --test trust/*.test.mjs` : **128/128 réussis localement**.
 - `bash -n trust/sql/v26/run-ci.sh` et `git diff --check` : réussis.
 - PostgreSQL n'est pas installé localement; l'installation système n'a pas abouti
-  (limitation de changement d'identité du conteneur). La preuve SQL sera fournie
-  par les jobs GitHub Actions PostgreSQL **16 et 17**, pas par des mocks Node.
+  (limitation de changement d'identité du conteneur). Les tests SQL natifs
+  PostgreSQL **16 et 17 ont réussi** sur le commit `72b0c878` :
+  [exécution CI](https://github.com/BEAUVILLE/digiy-loc/actions/runs/37811615758).
+  Les logs confirment INSERT 0 1 (actif), INSERT 0 0 (inactif/inconnu), ROLLBACK
+  et `ZERO TEST ROWS REMAIN`. Ce sont des tests PostgreSQL réels, pas des mocks.
+  La première exécution avait révélé une erreur de comptage dans le test :
+  ROW_COUNT en PL/pgSQL autour d'EXECUTE d'un statement préparé renvoyait zéro
+  pour l'INSERT. Le test vérifie désormais le compteur du client psql, comme
+  l'adaptateur vérifie celui de son client. Les permissions n'ont pas été élargies.
 - `adapter-statements.mjs` extrait les deux requêtes de l'adaptateur réel et les
   prépare dans PostgreSQL. Aucune seconde implémentation SQL de l'adaptateur.
 - `permissions.psql` vérifie succès actif, refus/absence inactive et inconnue,

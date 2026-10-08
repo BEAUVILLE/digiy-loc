@@ -28,4 +28,8 @@ where a.grantee=0 and c.relkind in ('r','v','m','p')
 select pg_get_userbyid(defaclrole) as creator,defaclobjtype,defaclacl
 from pg_default_acl d join pg_namespace n on n.oid=d.defaclnamespace
 where nspname='digiy_trust_private';
+select column_name,data_type,is_nullable,column_default
+from information_schema.columns
+where table_schema='digiy_trust_private' and table_name='voluntary_feedback'
+order by ordinal_position;
 rollback;
