@@ -43,6 +43,10 @@ SELECT pg_temp.expect_denied($q$
     '00000000-0000-4000-8000-000000000021','x','msg','forged')
 $q$);
 SELECT pg_temp.expect_denied($q$
+  SELECT public.digiy_loc_pulse_mark_sent(
+    p_pulse_id => '00000000-0000-4000-8000-000000000021'::uuid)
+$q$);
+SELECT pg_temp.expect_denied($q$
   SELECT public.digiy_loc_pulse_fail_backoff(
     '00000000-0000-4000-8000-000000000021','ERR','forged','fake')
 $q$);
@@ -56,6 +60,10 @@ $q$);
 SELECT pg_temp.expect_denied($q$
   SELECT public.digiy_loc_pulse_mark_sent(
     '00000000-0000-4000-8000-000000000021','x','msg','forged')
+$q$);
+SELECT pg_temp.expect_denied($q$
+  SELECT public.digiy_loc_pulse_mark_sent(
+    p_pulse_id => '00000000-0000-4000-8000-000000000021'::uuid)
 $q$);
 SELECT pg_temp.expect_denied($q$
   SELECT public.digiy_loc_pulse_fail_backoff(
