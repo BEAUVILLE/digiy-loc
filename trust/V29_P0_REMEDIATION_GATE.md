@@ -36,3 +36,19 @@ If a legitimate consumer or auth boundary cannot be established, **do not deploy
 ## Reference
 
 V26: `trust/V26_SERVER_PERMISSIONS.md`; V27: `trust/V27_PUBLIC_PERMISSIONS_AUDIT.md`; V28 draft PR #34: `trust/V28_PRIORITY_PERMISSIONS_REVIEW.md`.
+
+## Outbox family discovery (additional read-only audit)
+
+A related function already implements a narrower ACL: `public.digiy_loc_outbox_claim(text,integer)` is SECURITY DEFINER, executable by `service_role` but **not** by `anon` or `authenticated`. This is a promising model to examine, **not** proof that the worker currently calls it.
+
+Other related functions are still executable by `anon` and `authenticated`:
+
+| Function | SECURITY DEFINER | anon/auth EXECUTE | Note |
+| --- | --- | --- | --- |
+| `digiy_loc_outbox_claim_due(integer,text)` | yes | yes | P0, sensitive returned fields |
+| `digiy_loc_outbox_claim(text,integer)` | yes | no | service_role can execute |
+| `digiy_loc_outbox_mark_sent(uuid)` | yes | yes | updates outbox state |
+| `digiy_loc_outbox_mark_failed(uuid,text)` | yes | yes | updates outbox state |
+| `claim_digiy_loc_pulse_outbox(text,integer)` | no | yes | separate function, review underlying RLS |
+
+Text scans of the three SECURITY DEFINER siblings (`claim`, `mark_sent`, `mark_failed`) did not find `auth.uid`, `auth.role`, `current_setting` or `RAISE`; this is not a substitute for reviewing full definitions. **Do not secure only claim_due while leaving mark_sent/mark_failed unreviewed**. Expand P0's functional boundary to include the full claim/acknowledge/fail lifecycle, without automatically revoking any ACL.
