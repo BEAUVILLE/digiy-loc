@@ -77,7 +77,8 @@ The legacy PULSE/NDIMBAL suites use harmless **synthetic stub function
 bodies**. The fifth suite uses the exact **2026-10-08 production SQL
 function definitions** of `digiy_loc_public_room_by_slug`,
 `digiy_loc_master_save_reservation_v1` and
-`digiy_loc_master_list_reservations_v1` on **synthetic schemas/data**.
+`digiy_loc_master_list_reservations_v1` and
+`digiy_loc_set_unit_calendar_state_v2` on **synthetic schemas/data**.
 It proves their public and owner-facing SQL behavior before and after
 retiring the nine legacy triggers in isolation, **not** full live
 payment processing, actual browser integrations, wider booking modules,
@@ -142,3 +143,50 @@ The verified SQL contracts include:
 payment/WhatsApp paths, all other LOC owner endpoints, and a production
 deployment. Do not call this a full staging pass. No production SQL
 or data changed, and no retired service was restarted.
+
+## Extra validation: Saly/Sarlat MASTER calendar control — 2026-10-08
+
+The public Saly card links to `part-chez-baptiste.digiylyfe.com`
+rather than the generic `loc.digiylyfe.com/fiche.html`. Its public
+page reads calendar and price data from MASTER tables. The owner
+page `BEAUVILLE/part-chez-baptiste/gestion.html` uses
+`digiy_loc_master_save_reservation_v1`,
+`digiy_loc_master_list_reservations_v1`, and
+`digiy_loc_set_unit_calendar_state_v2`. A connected owner page
+in `BEAUVILLE/pro-espace/loc.html` also references these RPCs.
+
+The fifth SQL fixture now snapshots the **fourth real PostgreSQL
+RPC**, `digiy_loc_set_unit_calendar_state_v2(uuid,date[],text)`,
+read-only from `digiy-core`, and replays its definition with
+synthetic owners/units on disposable PostgreSQL 16 and 17. Added:
+anonymous EXECUTE denial, foreign-owner denial, invalid-status
+denial, owner date closure, reopening, occupied state, and calendar
+row effects. Checks run both before and after targeted PULSE +
+NDIMBAL trigger-disable candidates.
+
+**Executed successful CI proof**:
+[run 37850889031](https://github.com/BEAUVILLE/digiy-loc/actions/runs/37850889031).
+Both PostgreSQL 16 and 17 passed all **5 suites each (10/10)**.
+
+First attempt [37850748305](https://github.com/BEAUVILLE/digiy-loc/actions/runs/37850748305)
+identified a *test fixture privilege assumption*: directly
+checking calendar table rows under `SET ROLE authenticated`
+requires a separate table SELECT GRANT/RLS model; our focused
+fixture replays functions but intentionally omits live table
+RLS policy definitions. The test now checks the function behavior
+as `authenticated`, then checks persisted synthetic table effects
+as the disposable fixture administrator, and rolls back. The
+underlying live table RLS policies and grants were separately
+inspected **read-only**, not simulated in this test.
+
+**Limits**: does not show a real browser successfully completing
+OTP or owner login, does not exercise a booking or cancellation
+against production, does not verify Sarlat web source line-for-line,
+and does not resolve how canceling a MASTER reservation reconciles
+its row and occupied calendar dates. A live end-to-end test on
+authorized isolated staging remains required before merge/deploy.
+
+PR #37 generic fiche fix has since been **merged** on `main`,
+commit `9069cba2f51c04c0cca34ac7a88f1d15041f8990`,
+with GitHub Pages deployment succeeded. It is independent of
+**PR #36 still in draft and NOT merged**.
