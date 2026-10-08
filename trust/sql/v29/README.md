@@ -49,13 +49,14 @@ booking notification integrations; those need separate staging tests.
 
 ## Release blockers
 
-1. Obtain current VPS/worker source, runtime secrets *names only*,
-   database role, and live call chain. Never expose key values.
+1. Keep retired PULSE VPS stopped and disconnected. Verify only the
+   *remaining* current database consumers and legacy SQL dependencies;
+   no server restarts, keys, bridges, or reconnects.
 2. Review complete live PostgreSQL function definitions, including
    the claim overload containing `current_setting`, and dependencies.
-3. Run and inspect PostgreSQL 16/17 isolated fixture results; then
-   test the real LOC worker, booking flow, owner flow, and retries
-   against a staging environment without private client data.
+3. Run PostgreSQL 16/17 synthetic fixture tests and verify modern
+   booking, direct payment, and owner flows independently on staging.
+   Do not test or restore a PULSE VPS worker.
 4. Assess remaining `digiy_loc_pulse_mark_sent` overloads,
    `fail_backoff`, `retry`, enqueue and mark-seen endpoints.
 5. Separate authorization to merge GitHub changes from authorization
@@ -87,10 +88,10 @@ V29_CI_ONLY=1 PGHOST=127.0.0.1 PGPORT=5432 PGUSER=postgres \
 **Release caution:** the PULSE VPS was reported stopped by the founder,
 not independently inspected. This does not automatically close database
 RPC access and does not confirm that other worker clients are absent.
-Leave the VPS stopped during read-only verification and testing; before
-any restart, validate its active source, role, RPC signatures, and
-delivery states. The three PULSE candidates are independent SQL
-proposals; none has been deployed.
+Leave PULSE VPS permanently disconnected for this program: restarting
+it is NOT a remediation goal. Assess existing RPC permissions as
+legacy database exposure independently; none of the draft SQL has
+been deployed.
 
 ## Founder decision — do not reconnect PULSE VPS to Supabase (2026-10-08)
 
