@@ -1,0 +1,256 @@
+\set ON_ERROR_STOP on
+-- PRIVATE, DISPOSABLE TEST ONLY. Only actual *function definitions* are
+-- replayed; all data, schema rows, owner IDs, phones and slugs are fictitious.
+-- Source contracts inspected read-only in digiy-core on 2026-10-08.
+\ir ci-roles.psql
+CREATE SCHEMA auth;
+CREATE OR REPLACE FUNCTION auth.uid() RETURNS uuid
+LANGUAGE sql STABLE AS $test$
+ SELECT nullif(current_setting('request.jwt.claim.sub',true),'')::uuid
+$test$;
+GRANT USAGE ON SCHEMA auth TO anon,authenticated,service_role;
+GRANT EXECUTE ON FUNCTION auth.uid() TO anon,authenticated,service_role;
+CREATE TABLE public.digiy_loc_master_sites(
+  id uuid PRIMARY KEY,
+  owner_id uuid NOT NULL,
+  slug text NOT NULL,
+  display_name text NOT NULL
+);
+CREATE TABLE public.digiy_loc_master_units(
+  id uuid PRIMARY KEY,
+  site_id uuid NOT NULL REFERENCES public.digiy_loc_master_sites(id),
+  slug text NOT NULL,
+  display_name text NOT NULL
+);
+CREATE TABLE public.digiy_loc_master_reservations(
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  unit_id uuid NOT NULL REFERENCES public.digiy_loc_master_units(id),
+  guest_name text NOT NULL,
+  guest_phone text NOT NULL,
+  source text,
+  start_day date NOT NULL,
+  end_day date NOT NULL,
+  note text,
+  created_by uuid NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE public.digiy_loc_master_unit_calendar(
+  unit_id uuid NOT NULL REFERENCES public.digiy_loc_master_units(id),
+  day date NOT NULL,
+  status text NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now(),
+  CONSTRAINT digiy_loc_master_unit_calendar_pkey PRIMARY KEY (unit_id,day)
+);
+CREATE TABLE public.digiy_loc_rooms(
+  id uuid PRIMARY KEY,
+  owner_id uuid NOT NULL,
+  slug text,
+  is_public boolean NOT NULL DEFAULT false,
+  status text NOT NULL DEFAULT 'actif',
+  nom text,
+  adresse text,
+  city text,
+  quartier text,
+  country text,
+  type_logement text,
+  personnes_max integer,
+  prix_nuit integer,
+  prix_semaine integer,
+  prix_mois integer,
+  description text,
+  photo_url text,
+  gallery_urls jsonb,
+  video_url text,
+  cover_mode text,
+  owner_name text,
+  tagline text,
+  hero_badges jsonb,
+  amenities jsonb,
+  short_rules text,
+  senelec_note text,
+  deposit_percent integer,
+  payment_note text,
+  wave_name text,
+  whatsapp_phone text,
+  call_phone text,
+  is_featured boolean,
+  public_url text
+);
+-- Synthetic owner A and owner B; never real customer data.
+INSERT INTO public.digiy_loc_master_sites(id,owner_id,slug,display_name) VALUES
+('00000000-0000-4000-8000-000000000a01','00000000-0000-4000-8000-000000000a11','fixture-a','Fixture A'),
+('00000000-0000-4000-8000-000000000b01','00000000-0000-4000-8000-000000000b11','fixture-b','Fixture B');
+INSERT INTO public.digiy_loc_master_units(id,site_id,slug,display_name) VALUES
+('00000000-0000-4000-8000-000000000a02','00000000-0000-4000-8000-000000000a01','unit-a','Unit A'),
+('00000000-0000-4000-8000-000000000b02','00000000-0000-4000-8000-000000000b01','unit-b','Unit B');
+INSERT INTO public.digiy_loc_rooms(id,owner_id,slug,is_public,status,nom,adresse,city,country,prix_nuit,whatsapp_phone,gallery_urls)
+VALUES
+('00000000-0000-4000-8000-000000000c01','00000000-0000-4000-8000-000000000a11','public-synthetic',true,'actif','Test public','Sample','Testville','Sénégal',5500,'+221000000000','[]'::jsonb),
+('00000000-0000-4000-8000-000000000c02','00000000-0000-4000-8000-000000000a11','hidden-synthetic',false,'draft','Test private','Sample','Testville','Sénégal',6500,'+221000000000','[]'::jsonb);
+-- ACTUAL production SQL definitions, applied in a disposable fixture
+-- database ONLY. No Supabase URL, secrets, or real booking rows.
+CREATE OR REPLACE FUNCTION public.digiy_loc_master_list_reservations_v1(p_unit_id uuid)
+ RETURNS TABLE(id uuid, unit_id uuid, guest_name text, guest_phone text, source text, start_day date, end_day date, note text, created_at timestamp with time zone, updated_at timestamp with time zone)
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'pg_catalog', 'public', 'auth'
+AS $function$
+begin
+  if auth.uid() is null then
+    raise exception 'Authentication required';
+  end if;
+
+  if not exists (
+    select 1
+    from public.digiy_loc_master_units u
+    join public.digiy_loc_master_sites s on s.id = u.site_id
+    where u.id = p_unit_id
+      and s.owner_id = auth.uid()
+  ) then
+    raise exception 'Forbidden';
+  end if;
+
+  return query
+  select
+    r.id,
+    r.unit_id,
+    r.guest_name,
+    r.guest_phone,
+    r.source,
+    r.start_day,
+    r.end_day,
+    r.note,
+    r.created_at,
+    r.updated_at
+  from public.digiy_loc_master_reservations r
+  where r.unit_id = p_unit_id
+  order by r.start_day desc, r.created_at desc;
+end;
+$function$
+
+CREATE OR REPLACE FUNCTION public.digiy_loc_master_save_reservation_v1(p_unit_id uuid, p_start_day date, p_end_day date, p_guest_name text, p_guest_phone text, p_source text DEFAULT NULL::text, p_note text DEFAULT NULL::text)
+ RETURNS TABLE(id uuid, start_day date, end_day date, guest_name text, guest_phone text, source text, note text)
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'pg_catalog', 'public', 'auth'
+AS $function$
+declare
+  v_owner uuid;
+  v_id uuid;
+begin
+  if auth.uid() is null then
+    raise exception 'AUTH_REQUIRED';
+  end if;
+
+  select s.owner_id into v_owner
+  from public.digiy_loc_master_units u
+  join public.digiy_loc_master_sites s on s.id=u.site_id
+  where u.id=p_unit_id;
+
+  if v_owner is null or v_owner <> auth.uid() then
+    raise exception 'OWNER_FORBIDDEN';
+  end if;
+
+  if p_start_day is null or p_end_day is null or p_end_day < p_start_day then
+    raise exception 'INVALID_DATES';
+  end if;
+  if nullif(btrim(p_guest_name),'') is null then
+    raise exception 'GUEST_NAME_REQUIRED';
+  end if;
+  if nullif(btrim(p_guest_phone),'') is null then
+    raise exception 'GUEST_PHONE_REQUIRED';
+  end if;
+
+  insert into public.digiy_loc_master_reservations(
+    unit_id,guest_name,guest_phone,source,start_day,end_day,note,created_by,updated_at
+  ) values (
+    p_unit_id,btrim(p_guest_name),btrim(p_guest_phone),nullif(btrim(p_source),''),p_start_day,p_end_day,nullif(btrim(p_note),''),auth.uid(),now()
+  ) returning digiy_loc_master_reservations.id into v_id;
+
+  insert into public.digiy_loc_master_unit_calendar(unit_id,day,status,updated_at)
+  select p_unit_id,gs::date,'occupied',now()
+  from generate_series(p_start_day,p_end_day,interval '1 day') gs
+  on conflict on constraint digiy_loc_master_unit_calendar_pkey do update
+    set status='occupied',updated_at=excluded.updated_at;
+
+  return query
+  select r.id,r.start_day,r.end_day,r.guest_name,r.guest_phone,r.source,r.note
+  from public.digiy_loc_master_reservations r
+  where r.id=v_id;
+end;
+$function$
+
+CREATE OR REPLACE FUNCTION public.digiy_loc_public_room_by_slug(p_slug text)
+ RETURNS jsonb
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+declare
+  v_room record;
+begin
+  select *
+  into v_room
+  from public.digiy_loc_rooms r
+  where r.slug = p_slug
+    and coalesce(r.is_public, false) = true
+    and lower(coalesce(r.status, '')) not in ('draft','hidden','disabled','archived','inactive')
+  limit 1;
+
+  if not found then
+    return jsonb_build_object(
+      'ok', false,
+      'error', 'room_not_found'
+    );
+  end if;
+
+  return jsonb_build_object(
+    'ok', true,
+    'room', jsonb_build_object(
+      'id', v_room.id,
+      'slug', v_room.slug,
+      'public_url', v_room.public_url,
+      'nom', v_room.nom,
+      'adresse', v_room.adresse,
+      'city', v_room.city,
+      'quartier', v_room.quartier,
+      'country', v_room.country,
+      'type_logement', v_room.type_logement,
+      'personnes_max', v_room.personnes_max,
+      'prix_nuit', v_room.prix_nuit,
+      'prix_semaine', v_room.prix_semaine,
+      'prix_mois', v_room.prix_mois,
+      'description', v_room.description,
+      'photo_url', v_room.photo_url,
+      'gallery_urls', coalesce(v_room.gallery_urls, '[]'::jsonb),
+      'video_url', v_room.video_url,
+      'cover_mode', v_room.cover_mode,
+      'owner_name', v_room.owner_name,
+      'tagline', v_room.tagline,
+      'hero_badges', coalesce(v_room.hero_badges, '[]'::jsonb),
+      'amenities', coalesce(v_room.amenities, '[]'::jsonb),
+      'short_rules', v_room.short_rules,
+      'senelec_note', v_room.senelec_note,
+      'deposit_percent', v_room.deposit_percent,
+      'payment_note', v_room.payment_note,
+      'wave_name', v_room.wave_name,
+      'whatsapp_phone', v_room.whatsapp_phone,
+      'call_phone', v_room.call_phone,
+      'is_featured', coalesce(v_room.is_featured, false)
+    )
+  );
+end;
+$function$
+
+-- Reproduce present production SQL EXECUTE boundary for these entrypoints.
+REVOKE EXECUTE ON FUNCTION public.digiy_loc_master_list_reservations_v1(uuid)
+ FROM PUBLIC,anon,authenticated;
+GRANT EXECUTE ON FUNCTION public.digiy_loc_master_list_reservations_v1(uuid)
+ TO authenticated,service_role;
+REVOKE EXECUTE ON FUNCTION public.digiy_loc_master_save_reservation_v1(uuid,date,date,text,text,text,text)
+ FROM PUBLIC,anon,authenticated;
+GRANT EXECUTE ON FUNCTION public.digiy_loc_master_save_reservation_v1(uuid,date,date,text,text,text,text)
+ TO authenticated,service_role;
+GRANT EXECUTE ON FUNCTION public.digiy_loc_public_room_by_slug(text)
+ TO anon,authenticated;
