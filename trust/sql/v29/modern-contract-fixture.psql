@@ -127,7 +127,7 @@ begin
   where r.unit_id = p_unit_id
   order by r.start_day desc, r.created_at desc;
 end;
-$function$
+$function$;
 
 CREATE OR REPLACE FUNCTION public.digiy_loc_master_save_reservation_v1(p_unit_id uuid, p_start_day date, p_end_day date, p_guest_name text, p_guest_phone text, p_source text DEFAULT NULL::text, p_note text DEFAULT NULL::text)
  RETURNS TABLE(id uuid, start_day date, end_day date, guest_name text, guest_phone text, source text, note text)
@@ -179,7 +179,7 @@ begin
   from public.digiy_loc_master_reservations r
   where r.id=v_id;
 end;
-$function$
+$function$;
 
 CREATE OR REPLACE FUNCTION public.digiy_loc_public_room_by_slug(p_slug text)
  RETURNS jsonb
@@ -241,7 +241,7 @@ begin
     )
   );
 end;
-$function$
+$function$;
 
 -- Reproduce present production SQL EXECUTE boundary for these entrypoints.
 REVOKE EXECUTE ON FUNCTION public.digiy_loc_master_list_reservations_v1(uuid)
