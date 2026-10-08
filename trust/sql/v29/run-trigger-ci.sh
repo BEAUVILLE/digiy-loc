@@ -19,4 +19,15 @@ if psql -X -v ON_ERROR_STOP=1   -f trust/sql/v29/PULSE_TRIGGER_DISABLE_CANDIDATE
   exit 1
 fi
 grep -F 'V29 PULSE preflight:' "$tmpfile"
-echo 'V29 PULSE TRIGGER RETIREMENT SYNTHETIC TESTS PASSED'
+# NDIMBAL is independently confirmed obsolete by the founder. Verify its
+# payment-side legacy trigger can be retired separately, without touching
+# the three non-target payment/ownership/timestamp trigger stubs.
+psql -X -v ON_ERROR_STOP=1 -f trust/sql/v29/NDIMBAL_PAYMENT_TRIGGER_DISABLE_CANDIDATE.sql
+psql -X -v ON_ERROR_STOP=1 -f trust/sql/v29/ndimbal-isolation-tests.psql
+if psql -X -v ON_ERROR_STOP=1 \
+  -f trust/sql/v29/NDIMBAL_PAYMENT_TRIGGER_DISABLE_CANDIDATE.sql >"$tmpfile" 2>&1; then
+  echo 'Unexpected success reapplying V29 NDIMBAL disable candidate' >&2
+  exit 1
+fi
+grep -F 'V29 NDIMBAL trigger identity or enabled-state drift' "$tmpfile"
+echo 'V29 PULSE + NDIMBAL LEGACY TRIGGER SYNTHETIC TESTS PASSED'
