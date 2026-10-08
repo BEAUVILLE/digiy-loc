@@ -863,6 +863,9 @@
     try{
       const { data, error } = await S.rpc("digiy_loc_public_room_by_slug", { p_slug: slug });
       if(!error && data){
+        // Explicit public-RPC denial is authoritative: do not reinterpret
+        // {ok:false} as a room or bypass it via legacy table fallbacks.
+        if(data.ok === false) return null;
         if(data.ok && data.room) return data.room;
         if(data.room) return data.room;
         if(!Array.isArray(data) && typeof data === "object") return data;
