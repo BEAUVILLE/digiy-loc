@@ -30,7 +30,7 @@ Matches were determined by source references to exact MASTER table/function name
 
 ## V30 MAÎTRE factory update (draft PR #10)
 
-The MAÎTRE branch was extended beyond the calendar direct-write fix: a generic private reservation form and carnet, V30 owner cancellation and legacy v1 safe read fallback now belong to the repeatable template. The [14/14 passing tests](https://github.com/BEAUVILLE/digiy-master-modeles/actions/runs/37857312861) cover this factory feature set. The new template is still only on a draft branch, **not** the `main` version described in the original 99-file scan. Real owner-session acceptance and a restored backup remain mandatory.
+The MAÎTRE branch was extended beyond the calendar direct-write fix: a generic private reservation form and carnet, V30 owner cancellation and legacy v1 safe read fallback now belong to the repeatable template. The [15/15 Node tests](https://github.com/BEAUVILLE/digiy-master-modeles/actions/runs/37857692004) plus [4/4 mobile browser tests](https://github.com/BEAUVILLE/digiy-master-modeles/actions/runs/37857692007) cover this factory feature set. The new template is still only on a draft branch, **not** the `main` version described in the original 99-file scan. Real owner-session acceptance and a restored backup remain mandatory.
 
 ## Remaining release-only verification
 
