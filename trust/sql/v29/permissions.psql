@@ -2,7 +2,10 @@
 -- V29 tests run only in disposable PostgreSQL after fixture and candidate.
 BEGIN;
 
-CREATE FUNCTION pg_temp.expect_denied(q text) RETURNS void
+-- This helper lives only inside this transaction and is rolled back.
+-- Grant EXECUTE explicitly so role-switch tests validate the TARGET RPC,
+-- not temporary-schema permissions of a session-owned pg_temp function.
+CREATE FUNCTION public.v29_expect_denied(q text) RETURNS void
 LANGUAGE plpgsql SECURITY INVOKER AS $fn$
 BEGIN
   BEGIN
@@ -13,6 +16,9 @@ BEGIN
   RAISE EXCEPTION 'Expected insufficient_privilege (42501), but allowed: %',q;
 END
 $fn$;
+GRANT EXECUTE ON FUNCTION public.v29_expect_denied(text)
+  TO anon, authenticated;
+
 
 DO $check$
 DECLARE signature text;
@@ -40,19 +46,19 @@ END
 $check$;
 
 SET LOCAL ROLE anon;
-SELECT pg_temp.expect_denied($q$select * from public.digiy_loc_outbox_claim_due(1,'forged-worker')$q$);
-SELECT pg_temp.expect_denied($q$select * from public.digiy_loc_outbox_claim_due()$q$);
-SELECT pg_temp.expect_denied($q$select * from public.digiy_loc_outbox_claim_due(2147483647)$q$);
-SELECT pg_temp.expect_denied($q$select public.digiy_loc_outbox_mark_sent('00000000-0000-4000-8000-000000000001')$q$);
-SELECT pg_temp.expect_denied($q$select public.digiy_loc_outbox_mark_failed('00000000-0000-4000-8000-000000000001','forged')$q$);
+SELECT public.v29_expect_denied($q$select * from public.digiy_loc_outbox_claim_due(1,'forged-worker')$q$);
+SELECT public.v29_expect_denied($q$select * from public.digiy_loc_outbox_claim_due()$q$);
+SELECT public.v29_expect_denied($q$select * from public.digiy_loc_outbox_claim_due(2147483647)$q$);
+SELECT public.v29_expect_denied($q$select public.digiy_loc_outbox_mark_sent('00000000-0000-4000-8000-000000000001')$q$);
+SELECT public.v29_expect_denied($q$select public.digiy_loc_outbox_mark_failed('00000000-0000-4000-8000-000000000001','forged')$q$);
 RESET ROLE;
 
 SET LOCAL ROLE authenticated;
-SELECT pg_temp.expect_denied($q$select * from public.digiy_loc_outbox_claim_due(1,'forged-worker')$q$);
-SELECT pg_temp.expect_denied($q$select * from public.digiy_loc_outbox_claim_due()$q$);
-SELECT pg_temp.expect_denied($q$select * from public.digiy_loc_outbox_claim_due(2147483647)$q$);
-SELECT pg_temp.expect_denied($q$select public.digiy_loc_outbox_mark_sent('00000000-0000-4000-8000-000000000001')$q$);
-SELECT pg_temp.expect_denied($q$select public.digiy_loc_outbox_mark_failed('00000000-0000-4000-8000-000000000001','forged')$q$);
+SELECT public.v29_expect_denied($q$select * from public.digiy_loc_outbox_claim_due(1,'forged-worker')$q$);
+SELECT public.v29_expect_denied($q$select * from public.digiy_loc_outbox_claim_due()$q$);
+SELECT public.v29_expect_denied($q$select * from public.digiy_loc_outbox_claim_due(2147483647)$q$);
+SELECT public.v29_expect_denied($q$select public.digiy_loc_outbox_mark_sent('00000000-0000-4000-8000-000000000001')$q$);
+SELECT public.v29_expect_denied($q$select public.digiy_loc_outbox_mark_failed('00000000-0000-4000-8000-000000000001','forged')$q$);
 RESET ROLE;
 
 -- Server-only worker still receives synthetic messages.
