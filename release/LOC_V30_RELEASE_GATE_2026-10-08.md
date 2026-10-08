@@ -31,7 +31,7 @@ Target: `digiy-core` Supabase project `wesqmwjjtsefyjnluosj`. The exact query is
 
 Re-run preflight immediately before any planned release. If counts/signatures/constraints change or V30 has partly landed, **STOP** and investigate; do not replay the migration blindly.
 
-**Updated factory parity (draft):** [MAÎTRE LOC PR #10](https://github.com/BEAUVILLE/digiy-master-modeles/pull/10) now includes a generic private reservation form, V30 cancellation with legacy-safe fallback, and the protected calendar RPC. [14 isolated synthetic tests passed](https://github.com/BEAUVILLE/digiy-master-modeles/actions/runs/37857312861). This remains a draft. Test with real owner sessions before any release.
+**Updated factory parity (draft):** [MAÎTRE LOC PR #10](https://github.com/BEAUVILLE/digiy-master-modeles/pull/10) now includes a generic private reservation form, V30 cancellation with legacy-safe fallback, and the protected calendar RPC. [15 isolated Node tests passed](https://github.com/BEAUVILLE/digiy-master-modeles/actions/runs/37857692004) and [4/4 isolated mobile-browser tests passed](https://github.com/BEAUVILLE/digiy-master-modeles/actions/runs/37857692007). This remains a draft. Test with real owner sessions before any release.
 
 ## Mandatory pre-release backup / restoration proof — NOT YET SATISFIED
 
