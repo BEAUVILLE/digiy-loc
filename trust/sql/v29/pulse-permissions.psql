@@ -1,0 +1,85 @@
+\set ON_ERROR_STOP on
+-- After pulse-fixture.psql and PULSE_CLAIM_ACL_CANDIDATE.sql only.
+BEGIN;
+
+CREATE FUNCTION pg_temp.expect_denied(q text) RETURNS void
+LANGUAGE plpgsql SECURITY INVOKER AS $fn$
+BEGIN
+  BEGIN
+    EXECUTE q;
+  EXCEPTION WHEN insufficient_privilege THEN
+    RETURN;
+  END;
+  RAISE EXCEPTION 'Expected 42501 but call succeeded: %',q;
+END
+$fn$;
+
+DO $check$
+DECLARE signature text;
+BEGIN
+  FOREACH signature IN ARRAY ARRAY[
+    'public.digiy_loc_pulse_claim_batch(integer)',
+    'public.digiy_loc_pulse_claim_batch(integer,timestamptz,text)'
+  ] LOOP
+    IF has_function_privilege('anon',signature,'EXECUTE')
+      OR has_function_privilege('authenticated',signature,'EXECUTE')
+      OR NOT has_function_privilege('service_role',signature,'EXECUTE')
+      OR NOT has_function_privilege('postgres',signature,'EXECUTE') THEN
+      RAISE EXCEPTION 'V29 PULSE claim ACL mismatch: %',signature;
+    END IF;
+  END LOOP;
+  IF NOT has_function_privilege(
+    'anon','public.v29_unrelated_pulse_public_rpc()','EXECUTE'
+  ) THEN
+    RAISE EXCEPTION 'Unrelated public entrypoint changed';
+  END IF;
+END
+$check$;
+
+SET LOCAL ROLE anon;
+SELECT pg_temp.expect_denied($q$SELECT * FROM public.digiy_loc_pulse_claim_batch(1)$q$);
+SELECT pg_temp.expect_denied($q$SELECT * FROM public.digiy_loc_pulse_claim_batch()$q$);
+SELECT pg_temp.expect_denied($q$SELECT * FROM public.digiy_loc_pulse_claim_batch(1,now(),'forged')$q$);
+RESET ROLE;
+
+SET LOCAL ROLE authenticated;
+SELECT pg_temp.expect_denied($q$SELECT * FROM public.digiy_loc_pulse_claim_batch(1)$q$);
+SELECT pg_temp.expect_denied($q$SELECT * FROM public.digiy_loc_pulse_claim_batch()$q$);
+SELECT pg_temp.expect_denied($q$SELECT * FROM public.digiy_loc_pulse_claim_batch(1,now(),'forged')$q$);
+RESET ROLE;
+
+SET LOCAL ROLE service_role;
+DO $check$
+DECLARE one_arg_count int; three_arg_count int;
+BEGIN
+  SELECT count(*) INTO one_arg_count FROM public.digiy_loc_pulse_claim_batch(1);
+  SELECT count(*) INTO three_arg_count
+    FROM public.digiy_loc_pulse_claim_batch(1,now(),'worker-test');
+  IF one_arg_count <> 1 OR three_arg_count <> 1 THEN
+    RAISE EXCEPTION 'Server claim broken: % rows / % rows',one_arg_count,three_arg_count;
+  END IF;
+END
+$check$;
+RESET ROLE;
+
+DO $check$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM public.v29_pulse_fixture
+    WHERE id='00000000-0000-4000-8000-000000000011'
+      AND locked_by='worker-test'
+  ) THEN RAISE EXCEPTION 'Server claim did not update fixture lock'; END IF;
+END
+$check$;
+
+ROLLBACK;
+DO $check$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM public.v29_pulse_fixture
+    WHERE id='00000000-0000-4000-8000-000000000011'
+      AND locked_by IS NULL
+  ) THEN RAISE EXCEPTION 'Pulse permission test did not rollback data changes'; END IF;
+END
+$check$;
+SELECT 'V29 PULSE CLAIM ACL SYNTHETIC TESTS PASSED' AS result;
