@@ -263,3 +263,22 @@ GRANT SELECT,INSERT,UPDATE,DELETE ON
  public.digiy_loc_master_sites,
  public.digiy_loc_master_units
  TO authenticated;
+-- Mirror real digiy-core: both exposed MASTER tables have RLS enabled.
+-- Synthetic policies approximate the existing owner-visible SELECT boundary.
+ALTER TABLE public.digiy_loc_master_reservations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.digiy_loc_master_unit_calendar ENABLE ROW LEVEL SECURITY;
+CREATE POLICY v30_fixture_owner_reservations_read
+ ON public.digiy_loc_master_reservations FOR SELECT TO authenticated
+ USING(EXISTS(
+   SELECT 1 FROM public.digiy_loc_master_units u
+   JOIN public.digiy_loc_master_sites s ON s.id=u.site_id
+   WHERE u.id=unit_id AND s.owner_id=auth.uid()));
+CREATE POLICY v30_fixture_owner_calendar_read
+ ON public.digiy_loc_master_unit_calendar FOR SELECT TO authenticated
+ USING(EXISTS(
+   SELECT 1 FROM public.digiy_loc_master_units u
+   JOIN public.digiy_loc_master_sites s ON s.id=u.site_id
+   WHERE u.id=unit_id AND s.owner_id=auth.uid()));
+GRANT SELECT ON public.digiy_loc_master_unit_calendar TO anon;
+CREATE POLICY v30_fixture_calendar_public_read
+ ON public.digiy_loc_master_unit_calendar FOR SELECT TO anon USING(true);
