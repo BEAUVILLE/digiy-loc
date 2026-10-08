@@ -83,7 +83,7 @@ begin
   where r.unit_id = p_unit_id
   order by r.start_day desc, r.created_at desc;
 end;
-$function$
+$function$;
 
 
 -- Exact live source snapshot: digiy_loc_master_save_reservation_v1 (2026-10-08)
@@ -137,7 +137,7 @@ begin
   from public.digiy_loc_master_reservations r
   where r.id=v_id;
 end;
-$function$
+$function$;
 
 
 -- Exact live source snapshot: digiy_loc_set_unit_calendar_state (2026-10-08)
@@ -191,7 +191,7 @@ begin
   get diagnostics v_count = row_count;
   return v_count;
 end;
-$function$
+$function$;
 
 
 -- Exact live source snapshot: digiy_loc_set_unit_calendar_state_v2 (2026-10-08)
@@ -243,7 +243,7 @@ begin
     order by c.day;
   end if;
 end;
-$function$
+$function$;
 
 GRANT EXECUTE ON FUNCTION
  public.digiy_loc_master_save_reservation_v1(uuid,date,date,text,text,text,text),
