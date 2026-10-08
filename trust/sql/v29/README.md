@@ -63,9 +63,13 @@ booking notification integrations; those need separate staging tests.
    to deploy DB SQL. Preserve a validated rollback procedure.
 6. Do not activate DIGIY TRUST V26 through or because of V29.
 
-At creation time the V29 SQL fixtures had **not run**: this session
-had no isolated PostgreSQL server and GitHub workflow creation was
-blocked. Existing V26 CI successes do not validate these V29 tests.
+**SQL validation executed successfully:** the new
+`.github/workflows/trust-v29-isolated-postgres.yml` workflow has
+run all four synthetic PostgreSQL suites on versions **16 and 17**
+(**8/8 succeeded**). Results:
+https://github.com/BEAUVILLE/digiy-loc/actions/runs/37843794858
+Detailed evidence: `trust/V29_ISOLATED_TEST_GATE.md`.
+Existing V26 green checks alone are not V29 evidence.
 
 ## Third distinct candidate: server-side status transitions
 
@@ -114,9 +118,11 @@ continues to create its own separate disposable *database*. This is a
 fixture-only correction; it does not modify application auth or the
 production Supabase project.
 
-**Testing status:** repository static contract checks may pass, but the
-PostgreSQL fixtures have not been executed against a running ephemeral
-server in this session. Existing V26 CI successes are not V29 runtime tests.
+**Testing status:** real disposable PostgreSQL 16/17 runs succeeded
+for Outbox ACL, PULSE claim ACL, PULSE status ACL and legacy PULSE +
+NDIMBAL trigger isolation (8/8 suites). These are **synthetic** tests;
+the modern LOC reservation/payment/owner staging non-regression test
+and separate production approval are still required.
 
 ## Founder correction — legacy PULSE and NDIMBAL both CADUC
 
@@ -145,3 +151,18 @@ Two **separate** review-only trigger-isolation proposals now exist:
 **Nothing is applied.** Neither SQL file is a production migration.
 Independent validation/approval remains mandatory before disabling
 legacy database triggers; no data deletion, no service reintroduction.
+
+## Dedicated V29 PostgreSQL test workflow — executed
+
+The PR contains `.github/workflows/trust-v29-isolated-postgres.yml`,
+which runs the four SQL test scripts against isolated temporary
+PostgreSQL **16** and **17** services; **all eight suites passed**.
+Run: https://github.com/BEAUVILLE/digiy-loc/actions/runs/37843794858
+
+Expected negative-test SQL errors occur when the two legacy trigger
+disable candidates are intentionally applied a second time: the
+scripts assert that changed-state drift fails closed. These are
+successful negative tests, not deployment failures.
+
+This does **not** mean PULSE or NDIMBAL should be restarted. They
+remain retired; no production migrations have been performed.
