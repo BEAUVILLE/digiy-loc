@@ -1,120 +1,103 @@
-# DIGIY SECURITY V29 — isolated PostgreSQL validation gate
+# DIGIY SECURITY V29 — PostgreSQL 16/17 isolated validation
 
-**State: PARTIALLY VALIDATED / NOT DEPLOYABLE.** Updated 2026-10-08.
-This report separates **static/source inspection**, **read-only live
-catalog verification**, and **actual executable PostgreSQL tests**.
-The founder authorizes proceeding with safe validation only: no
-production database change, no PR merge by implication, no PULSE or
-NDIMBAL reactivation. PULSE/NDIMBAL are retired.
+**2026-10-08 | STATUS: 8/8 SYNTHETIC POSTGRESQL SUITES PASS; PRODUCTION NOT APPROVED.**
 
-## Confirmed results
+## Executed evidence
 
-1. Read-only `digiy-core` PostgreSQL catalog confirmed **8/8 legacy
-   PULSE trigger/table/function triples** match the expected function
-   identities and remain enabled. A previous catalog check also
-   matched the separately retired NDIMBAL payment-side trigger and
-   three explicitly untouched bookkeeping/owner/timestamp triggers.
-   **This does not prove those old tables are part of the modern
-   booking path.**
-2. Corrected synthetic NDIMBAL trigger fixture to use the exact
-   `digiy_loc_ndimbal_after_paid()` function name required by the
-   candidate's fail-closed preflight. It traces synthetic events
-   only; no payment functions or rows are modified.
-3. Updated the eight-trigger PULSE candidate preflight and postcheck
-   to validate the **associated function identities and public schema**
-   in addition to exact table/trigger names and enabled-state.
-   The production read-only triple inventory matches these checks.
-4. In all three ACL-denial suites, replaced the role-switched
-   `pg_temp` test helper with a transactional
-   `public.v29_expect_denied(text)` SECURITY INVOKER helper and
-   explicit `anon`/`authenticated` EXECUTE. This avoids making
-   temporary-schema permissions an accidental source of test failure.
-   Each test helper is discarded by the test transaction's rollback.
-5. Shared fixture roles are initialized via `ci-roles.psql`, not
-   recreated three times in a single cluster; tests use separate
-   named databases containing **synthetic data only**.
-6. No SQL permission change, trigger toggle, worker restart,
-   historical data deletion, or payment/reservation mutation was
-   performed on the live Supabase project.
+GitHub Actions workflow:
+[**DIGIY SECURITY V29 isolated PostgreSQL**](https://github.com/BEAUVILLE/digiy-loc/actions/runs/37843794858)
 
-## Actual executable tests STILL NOT RUN
+| Isolated synthetic test suite | PostgreSQL 16 | PostgreSQL 17 |
+| --- | --- | --- |
+| LOC Outbox ACL — `run-ci.sh` | PASS | PASS |
+| Retired PULSE claim ACL — `run-pulse-ci.sh` | PASS | PASS |
+| Retired PULSE status ACL — `run-pulse-status-ci.sh` | PASS | PASS |
+| Legacy PULSE + NDIMBAL trigger isolation — `run-trigger-ci.sh` | PASS | PASS |
 
-No `postgres`, `initdb`, or `psql` executable/isolated server was
-available in the current execution container, and the runtime cannot
-reach GitHub/apt package servers to install PostgreSQL. Supabase
-`list_branches` returned no isolated branch. Another existing project
-was inactive and **was not used or reactivated**. Creating a billable
-branch or project without explicit cost confirmation is prohibited.
+**8/8 actual SQL suites completed successfully**, with `psql -X
+-v ON_ERROR_STOP=1` executing against four synthetic databases in
+each independent ephemeral PostgreSQL service. Runner jobs:
 
-The repository's existing GitHub V26/TRUST workflows do not invoke
-the V29 SQL suites. **Green existing CI is not a V29 PostgreSQL pass.**
-No unexecuted SQL test should be reported as green.
+- [PostgreSQL 16 — job 113539479470](https://github.com/BEAUVILLE/digiy-loc/actions/runs/37843794858/job/113539479470)
+- [PostgreSQL 17 — job 113539479709](https://github.com/BEAUVILLE/digiy-loc/actions/runs/37843794858/job/113539479709)
 
-## Reproduce on verified disposable PostgreSQL 17 (then 16)
+Verified job logs contain explicit `V29 ... TESTS PASSED` markers
+for all four scripts on both versions. In the trigger test, the
+second application of both exact-name disable candidates **must fail**
+due to the changed trigger state; those logged SQL `ERROR` entries
+are expected negative tests, captured and asserted by `run-trigger-ci.sh`.
+Both jobs nevertheless completed with **conclusion=success**.
 
-Set up a local, isolated PostgreSQL 17 instance on the user's machine
-or in a controlled CI environment, with no port-forward to Supabase,
-no production credentials, and the repo checkout. From repo root:
+## Defects discovered and corrected by the real tests
 
-```bash
-V29_CI_ONLY=1 PGHOST=127.0.0.1 PGPORT=5432 PGUSER=postgres \
-  bash trust/sql/v29/run-ci.sh
+The initial PostgreSQL 16/17 run
+[37843643270](https://github.com/BEAUVILLE/digiy-loc/actions/runs/37843643270)
+passed all three ACL suites, but the fourth fixture failed the
+stronger eight-trigger identity preflight. The source fixture
+previously represented every PULSE trigger with the generic
+`v29_trace_trigger` function. The real retirement candidate
+correctly requires the actual production function name for each
+trigger. The fixture was corrected to use seven named synthetic
+trigger-function bodies with **no real queue operations**, preserving
+all eight original trigger-to-function relationships (commit
+`3cd3d02d4b8a5edad59f44c48e54217c089c117d`).
+The second run succeeded on **both PostgreSQL versions**.
 
-V29_CI_ONLY=1 PGHOST=127.0.0.1 PGPORT=5432 PGUSER=postgres \
-  bash trust/sql/v29/run-pulse-ci.sh
+Earlier fixes, now exercised by the suite, include:
 
-V29_CI_ONLY=1 PGHOST=127.0.0.1 PGPORT=5432 PGUSER=postgres \
-  bash trust/sql/v29/run-pulse-status-ci.sh
+1. NDIMBAL synthetic function identity matches
+   `digiy_loc_ndimbal_after_paid()`.
+2. The three ACL suites use a transaction-scoped,
+   explicitly `anon`/`authenticated`-callable denial helper to
+   validate the *target RPC permission*, not the helper's temp schema.
+3. Shared cluster roles are initialized once by `ci-roles.psql`.
+4. The 1-argument `digiy_loc_pulse_mark_sent` fixture uses named
+   `p_id =>` to distinguish overloaded function defaults.
+5. PULSE disable preflight and postcheck confirm table, trigger name,
+   trigger function identity, and enabled status.
 
-V29_CI_ONLY=1 PGHOST=127.0.0.1 PGPORT=5432 PGUSER=postgres \
-  bash trust/sql/v29/run-trigger-ci.sh
-```
+## Source/catalog validation
 
-These commands create **four named test databases** and fixture SQL
-roles on the disposable server. The guard `PGHOST=127.0.0.1` is not
-enough by itself to prevent a tunnel, so independently verify the
-endpoint's identity before execution. Failures must block any
-deployment; do not test against real Supabase production.
+- Live Supabase `digiy-core` was queried **read-only**. Its PostgreSQL
+  catalog matched **8/8 old PULSE** exact table/trigger/function
+  triples, and a separate read-only check confirmed the obsolete
+  NDIMBAL payment trigger and three non-target triggers.
+- Live production still has the old PULSE/NDIMBAL triggers enabled and
+  the public ACLs described by V29. **No SQL remediation has been
+  applied on production.**
+- These existing database objects do not establish participation in
+  the current booking path. The founder states old PULSE and NDIMBAL
+  are **caduc**, and the old PULSE VPS must never be restarted or
+  reconnected to Supabase.
 
-## Staging and release gates remain
+## Limits — NOT a production release certificate
 
-- Run the four suites on disposable PostgreSQL and capture
-  exit status, output, SQL version, and test artifacts.
-- Negative test: renamed/reassigned legacy trigger or unapproved
-  privilege leaves candidate transaction unapplied.
-- Real-system **staging only**, with synthetic data: verify modern
-  reservation, direct-payment, owner, cancellation and location flows
-  function without the retired PULSE/NDIMBAL wiring.
-- Separately review remaining public legacy RPCs, NDIMBAL views,
-  functions and ancillary triggers; do not drop historical data.
-- Prepare a reversible SQL deployment with exact ACL/trigger
-  before-and-after checks, and obtain **separate explicit approval**
-  for GitHub merge and production DB changes.
+The suites use harmless **synthetic stub function bodies**, not
+copies of live business logic, and do not exercise current real LOC
+reservation, direct-payment, owner-management, multi-module, or
+concurrent notification behavior. They validate the specific ACL and
+legacy trigger-isolation contracts and rollback behavior.
 
-**Current result: preparation strengthened and read-only catalog
-preflight confirmed; executable V29 validation not yet available.**
+Before authorizing production SQL, separately confirm on staging
+with synthetic bookings that the **modern** reservation, payment,
+cancellation and owner flows are unaffected; review dependencies of
+residual NDIMBAL functions/views and PULSE-related RPCs. No data
+deletion or blanket trigger revocation is authorized. Preserve
+DIGIY TRUST V26 fail-closed behavior.
 
-## Executed shell launcher validation in the current sandbox
+PR #36 remains **draft, unmerged**. The testing milestone does NOT
+grant permission to merge the PR or execute the candidate SQL
+against real Supabase.
 
-The four launcher scripts were copied from the current draft branch
-into a local inspection directory and were **actually executed** for
-safe, non-database checks:
+## Reproducibility
 
-- `bash -n` succeeded on all four scripts (**4/4**).
-- With both required environment variables absent, all four scripts
-  refused to start (**4/4**).
-- With `V29_CI_ONLY=1` and a non-local `PGHOST`, all four scripts
-  refused to start (**4/4**).
-- With `PGHOST=127.0.0.1` and the opt-in flag missing, all four
-  scripts refused to start (**4/4**).
+A dedicated workflow lives at
+`.github/workflows/trust-v29-isolated-postgres.yml`, runs on pull
+requests, and tests both PostgreSQL 16 and 17. The four individual
+runners are under `trust/sql/v29/`. They require
+`V29_CI_ONLY=1`, `PGHOST=127.0.0.1` and a verified **disposable**
+instance, and create separate synthetic test databases.
 
-**Total executed launcher assertions: 16/16 passed.** These are
-Bash guard/syntax checks only, not PostgreSQL fixtures, RPC privilege
-tests or booking non-regression tests. Existing safety notes about
-localhost forwarding still apply.
-
-PostgreSQL binaries `postgres`, `psql` and `initdb` remain
-unavailable in this sandbox, and an attempt to update the Debian package
-index failed because DNS resolution for `deb.debian.org` was
-unavailable. Therefore **0/4 actual PostgreSQL database suites have
-run**. No Supabase branch was created or any production SQL changed.
+**Final result: PostgreSQL synthetic V29 gate PASS (8/8); modern
+staging non-regression and production-deployment approval remain
+OPEN.**
