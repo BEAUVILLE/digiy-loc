@@ -116,3 +116,31 @@ production Supabase project.
 **Testing status:** repository static contract checks may pass, but the
 PostgreSQL fixtures have not been executed against a running ephemeral
 server in this session. Existing V26 CI successes are not V29 runtime tests.
+
+## Founder correction — legacy PULSE and NDIMBAL both CADUC
+
+The founder explicitly states that **the old PULSE has no involvement in
+current reservations**, and **NDIMBAL is also out of service**. Do not call
+either a live dependency, do not reconnect PULSE, and do not restore NDIMBAL.
+
+The database metadata still shows legacy triggers enabled on older
+reservation-related tables. Such a trigger runs *if its table is written*
+but `tgenabled='O'` does **not prove** the modern booking workflow uses it.
+
+Two **separate** review-only trigger-isolation proposals now exist:
+
+- `PULSE_TRIGGER_DISABLE_CANDIDATE.sql`: targets only the eight old PULSE
+  triggers on legacy reservation tables; does **not** touch NDIMBAL.
+  It guards three non-PULSE triggers (payment-related, owner assignment,
+  timestamp) against incidental changes, without asserting they belong to
+  today's live workflow.
+- `NDIMBAL_PAYMENT_TRIGGER_DISABLE_CANDIDATE.sql`: independently targets
+  only `trg_ndimbal_after_paid` on `public.digiy_loc_reservations`.
+  On historical `payment_status='paid'` updates it used to insert an
+  NDIMBAL contribution row; this is **not the payment processor itself**.
+  Other NDIMBAL timestamp-maintenance triggers are documented but are not
+  part of this narrow candidate.
+
+**Nothing is applied.** Neither SQL file is a production migration.
+Independent validation/approval remains mandatory before disabling
+legacy database triggers; no data deletion, no service reintroduction.
