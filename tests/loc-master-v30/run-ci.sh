@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+# Hard CI guard: never permit running this runner against real Supabase/VPS.
+if [[ "${V30_CI_ONLY:-}" != "1" || "${PGHOST:-}" != "127.0.0.1" ||
+      "${PGUSER:-}" != "postgres" || "${PGPORT:-}" != "5432" ]]; then
+  echo 'V30 requires disposable local Docker PostgreSQL on 127.0.0.1:5432; refusing' >&2
+  exit 1
+fi
+export PGDATABASE=digiy_loc_v30_disposable
+createdb "$PGDATABASE"
+psql -X -v ON_ERROR_STOP=1 -f tests/loc-master-v30/fixture.psql
+psql -X -v ON_ERROR_STOP=1 -f supabase/candidates/LOC_MASTER_V30_CANDIDATE.sql
+psql -X -v ON_ERROR_STOP=1 -f tests/loc-master-v30/contracts.psql
+echo 'V30 MASTER synthetic cancel + overlap + owner permissions tests PASSED'
