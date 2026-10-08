@@ -243,6 +243,58 @@ begin
 end;
 $function$;
 
+-- Read-only catalog snapshot from digiy-core (2026-10-08):
+-- master owner calendar open/closed/occupied RPC; no real data copied.
+CREATE OR REPLACE FUNCTION public.digiy_loc_set_unit_calendar_state_v2(p_unit_id uuid, p_days date[], p_status text)
+ RETURNS TABLE(day date, status text)
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'pg_catalog', 'public', 'auth'
+AS $function$
+declare
+  v_owner uuid;
+begin
+  if p_status not in ('available','occupied','closed') then
+    raise exception 'invalid_status';
+  end if;
+
+  select s.owner_id
+    into v_owner
+  from public.digiy_loc_master_units as u
+  join public.digiy_loc_master_sites as s on s.id = u.site_id
+  where u.id = p_unit_id;
+
+  if v_owner is null or v_owner <> auth.uid() then
+    raise exception 'not_authorized';
+  end if;
+
+  if p_status = 'available' then
+    delete from public.digiy_loc_master_unit_calendar as c
+    where c.unit_id = p_unit_id
+      and c.day = any(p_days);
+
+    return query
+    select x.day_value, 'available'::text
+    from unnest(p_days) as x(day_value)
+    order by x.day_value;
+  else
+    insert into public.digiy_loc_master_unit_calendar(unit_id, day, status, updated_at)
+    select p_unit_id, x.day_value, p_status, now()
+    from unnest(p_days) as x(day_value)
+    on conflict on constraint digiy_loc_master_unit_calendar_pkey do update
+      set status = excluded.status,
+          updated_at = excluded.updated_at;
+
+    return query
+    select c.day, c.status
+    from public.digiy_loc_master_unit_calendar as c
+    where c.unit_id = p_unit_id
+      and c.day = any(p_days)
+    order by c.day;
+  end if;
+end;
+$function$;
+
 -- Reproduce present production SQL EXECUTE boundary for these entrypoints.
 REVOKE EXECUTE ON FUNCTION public.digiy_loc_master_list_reservations_v1(uuid)
  FROM PUBLIC,anon,authenticated;
@@ -254,3 +306,9 @@ GRANT EXECUTE ON FUNCTION public.digiy_loc_master_save_reservation_v1(uuid,date,
  TO authenticated,service_role;
 GRANT EXECUTE ON FUNCTION public.digiy_loc_public_room_by_slug(text)
  TO anon,authenticated;
+
+-- Owner calendar state RPC is not callable by anon.
+REVOKE EXECUTE ON FUNCTION public.digiy_loc_set_unit_calendar_state_v2(uuid,date[],text)
+ FROM PUBLIC,anon,authenticated;
+GRANT EXECUTE ON FUNCTION public.digiy_loc_set_unit_calendar_state_v2(uuid,date[],text)
+ TO authenticated,service_role;
