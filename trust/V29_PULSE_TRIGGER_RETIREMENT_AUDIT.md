@@ -9,13 +9,11 @@ Historical PULSE/VPS loops resulted from a faulty connection. **Do not
 reintroduce, reconnect or restart PULSE on Supabase or VPS.** The objective
 is to isolate legacy database paths safely, not repair the faulty wiring.
 
-## Unexpected database-side behavior with VPS already stopped
+## Founder clarification — legacy paths are obsolete, not part of today's reservations
 
-The production database has **8 enabled PULSE-related triggers on two
-reservation tables**. Six attach to `public.digiy_loc_reservations` and two
-attach to `public.reservations_loc`; all have `tgenabled='O'`, meaning they
-are enabled in normal/origin operation. **Stopping the VPS does not disable
-them.** Trigger events can still create or alter queue records.
+The founder explicitly confirms that **the old PULSE no longer participates in the current reservation workflow** and that **NDIMBAL is also retired (CADUC)**. Neither must be restored, reconnected, or treated as an operational dependency of today's LOC reservations. The previous suggestion that preserving NDIMBAL was essential was incorrect.
+
+The **database catalog still contains 8 enabled legacy PULSE-related triggers** attached to `public.digiy_loc_reservations` (six) and `public.reservations_loc` (two). Their `tgenabled='O'` setting only establishes that *if those underlying tables are written*, PostgreSQL would run them; **it does not establish that the modern reservation workflow uses those tables or triggers**. The metadata and the operator's live-workflow assessment are distinct. No trigger has been disabled in production.
 
 | Table | Trigger | When it fires | Queue target / purpose |
 | --- | --- | --- | --- |
@@ -28,10 +26,9 @@ them.** Trigger events can still create or alter queue records.
 | reservations_loc | trg_digiy_loc_pulse_enqueue | INSERT or UPDATE, selected field changes | Delegate to `digiy_loc_pulse_enqueue_for_reservation` |
 | reservations_loc | trg_digiy_loc_cancel_pulses | UPDATE status to canceled/rejected | Delegate to `digiy_loc_outbox_cancel_for_reservation` |
 
-**Four other enabled triggers must remain untouched by any PULSE-only
-proposal:** `trg_digiy_loc_reservation_to_pay` (payment flow),
-`trg_ndimbal_after_paid`, `trg_res_set_owner` (ownership),
-and `trg_res_updated_at` (timestamps).
+**Three non-PULSE triggers must remain outside this narrowly scoped candidate** pending separate dependency verification: `trg_digiy_loc_reservation_to_pay` (historical payment-related trigger), `trg_res_set_owner` (owner assignment), and `trg_res_updated_at` (timestamp maintenance). They are database objects; this is not proof they are used by today's workflow.
+
+`trg_ndimbal_after_paid` is a **separate obsolete NDIMBAL component** according to the founder. It is **not a mandatory preservation requirement** and its possible retirement belongs in a distinct, narrowly scoped review—not mixed into the eight-trigger PULSE change.
 
 There is also an enabled `trg_digiy_loc_pulse_outbox_updated_at` on
 `digiy_loc_pulse_outbox` itself. It only manages row timestamps and is
@@ -48,14 +45,16 @@ indirect dependency. It is not evidence that an external worker still runs.
 2. Confirm no active, legitimate consumer relies on notifications generated
    by these eight triggers; determine policy for already-queued messages,
    especially cancellation consistency. Use metadata/aggregate-only audits.
-3. On **synthetic staging reservations**, compare insert, payment confirmation,
-   status update, cancellation and room change *before and after* selectively
-   disabling PULSE-only triggers; verify no breakage to reservations, payment,
-   owner assignment, and NDIMBAL.
-4. Only after separate approval, disable triggers by their **exact names
-   and table**, never `DISABLE TRIGGER ALL`. Preserve the four unrelated
-   enabled triggers, constraints, RLS, actual reservation records and
-   queues. Do not drop functions/tables in the first rollout.
+3. On **synthetic staging data**, verify whether writes to the two legacy tables
+   still occur and demonstrate that current reservations, payment and owner
+   access remain independent of all legacy PULSE/NDIMBAL components.
+   Do **not** test or restore the stopped PULSE worker.
+4. Only after separate approval, disable legacy PULSE triggers by their
+   **exact names and tables**, never `DISABLE TRIGGER ALL`. Do not
+   include the retired NDIMBAL trigger automatically: its separate,
+   documented decommission can follow targeted analysis. Preserve
+   non-targeted database objects, constraints, RLS and actual records;
+   do not drop any table or function in the first rollout.
 5. Read-only verify trigger statuses and remaining ACL exposure; evaluate
    whether to retire orphaned SQL EXECUTE grants and unused PULSE objects in
    a **separate** approved step. Preserve V26 TRUST fail-closed gate.
