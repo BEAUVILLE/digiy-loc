@@ -1,0 +1,41 @@
+name: DIGIY LOC V30 owner browser staging
+on:
+  pull_request:
+    paths:
+      - "tests/loc-master-v30/owner-browser.spec.cjs"
+      - "tests/loc-master-v30/playwright.config.cjs"
+      - ".github/workflows/loc-v30-owner-browser.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  mobile-owner-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Checkout Saly owner PR head (not deployed)
+        uses: actions/checkout@v4
+        with:
+          repository: BEAUVILLE/part-chez-baptiste
+          ref: c42d705b6a0114631360fcf71b19b3aa6af2fc80
+          path: staging/saly
+          persist-credentials: false
+      - name: Checkout Sarlat owner PR head (not deployed)
+        uses: actions/checkout@v4
+        with:
+          repository: BEAUVILLE/pro-espace
+          ref: d3c3475e07db9e919e1413190582a00fdc9bcf83
+          path: staging/sarlat
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install isolated Chromium test tooling
+        run: |
+          npm install --no-save @playwright/test@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Real owner HTML with all Supabase and outbound traffic mocked
+        run: npx playwright test --config=tests/loc-master-v30/playwright.config.cjs --workers=1 --reporter=line
