@@ -215,3 +215,27 @@ trigger isolation. No production DML, no mail, no payment.
 The fixture does not reproduce all live table RLS rules; these
 were inspected separately read-only. See
 `trust/V29_LOC_CURRENT_FLOW_GATE.md` for current live routes.
+
+## MASTER cancellation-gap / overlap-risk probes
+
+The V29 modern CI runner also executes:
+
+- `master-cancellation-gap-test.psql`: after a *synthetic* MASTER
+  reservation and `available` calendar change, the reservation still
+  exists in the ledger (verified negative behavior).
+- `master-overlap-risk-test.psql`: overlapping *synthetic* MASTER
+  stays can both be recorded; releasing calendar dates can leave a
+  second stay apparently available in the public calendar
+  (verified negative behavior).
+
+Both run **twice** (with legacy triggers present and after their
+targeted disable candidates), in transactions that roll back.
+Their SUCCESS does **not** mean MASTER cancellation, concurrency
+or double-booking prevention is fixed. The actual production
+SQL function bodies are replayed as source snapshots; the tables,
+user IDs and bookings are fake.
+
+See `trust/V29_MASTER_CANCELLATION_DEPENDENCIES.md` for the impact
+assessment and a proposed future explicit cancellation contract.
+No customer rows, data deletion, production SQL or obsolete VPS
+services are involved.
