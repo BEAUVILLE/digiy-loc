@@ -1,0 +1,10 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {validateAttestationRequest,issueInvitationFromUnverifiedRequest} from "./server-attestor-contract.mjs";
+const candidate={sourceModule:"loc",sourceEventId:"stay-1",professionalId:"pro-1",clientSubjectId:"client-2",status:"completed",claimedBy:"system",verified:true,verifierId:"fake"};
+test("even forged verified flag never grants issuance",()=>{assert.equal(validateAttestationRequest(candidate).canIssueInvitation,false);assert.equal(issueInvitationFromUnverifiedRequest(candidate).canIssueInvitation,false);});
+test("all pilot modules require real server verifier",()=>{for(const sourceModule of ["loc","resto","driver"])assert.equal(validateAttestationRequest({...candidate,sourceModule}).decision,"requires_verifier");});
+test("unsupported modules denied",()=>{for(const sourceModule of ["build","jobs","unknown","__proto__"])assert.equal(validateAttestationRequest({...candidate,sourceModule}).decision,"deny");});
+test("owner and browser claims denied",()=>{for(const claimedBy of ["owner","professional","browser"])assert.equal(validateAttestationRequest({...candidate,claimedBy}).reason,"untrusted_claimant");});
+test("self review and incomplete service denied",()=>{assert.equal(validateAttestationRequest({...candidate,clientSubjectId:"pro-1"}).reason,"self_review");assert.equal(validateAttestationRequest({...candidate,status:"arrived"}).reason,"not_completed");});
+test("null input denied",()=>assert.equal(validateAttestationRequest(null).decision,"deny"));
