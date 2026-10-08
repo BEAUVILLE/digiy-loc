@@ -1,0 +1,11 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+const sql=readFileSync(new URL("./sql/v14_private_feedback_schema.sql",import.meta.url),"utf8");
+test("private schema is not public",()=>assert.match(sql,/create schema if not exists digiy_trust_private/i));
+test("public roles explicitly revoked",()=>assert.match(sql,/revoke all on digiy_trust_private\.voluntary_feedback from public, anon, authenticated/i));
+test("RLS is enabled",()=>assert.match(sql,/enable row level security/i));
+test("stay verification is permanently false in V14",()=>assert.match(sql,/stay_verified boolean not null default false check \(stay_verified=false\)/i));
+test("moderation is received only",()=>assert.match(sql,/moderation_status='received'/i));
+test("no policies granting access",()=>assert.doesNotMatch(sql,/create\s+policy/i));
+test("no privileged function",()=>assert.doesNotMatch(sql,/security\s+definer/i));
