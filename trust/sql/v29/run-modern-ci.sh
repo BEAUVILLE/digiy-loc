@@ -13,9 +13,11 @@ psql -X -v ON_ERROR_STOP=1 -f trust/sql/v29/trigger-fixture.psql
 echo 'V29 modern LOC baseline, legacy triggers present:'
 psql -X -v ON_ERROR_STOP=1 -f trust/sql/v29/modern-contract-tests.psql
 psql -X -v ON_ERROR_STOP=1 -f trust/sql/v29/master-cancellation-gap-test.psql
+psql -X -v ON_ERROR_STOP=1 -f trust/sql/v29/master-overlap-risk-test.psql
 psql -X -v ON_ERROR_STOP=1 -f trust/sql/v29/PULSE_TRIGGER_DISABLE_CANDIDATE.sql
 psql -X -v ON_ERROR_STOP=1 -f trust/sql/v29/NDIMBAL_PAYMENT_TRIGGER_DISABLE_CANDIDATE.sql
 echo 'V29 modern LOC post-retirement, legacy triggers disabled:'
 psql -X -v ON_ERROR_STOP=1 -f trust/sql/v29/modern-contract-tests.psql
 psql -X -v ON_ERROR_STOP=1 -f trust/sql/v29/master-cancellation-gap-test.psql
-echo 'V29 MODERN LOC CONTRACTS PASSED; MASTER CANCELLATION GAP CONFIRMED (NOT FIXED)'
+psql -X -v ON_ERROR_STOP=1 -f trust/sql/v29/master-overlap-risk-test.psql
+echo 'V29 MODERN LOC CONTRACTS PASS; MASTER CANCELLATION + OVERLAP RISKS REPRODUCED (NOT FIXED)'
