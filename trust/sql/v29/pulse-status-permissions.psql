@@ -2,7 +2,10 @@
 -- Must run only on fresh disposable V29 PostgreSQL fixture.
 BEGIN;
 
-CREATE FUNCTION pg_temp.expect_denied(q text) RETURNS void
+-- This helper lives only inside this transaction and is rolled back.
+-- Grant EXECUTE explicitly so role-switch tests validate the TARGET RPC,
+-- not temporary-schema permissions of a session-owned pg_temp function.
+CREATE FUNCTION public.v29_expect_denied(q text) RETURNS void
 LANGUAGE plpgsql SECURITY INVOKER AS $fn$
 BEGIN
   BEGIN
@@ -12,6 +15,9 @@ BEGIN
   RAISE EXCEPTION 'V29 expected 42501, but call succeeded: %',q;
 END
 $fn$;
+GRANT EXECUTE ON FUNCTION public.v29_expect_denied(text)
+  TO anon, authenticated;
+
 
 DO $assert$
 DECLARE signature text;
@@ -34,38 +40,38 @@ BEGIN
 END $assert$;
 
 SET LOCAL ROLE anon;
-SELECT pg_temp.expect_denied($q$
+SELECT public.v29_expect_denied($q$
   SELECT public.digiy_loc_pulse_mark_sent(
     p_id => '00000000-0000-4000-8000-000000000021'::uuid)
 $q$);
-SELECT pg_temp.expect_denied($q$
+SELECT public.v29_expect_denied($q$
   SELECT public.digiy_loc_pulse_mark_sent(
     '00000000-0000-4000-8000-000000000021','x','msg','forged')
 $q$);
-SELECT pg_temp.expect_denied($q$
+SELECT public.v29_expect_denied($q$
   SELECT public.digiy_loc_pulse_mark_sent(
     p_pulse_id => '00000000-0000-4000-8000-000000000021'::uuid)
 $q$);
-SELECT pg_temp.expect_denied($q$
+SELECT public.v29_expect_denied($q$
   SELECT public.digiy_loc_pulse_fail_backoff(
     '00000000-0000-4000-8000-000000000021','ERR','forged','fake')
 $q$);
 RESET ROLE;
 
 SET LOCAL ROLE authenticated;
-SELECT pg_temp.expect_denied($q$
+SELECT public.v29_expect_denied($q$
   SELECT public.digiy_loc_pulse_mark_sent(
     p_id => '00000000-0000-4000-8000-000000000021'::uuid)
 $q$);
-SELECT pg_temp.expect_denied($q$
+SELECT public.v29_expect_denied($q$
   SELECT public.digiy_loc_pulse_mark_sent(
     '00000000-0000-4000-8000-000000000021','x','msg','forged')
 $q$);
-SELECT pg_temp.expect_denied($q$
+SELECT public.v29_expect_denied($q$
   SELECT public.digiy_loc_pulse_mark_sent(
     p_pulse_id => '00000000-0000-4000-8000-000000000021'::uuid)
 $q$);
-SELECT pg_temp.expect_denied($q$
+SELECT public.v29_expect_denied($q$
   SELECT public.digiy_loc_pulse_fail_backoff(
     '00000000-0000-4000-8000-000000000021','ERR','forged','fake')
 $q$);
