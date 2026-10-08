@@ -1,0 +1,12 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {makeTrustHttpBoundary} from "./http-boundary.mjs";
+const origin="https://digiylyfe.com";
+const valid={method:"POST",headers:{origin,"content-type":"application/json"},rawBody:Buffer.from('{"a":1}')};
+test("valid request passes measured bytes",async()=>{let received;const fn=makeTrustHttpBoundary({allowedOrigin:origin,receive:async x=>{received=x;return {status:202,body:{accepted:true}}}});assert.equal((await fn(valid)).status,202);assert.equal(received.bodyBytes,7)});
+test("wrong origin denied",async()=>{let n=0;const fn=makeTrustHttpBoundary({allowedOrigin:origin,receive:async()=>{n++}});assert.equal((await fn({...valid,headers:{...valid.headers,origin:"https://evil.example"}})).status,403);assert.equal(n,0)});
+test("oversize denied before parsing",async()=>{const fn=makeTrustHttpBoundary({allowedOrigin:origin,receive:async()=>{throw Error("must not call")}});assert.equal((await fn({...valid,rawBody:Buffer.alloc(4097)})).status,413)});
+test("invalid JSON denied",async()=>{const fn=makeTrustHttpBoundary({allowedOrigin:origin,receive:async()=>{throw Error("must not call")}});assert.equal((await fn({...valid,rawBody:Buffer.from("{")})).status,400)});
+test("GET denied",async()=>{const fn=makeTrustHttpBoundary({allowedOrigin:origin,receive:async()=>{throw Error("must not call")}});assert.equal((await fn({...valid,method:"GET"})).status,405)});
+test("wrong content type denied",async()=>{const fn=makeTrustHttpBoundary({allowedOrigin:origin,receive:async()=>{throw Error("must not call")}});assert.equal((await fn({...valid,headers:{origin,"content-type":"text/plain"}})).status,415)});
+test("no raw body denied",async()=>{const fn=makeTrustHttpBoundary({allowedOrigin:origin,receive:async()=>{throw Error("must not call")}});assert.equal((await fn({...valid,rawBody:undefined})).status,413)});
