@@ -173,8 +173,9 @@ Added a fifth independent disposable PostgreSQL suite,
 `run-modern-ci.sh`, which creates `trust_v29_modern_ci`. It uses
 `modern-contract-fixture.psql` to replay the **actual 2026-10-08
 function definitions** of `digiy_loc_public_room_by_slug`,
-`digiy_loc_master_save_reservation_v1` and
-`digiy_loc_master_list_reservations_v1`, on synthetic schemas and
+`digiy_loc_master_save_reservation_v1`,
+`digiy_loc_master_list_reservations_v1`, and
+`digiy_loc_set_unit_calendar_state_v2`, on synthetic schemas and
 data. The `auth.uid()` implementation is an isolated fixture
 with synthetic JWT claim IDs, not Supabase Auth.
 
@@ -201,3 +202,16 @@ source snapshots** only. Test data, keys and IDs are fully synthetic.
 These tests do not execute the complete live booking UI, payment or
 messaging channels and do not authorize DB changes, merge, or restart
 of PULSE/NDIMBAL.
+
+### MASTER calendar-state addendum
+
+The same fifth PostgreSQL suite also replays the production
+`digiy_loc_set_unit_calendar_state_v2(uuid,date[],text)` RPC on
+synthetic units and JWT identities, verifying anon/foreign-owner
+denials, invalid status, owner closed/open/occupied transitions and
+the resulting calendar row state, **before and after** retired
+trigger isolation. No production DML, no mail, no payment.
+[10/10 suites passed in run 37850889031](https://github.com/BEAUVILLE/digiy-loc/actions/runs/37850889031).
+The fixture does not reproduce all live table RLS rules; these
+were inspected separately read-only. See
+`trust/V29_LOC_CURRENT_FLOW_GATE.md` for current live routes.
