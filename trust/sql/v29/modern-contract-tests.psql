@@ -46,6 +46,11 @@ SELECT public.v29_expect_error(
  'SELECT * FROM public.digiy_loc_master_save_reservation_v1(''00000000-0000-4000-8000-000000000a02''::uuid,DATE ''2026-12-01'',DATE ''2026-12-03'',''Anonymous'', ''000'',NULL,NULL)',
  'permission denied'
 );
+-- Anonymous clients must never change a MASTER calendar.
+SELECT public.v29_expect_error(
+ 'SELECT * FROM public.digiy_loc_set_unit_calendar_state_v2(''00000000-0000-4000-8000-000000000a02''::uuid, ARRAY[DATE ''2026-12-10''], ''closed'')',
+ 'permission denied'
+);
 RESET ROLE;
 
 -- AUTHENTICATED without a JWT identity is not authorized.
@@ -64,6 +69,11 @@ SELECT public.v29_expect_error(
  'SELECT * FROM public.digiy_loc_master_list_reservations_v1(''00000000-0000-4000-8000-000000000a02''::uuid)',
  'Forbidden'
 );
+-- Cross-owner calendar update must be rejected by the real SQL function.
+SELECT public.v29_expect_error(
+ 'SELECT * FROM public.digiy_loc_set_unit_calendar_state_v2(''00000000-0000-4000-8000-000000000a02''::uuid, ARRAY[DATE ''2026-12-10''], ''closed'')',
+ 'not_authorized'
+);
 -- Owner A can book via the actual master V1 procedure.
 SET LOCAL request.jwt.claim.sub = '00000000-0000-4000-8000-000000000a11';
 SELECT public.v29_expect_error(
@@ -74,6 +84,48 @@ SELECT public.v29_expect_error(
  'SELECT * FROM public.digiy_loc_master_save_reservation_v1(''00000000-0000-4000-8000-000000000a02''::uuid,DATE ''2026-12-01'',DATE ''2026-12-03'','' '', ''000'',NULL,NULL)',
  'GUEST_NAME_REQUIRED'
 );
+SELECT public.v29_expect_error(
+ 'SELECT * FROM public.digiy_loc_set_unit_calendar_state_v2(''00000000-0000-4000-8000-000000000a02''::uuid, ARRAY[DATE ''2026-12-10''], ''invalid_state'')',
+ 'invalid_status'
+);
+DO $test$
+DECLARE changed integer;
+BEGIN
+  -- Owner A closes two days, reopens one, then marks the other occupied.
+  -- This is only the disposable database, always inside a rollback.
+  SELECT count(*) INTO changed
+  FROM public.digiy_loc_set_unit_calendar_state_v2(
+    '00000000-0000-4000-8000-000000000a02'::uuid,
+    ARRAY[DATE '2026-12-10',DATE '2026-12-11'], 'closed');
+  IF changed <> 2 THEN
+    RAISE EXCEPTION 'Calendar close contract mismatch: %',changed;
+  END IF;
+  SELECT count(*) INTO changed
+  FROM public.digiy_loc_set_unit_calendar_state_v2(
+    '00000000-0000-4000-8000-000000000a02'::uuid,
+    ARRAY[DATE '2026-12-10'], 'available');
+  IF changed <> 1 THEN
+    RAISE EXCEPTION 'Calendar reopen contract mismatch: %',changed;
+  END IF;
+  SELECT count(*) INTO changed
+  FROM public.digiy_loc_set_unit_calendar_state_v2(
+    '00000000-0000-4000-8000-000000000a02'::uuid,
+    ARRAY[DATE '2026-12-11'], 'occupied');
+  IF changed <> 1 THEN
+    RAISE EXCEPTION 'Calendar occupied contract mismatch: %',changed;
+  END IF;
+  IF EXISTS(
+    SELECT 1 FROM public.digiy_loc_master_unit_calendar
+    WHERE unit_id='00000000-0000-4000-8000-000000000a02'::uuid
+      AND day=DATE '2026-12-10'
+  ) OR NOT EXISTS(
+    SELECT 1 FROM public.digiy_loc_master_unit_calendar
+    WHERE unit_id='00000000-0000-4000-8000-000000000a02'::uuid
+      AND day=DATE '2026-12-11' AND status='occupied'
+  ) THEN
+    RAISE EXCEPTION 'Calendar state closed/available/occupied effect regressed';
+  END IF;
+END $test$;
 DO $test$
 DECLARE inserted_count integer; list_count integer;
 BEGIN
