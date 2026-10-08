@@ -1,0 +1,21 @@
+name: DIGIY TRUST V16 receiver tests
+on:
+  pull_request:
+    paths:
+      - "trust/**"
+      - ".github/workflows/trust-receiver-tests.yml"
+  push:
+    paths:
+      - "trust/**"
+      - ".github/workflows/trust-receiver-tests.yml"
+jobs:
+  receiver:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node --test trust/private-receiver.test.mjs trust/feedback-contract.test.mjs trust/private-intake-boundary.test.mjs trust/private-ingress-adapter.test.mjs
