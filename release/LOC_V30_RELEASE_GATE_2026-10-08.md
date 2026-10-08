@@ -2,6 +2,20 @@
 
 Status: **DRAFT / NO PRODUCTION DEPLOYMENT**. Prepared October 8, 2026. The following is a release procedure, **not proof of a backup or a completed deployment**.
 
+## Founder handoff — engineer-managed release only
+
+**Decision on 2026-10-08:** the founder closed the Mac terminal and is not expected to run shell commands, locate database passwords, or copy connection strings. **Do not request any further technical action from the founder** as a condition of calling the software work done. Installation and tested recovery must be organized by an authorized technical operator with private access, without sharing credentials in GitHub or chat.
+
+**Engineering status:** V30 code and isolated tests are ready on the four draft PRs; the live project has **not** received the V30 schema. Read-only control at 2026-10-08 23:48 UTC found **81 of 81** existing MASTER calendar rows blocked (`occupied`/`closed`), 0 other statuses, 0 reservation rows, both tables with RLS active. These counts are a time-stamped snapshot, not a backup.
+
+**Remaining release responsibility belongs to the engineer/operator, NOT the founder:**
+- Secure a private operator-controlled full logical backup and actually restore/verify it on a separate environment; no production SQL if this cannot be proved.
+- Check any untracked deployed clients and obtain owner-session acceptance on Saly/Sarlat with authorized synthetic dates.
+- Execute the migration only under separate release authority, then compare pre-/post-checks and retain recovery evidence privately.
+- No mandatory charge, account upgrade or new Supabase project without informed approval.
+
+**Release gate stays NO-GO, normal existing LOC service stays active.** No need to ask the founder to use a terminal or provide a database password.
+
 ## Scope and immutable business invariants
 
 - DIGIYLYFE never collects a booking payment; owner/guest contact remains direct. No OTP, WhatsApp, SMS or PULSE/NDIMBAL worker may run in the dry-run.
