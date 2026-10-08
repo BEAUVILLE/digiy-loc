@@ -10,7 +10,7 @@ permissions:
   contents: read
 jobs:
   isolated-postgresql:
-    name: PostgreSQL ${{ matrix.postgres }} - four V29 suites
+    name: PostgreSQL ${{ matrix.postgres }} - five V29 suites
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
@@ -71,3 +71,10 @@ jobs:
           PGPORT: "5432"
           PGUSER: postgres
         run: bash trust/sql/v29/run-trigger-ci.sh
+      - name: Validate modern LOC public and owner contracts before/after retired triggers
+        env:
+          V29_CI_ONLY: "1"
+          PGHOST: 127.0.0.1
+          PGPORT: "5432"
+          PGUSER: postgres
+        run: bash trust/sql/v29/run-modern-ci.sh
