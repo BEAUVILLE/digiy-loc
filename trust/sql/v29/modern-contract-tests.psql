@@ -114,17 +114,8 @@ BEGIN
   IF changed <> 1 THEN
     RAISE EXCEPTION 'Calendar occupied contract mismatch: %',changed;
   END IF;
-  IF EXISTS(
-    SELECT 1 FROM public.digiy_loc_master_unit_calendar
-    WHERE unit_id='00000000-0000-4000-8000-000000000a02'::uuid
-      AND day=DATE '2026-12-10'
-  ) OR NOT EXISTS(
-    SELECT 1 FROM public.digiy_loc_master_unit_calendar
-    WHERE unit_id='00000000-0000-4000-8000-000000000a02'::uuid
-      AND day=DATE '2026-12-11' AND status='occupied'
-  ) THEN
-    RAISE EXCEPTION 'Calendar state closed/available/occupied effect regressed';
-  END IF;
+  -- Effect checked below as fixture superuser after RESET ROLE. This
+  -- synthetic schema does not reproduce live RLS grants/policies.
 END $test$;
 DO $test$
 DECLARE inserted_count integer; list_count integer;
@@ -143,6 +134,24 @@ BEGIN
   END IF;
 END $test$;
 RESET ROLE;
+
+-- The owning SQL RPC ran as authenticated; synthetic table state is
+-- checked as the fixture admin because this sandbox intentionally does
+-- not mimic production table-level RLS policies.
+DO $test$
+BEGIN
+  IF EXISTS(
+    SELECT 1 FROM public.digiy_loc_master_unit_calendar
+    WHERE unit_id='00000000-0000-4000-8000-000000000a02'::uuid
+      AND day=DATE '2026-12-10'
+  ) OR NOT EXISTS(
+    SELECT 1 FROM public.digiy_loc_master_unit_calendar
+    WHERE unit_id='00000000-0000-4000-8000-000000000a02'::uuid
+      AND day=DATE '2026-12-11' AND status='occupied'
+  ) THEN
+    RAISE EXCEPTION 'Calendar state closed/available/occupied effect regressed';
+  END IF;
+END $test$;
 
 DO $test$
 DECLARE record_count integer; occupied_count integer; legacy_calls integer;
