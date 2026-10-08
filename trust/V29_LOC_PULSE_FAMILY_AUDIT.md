@@ -48,9 +48,11 @@ would not block callers with explicit grants.
 The `integer,timestamptz,text` claim variant mentions `UPDATE`,
 `RETURN QUERY` and the outbox table in its body; boolean text probes
 found no `auth.uid`, `auth.role`, `current_setting`, or `RAISE`.
-The `integer` variant **does** mention `current_setting`: it may have
-an indirect gate. Do not pronounce either function vulnerable without
-checking the complete definition and effective deployment/API context.
+Subsequent **full-body** review establishes that the `integer` variant
+uses `current_setting('app.worker_id', true)` only as a worker label,
+**not** as an authorization gate; neither overload authenticates the
+caller in its body. See `trust/V29_FULL_BODY_AUTHORIZATION_FINDINGS.md`.
+The actual API and network exposure remains a separate verification step.
 
 The pulse table contains sensitive/operational columns including
 `phone`, `message`, `payload`, `owner_id`, `reservation_id`,
