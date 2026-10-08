@@ -61,7 +61,9 @@ CREATE TRIGGER trg_digiy_loc_cancel_pulses
   AFTER UPDATE ON public.reservations_loc FOR EACH ROW
   EXECUTE FUNCTION public.v29_trace_trigger();
 
--- Critical business triggers must remain enabled by the candidate.
+-- Three non-target payment-related/owner/timestamp triggers are preserved;
+-- the NDIMBAL trigger is represented only as an obsolete legacy fixture.
+-- Its independent disable candidate is tested after the PULSE-only step.
 CREATE TRIGGER trg_digiy_loc_reservation_to_pay
   AFTER UPDATE ON public.digiy_loc_reservations FOR EACH ROW
   EXECUTE FUNCTION public.v29_trace_trigger();
@@ -76,7 +78,9 @@ CREATE TRIGGER trg_res_updated_at
   BEFORE UPDATE ON public.digiy_loc_reservations FOR EACH ROW
   EXECUTE FUNCTION public.v29_trace_trigger();
 
--- Prove all 12 fixtures are functional BEFORE disabling legacy triggers.
+-- Confirm all 12 synthetic fixture triggers, including obsolete NDIMBAL,
+-- initially fire BEFORE testing retirement. This does not describe the
+-- current live booking application.
 -- No synthetic reservation or audit record survives this baseline transaction.
 BEGIN;
 INSERT INTO public.digiy_loc_reservations
