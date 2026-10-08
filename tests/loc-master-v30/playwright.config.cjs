@@ -1,6 +1,6 @@
 'use strict';
 module.exports={
-  testDir:'./tests/loc-master-v30',
+  testDir:'.',
   testMatch:'**/owner-browser.spec.cjs',
   timeout:20000,
   expect:{timeout:7000},
