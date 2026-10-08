@@ -1,0 +1,21 @@
+name: DIGIY TRUST V18 integration pilot tests
+on:
+  pull_request:
+    paths:
+      - "trust/**"
+      - ".github/workflows/trust-integration-pilot-tests.yml"
+  push:
+    paths:
+      - "trust/**"
+      - ".github/workflows/trust-integration-pilot-tests.yml"
+jobs:
+  pilot:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node --test trust/integration-pilot.test.mjs
