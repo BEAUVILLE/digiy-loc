@@ -1,0 +1,101 @@
+\set ON_ERROR_STOP on
+-- Synthetic disposable PostgreSQL database ONLY.
+CREATE ROLE anon NOLOGIN;
+CREATE ROLE authenticated NOLOGIN;
+CREATE ROLE service_role NOLOGIN BYPASSRLS;
+
+CREATE TABLE public.v29_outbox_fixture (
+  id uuid PRIMARY KEY,
+  phone text NOT NULL,
+  reservation_id uuid NOT NULL,
+  room_id uuid NOT NULL,
+  pulse_kind text NOT NULL,
+  due_at timestamptz NOT NULL,
+  payload jsonb NOT NULL,
+  state text NOT NULL DEFAULT 'due',
+  last_error text
+);
+ALTER TABLE public.v29_outbox_fixture ENABLE ROW LEVEL SECURITY;
+INSERT INTO public.v29_outbox_fixture
+ (id,phone,reservation_id,room_id,pulse_kind,due_at,payload)
+ VALUES (
+  '00000000-0000-4000-8000-000000000001',
+  '+221700000000',
+  '00000000-0000-4000-8000-000000000002',
+  '00000000-0000-4000-8000-000000000003',
+  'reminder', now() - interval '1 minute',
+  '{"fixture":true}'::jsonb
+ );
+
+CREATE FUNCTION public.digiy_loc_outbox_claim_due(
+  p_limit integer DEFAULT 25, p_worker text DEFAULT 'worker-1'
+) RETURNS TABLE (
+  id uuid, phone text, reservation_id uuid, room_id uuid,
+  pulse_kind text, due_at timestamptz, payload jsonb
+) LANGUAGE plpgsql VOLATILE SECURITY DEFINER
+SET search_path = public AS $fn$
+BEGIN
+  RETURN QUERY
+  SELECT o.id,o.phone,o.reservation_id,o.room_id,o.pulse_kind,o.due_at,o.payload
+    FROM public.v29_outbox_fixture o
+    WHERE o.state = 'due'
+    LIMIT p_limit;
+END
+$fn$;
+
+CREATE FUNCTION public.digiy_loc_outbox_mark_sent(p_outbox_id uuid)
+RETURNS void LANGUAGE plpgsql VOLATILE SECURITY DEFINER
+AS $fn$
+BEGIN
+  UPDATE public.v29_outbox_fixture SET state='sent' WHERE id=p_outbox_id;
+END
+$fn$;
+
+CREATE FUNCTION public.digiy_loc_outbox_mark_failed(
+  p_outbox_id uuid, p_error text
+) RETURNS void LANGUAGE plpgsql VOLATILE SECURITY DEFINER
+AS $fn$
+BEGIN
+  UPDATE public.v29_outbox_fixture SET state='failed',last_error=p_error
+  WHERE id=p_outbox_id;
+END
+$fn$;
+
+-- A sibling already restricted to the server: candidate must not touch it.
+CREATE FUNCTION public.digiy_loc_outbox_claim(p_worker_id text,p_batch_size integer)
+RETURNS SETOF public.v29_outbox_fixture
+LANGUAGE sql VOLATILE SECURITY DEFINER
+AS $fn$ SELECT * FROM public.v29_outbox_fixture WHERE false $fn$;
+
+-- Unrelated public RPC: candidate must not revoke it.
+CREATE FUNCTION public.v29_unrelated_public_rpc()
+RETURNS integer LANGUAGE sql AS $fn$ SELECT 1 $fn$;
+
+-- Simulate explicitly granted ACLs observed on the real functions.
+GRANT EXECUTE ON FUNCTION public.digiy_loc_outbox_claim_due(integer,text)
+  TO anon,authenticated,service_role;
+GRANT EXECUTE ON FUNCTION public.digiy_loc_outbox_mark_sent(uuid)
+  TO anon,authenticated,service_role;
+GRANT EXECUTE ON FUNCTION public.digiy_loc_outbox_mark_failed(uuid,text)
+  TO anon,authenticated,service_role;
+REVOKE EXECUTE ON FUNCTION public.digiy_loc_outbox_claim(text,integer)
+  FROM PUBLIC,anon,authenticated;
+GRANT EXECUTE ON FUNCTION public.digiy_loc_outbox_claim(text,integer)
+  TO service_role;
+
+DO $check$
+DECLARE signature text;
+BEGIN
+  FOREACH signature IN ARRAY ARRAY[
+    'public.digiy_loc_outbox_claim_due(integer,text)',
+    'public.digiy_loc_outbox_mark_sent(uuid)',
+    'public.digiy_loc_outbox_mark_failed(uuid,text)'
+  ] LOOP
+    IF NOT has_function_privilege('anon',signature,'EXECUTE')
+       OR NOT has_function_privilege('authenticated',signature,'EXECUTE')
+       OR NOT has_function_privilege('service_role',signature,'EXECUTE') THEN
+      RAISE EXCEPTION 'V29 initial fixture ACL unexpected: %',signature;
+    END IF;
+  END LOOP;
+END
+$check$;
