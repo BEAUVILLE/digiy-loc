@@ -17,9 +17,7 @@ begin
 end $$;
 insert into public.digiy_trust_invitations(source_module,source_reservation_id,professional_id,client_subject_hash,token_hash,expires_at)
 values ('loc','reservation-1','pro-1',repeat('a',64),repeat('b',64),now()+interval '1 day');
-set role service_role;
 select public.digiy_trust_submit_review_v1(repeat('b',64),repeat('a',64),'{"quality":5,"value_for_money":3}'::jsonb);
-reset role;
 do $$
 begin
  if (select count(*) from public.digiy_trust_reviews)<>1 then raise exception 'review missing'; end if;
