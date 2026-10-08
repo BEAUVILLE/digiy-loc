@@ -31,6 +31,8 @@ Target: `digiy-core` Supabase project `wesqmwjjtsefyjnluosj`. The exact query is
 
 Re-run preflight immediately before any planned release. If counts/signatures/constraints change or V30 has partly landed, **STOP** and investigate; do not replay the migration blindly.
 
+**Updated factory parity (draft):** [MAÎTRE LOC PR #10](https://github.com/BEAUVILLE/digiy-master-modeles/pull/10) now includes a generic private reservation form, V30 cancellation with legacy-safe fallback, and the protected calendar RPC. [14 isolated synthetic tests passed](https://github.com/BEAUVILLE/digiy-master-modeles/actions/runs/37857312861). This remains a draft. Test with real owner sessions before any release.
+
 ## Mandatory pre-release backup / restoration proof — NOT YET SATISFIED
 
 1. **Verified:** Supabase organization `DIGIY AFRICA` is on the `free` tier (read-only organization lookup 2026-10-08). **Do not assume automatic daily backups.** Check actual project backup/PITR availability in Supabase Dashboard > Database > Backups, but plan a private logical export regardless. Free-tier logical export is recommended in the official reference: https://supabase.com/docs/guides/platform/backups
