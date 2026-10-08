@@ -1,0 +1,10 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {attestorReadiness,evaluateModuleCandidate} from "./attestor-adapters.mjs";
+const candidate={sourceModule:"loc",sourceEventId:"stay-1",professionalId:"pro-1",clientSubjectId:"client-2",status:"completed",completedAt:"2026-09-01T12:00:00Z",evidenceSource:"system_claim",proofReference:"ref-1",verifiedByServer:true,signature:"forged"};
+const now=new Date("2026-10-08T12:00:00Z");
+test("all pilots remain disabled",()=>{for(const module of ["loc","resto","driver"]){assert.equal(attestorReadiness(module).eligible,false);assert.equal(evaluateModuleCandidate(module,{...candidate,sourceModule:module},now).canIssueInvitation,false);}});
+test("unknown modules fail closed",()=>{for(const module of ["explore","__proto__","unknown"])assert.equal(attestorReadiness(module).reason,"unsupported_module");});
+test("cross-module candidate rejected",()=>assert.equal(evaluateModuleCandidate("resto",candidate,now).reason,"module_mismatch"));
+test("owner source and self review rejected",()=>{assert.equal(evaluateModuleCandidate("loc",{...candidate,evidenceSource:"owner"},now).reason,"untrusted_source");assert.equal(evaluateModuleCandidate("loc",{...candidate,clientSubjectId:"pro-1"},now).reason,"self_review");});
+test("forged server claims cannot authorize",()=>assert.equal(evaluateModuleCandidate("loc",candidate,now).reason,"independent_attestor_not_connected"));
