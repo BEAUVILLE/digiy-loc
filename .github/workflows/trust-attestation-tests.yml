@@ -1,0 +1,22 @@
+name: DIGIY TRUST V9 attestation tests
+on:
+  push:
+    paths:
+      - "trust/**"
+      - ".github/workflows/trust-attestation-tests.yml"
+  pull_request:
+    paths:
+      - "trust/**"
+      - ".github/workflows/trust-attestation-tests.yml"
+jobs:
+  attestation-tests:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Run V9 attestation denial tests
+        run: node --test trust/attestation-protocol.test.mjs
