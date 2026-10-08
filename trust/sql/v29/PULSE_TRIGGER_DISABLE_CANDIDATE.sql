@@ -3,7 +3,9 @@
 -- Founder instruction: VPS PULSE stays stopped; do not connect/restart it.
 --
 -- DISABLES exactly eight existing PULSE-related reservation triggers.
--- PRESERVES payment, NDIMBAL, ownership and timestamp triggers.
+-- PRESERVES payment, ownership and timestamp triggers.
+-- NDIMBAL is independently confirmed CADUC by the founder: it is NOT an active-service dependency.
+-- NDIMBAL trigger retirement must be scoped and reviewed separately.
 -- Does not delete data, drop functions, change RPC grants or restart PULSE.
 --
 -- PRECONDITIONS BEFORE ANY DEPLOYMENT (none has yet been approved):
@@ -39,7 +41,6 @@ BEGIN
   WITH must_remain(table_name,trigger_name) AS (
     VALUES
     ('digiy_loc_reservations','trg_digiy_loc_reservation_to_pay'),
-    ('digiy_loc_reservations','trg_ndimbal_after_paid'),
     ('digiy_loc_reservations','trg_res_set_owner'),
     ('digiy_loc_reservations','trg_res_updated_at')
   )
@@ -49,8 +50,8 @@ BEGIN
   JOIN pg_namespace ns ON ns.oid=c.relnamespace AND ns.nspname='public'
   JOIN pg_trigger t ON t.tgrelid=c.oid
        AND t.tgname=e.trigger_name AND NOT t.tgisinternal AND t.tgenabled='O';
-  IF n <> 4 THEN
-    RAISE EXCEPTION 'V29 PULSE preflight: non-PULSE business trigger drift; enabled count %',n;
+  IF n <> 3 THEN
+    RAISE EXCEPTION 'V29 PULSE preflight: required booking/payment/owner trigger drift; enabled count %',n;
   END IF;
 END $v29_preflight$;
 
@@ -84,7 +85,7 @@ BEGIN
        AND NOT t.tgisinternal AND t.tgenabled='D';
 
   WITH must_remain(trigger_name) AS (
-    VALUES ('trg_digiy_loc_reservation_to_pay'),('trg_ndimbal_after_paid'),
+    VALUES ('trg_digiy_loc_reservation_to_pay'),
            ('trg_res_set_owner'),('trg_res_updated_at')
   )
   SELECT count(*) INTO retained_count FROM must_remain e
@@ -93,8 +94,8 @@ BEGIN
   JOIN pg_trigger t ON t.tgrelid=c.oid AND t.tgname=e.trigger_name
        AND NOT t.tgisinternal AND t.tgenabled='O';
 
-  IF disabled_count <> 8 OR retained_count <> 4 THEN
-    RAISE EXCEPTION 'V29 PULSE postcheck: disabled %, retained % (expected 8,4)',
+  IF disabled_count <> 8 OR retained_count <> 3 THEN
+    RAISE EXCEPTION 'V29 PULSE postcheck: disabled %, retained % (expected 8,3)',
       disabled_count,retained_count;
   END IF;
 END $v29_postcheck$;
