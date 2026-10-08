@@ -23,7 +23,7 @@ values ('loc','reservation-1','pro-1',repeat('a',64),repeat('b',64),now()+interv
 set role service_role;
 select public.digiy_trust_submit_review_v1(repeat('b',64),repeat('a',64),'{"quality":5,"value_for_money":3}'::jsonb);
 reset role;
-do $
+do $$
 begin
  if (select count(*) from public.digiy_trust_reviews)<>1 then raise exception 'review missing'; end if;
  if (select count(*) from public.digiy_trust_invitations where consumed_at is not null)<>1 then raise exception 'not consumed'; end if;
