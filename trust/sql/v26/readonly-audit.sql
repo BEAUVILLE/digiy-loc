@@ -12,4 +12,20 @@ from pg_roles r where rolname in ('anon','authenticated','authenticator','servic
 select coalesce(r.rolname,'ALL') as role_name,s.setconfig from pg_db_role_setting s left join pg_roles r on r.oid=s.setrole where exists (select 1 from unnest(s.setconfig) c where c like 'pgrst.db_schemas=%');
 select tgname,pg_get_triggerdef(t.oid) as definition from pg_trigger t where tgrelid='digiy_trust_private.voluntary_feedback'::regclass and not tgisinternal;
 select conname,pg_get_constraintdef(oid) as definition from pg_constraint where conrelid='digiy_trust_private.voluntary_feedback'::regclass;
+-- Grants inherited by EVERY role via PUBLIC (NOINHERIT does not remove them).
+select count(*) as public_executable_definers
+from pg_proc p join pg_namespace n on n.oid=p.pronamespace
+where n.nspname not in ('pg_catalog','information_schema') and p.prosecdef
+  and exists (select 1 from aclexplode(coalesce(p.proacl,acldefault('f',p.proowner))) a
+              where a.grantee=0 and a.privilege_type='EXECUTE')
+  and exists (select 1 from aclexplode(coalesce(n.nspacl,acldefault('n',n.nspowner))) a
+              where a.grantee=0 and a.privilege_type='USAGE');
+select n.nspname,c.relname,a.privilege_type
+from pg_class c join pg_namespace n on n.oid=c.relnamespace
+cross join lateral aclexplode(coalesce(c.relacl,acldefault('r',c.relowner))) a
+where a.grantee=0 and c.relkind in ('r','v','m','p')
+  and n.nspname not in ('pg_catalog','information_schema');
+select pg_get_userbyid(defaclrole) as creator,defaclobjtype,defaclacl
+from pg_default_acl d join pg_namespace n on n.oid=d.defaclnamespace
+where nspname='digiy_trust_private';
 rollback;

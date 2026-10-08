@@ -58,9 +58,22 @@ select pg_temp.expect_error('select * from public.digiy_loc_master_units','42501
 select pg_temp.expect_error('update public.digiy_loc_master_units set is_active=false','42501');
 select pg_temp.expect_error('delete from public.digiy_loc_master_units','42501');
 select pg_temp.expect_error('insert into public.digiy_loc_master_units values (gen_random_uuid(),true,null)','42501');
-select pg_temp.expect_rows($q$execute trust_insert('00000000-0000-4000-8000-000000000001',5,null,4,3,'V26 fixture',false)$q$,1);
-select pg_temp.expect_rows($q$execute trust_insert('00000000-0000-4000-8000-000000000002',5,null,null,null,'inactive',false)$q$,0);
-select pg_temp.expect_rows($q$execute trust_insert('00000000-0000-4000-8000-000000000003',5,null,null,null,'unknown',false)$q$,0);
+execute trust_insert('00000000-0000-4000-8000-000000000001',5,null,4,3,'V26 fixture',false);
+\if :ROW_COUNT
+\else
+  \echo V26 active INSERT row count mismatch
+  \quit 1
+\endif
+execute trust_insert('00000000-0000-4000-8000-000000000002',5,null,null,null,'inactive',false);
+\if :ROW_COUNT
+  \echo V26 inactive INSERT row count mismatch
+  \quit 1
+\endif
+execute trust_insert('00000000-0000-4000-8000-000000000003',5,null,null,null,'unknown',false);
+\if :ROW_COUNT
+  \echo V26 unknown INSERT row count mismatch
+  \quit 1
+\endif
 select pg_temp.expect_error('select * from digiy_trust_private.voluntary_feedback','42501');
 select pg_temp.expect_error('update digiy_trust_private.voluntary_feedback set overall_rating=1','42501');
 select pg_temp.expect_error('delete from digiy_trust_private.voluntary_feedback','42501');
