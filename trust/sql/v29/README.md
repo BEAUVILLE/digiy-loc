@@ -91,3 +91,11 @@ Leave the VPS stopped during read-only verification and testing; before
 any restart, validate its active source, role, RPC signatures, and
 delivery states. The three PULSE candidates are independent SQL
 proposals; none has been deployed.
+
+## Founder decision — do not reconnect PULSE VPS to Supabase (2026-10-08)
+
+The founder identifies the historical high-volume PULSE/Outbox calls as loops caused by an incorrect connection. **Those counters must not be presented as healthy business activity or evidence that a PULSE worker should be restored.** This is a founder-supplied root-cause diagnosis, distinct from what the read-only database telemetry alone can prove.
+
+**Operational decision: PULSE VPS stays stopped. Do not restart it, introduce it into Supabase, reconnect a worker, create a new PULSE bridge, or deploy any PULSE runtime, RPC integration, scheduled job, or webhook as part of V29.** There is no requirement to preserve a *future* PULSE connection. Historical `service_role` statements merely establish previous technical calls, and may represent loops.
+
+The existing PostgreSQL functions and public EXECUTE grants are already present; this security review may still prepare **isolated, non-deployed least-privilege ACL candidates** to contain existing permissions. Such review is **not** an instruction to reintroduce PULSE or to automatically grant any live server access. Changing or retiring existing functions requires dependency analysis, isolation tests and a separate, explicit approval. Keep payment, reservations, owners, LOC and DIGIY TRUST independent of this abandoned runtime.
