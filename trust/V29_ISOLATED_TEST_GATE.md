@@ -190,3 +190,31 @@ PR #37 generic fiche fix has since been **merged** on `main`,
 commit `9069cba2f51c04c0cca34ac7a88f1d15041f8990`,
 with GitHub Pages deployment succeeded. It is independent of
 **PR #36 still in draft and NOT merged**.
+
+## MASTER cancellation and overlap: negative probes (NOT resolved)
+
+The fifth PostgreSQL suite now separately executes
+`trust/sql/v29/master-cancellation-gap-test.psql` and
+`trust/sql/v29/master-overlap-risk-test.psql`, in disposable
+transactions both **before and after** legacy trigger isolation.
+
+These are **expected-current-behavior probes**, not fixes or
+acceptance tests for cancellation. They verify that:
+
+1. The real MASTER save RPC writes a reservation + occupied calendar
+   days, while the real `set_unit_calendar_state_v2('available')`
+   frees the days **without removing the reservation row** from
+   owner list/ledger. It does not cancel the reservation.
+2. Overlapping synthetic reservations can both be saved; releasing
+   some days can leave a second reservation in the ledger while
+   its calendar dates misleadingly appear available.
+
+No live data was touched, both trials roll back, and neither issue
+is asserted to have occurred for any real customer. See
+`trust/V29_MASTER_CANCELLATION_DEPENDENCIES.md` for schema sources,
+user-experience consequences, shared-agent-queue dependencies and
+a separate proposal for explicit, atomic cancellation.
+
+**The green matrix intentionally demonstrates these known limits.**
+Actual resolution requires a separate reviewed schema + API + UI
+change and isolated staging tests, not the V29 PULSE/NDIMBAL cleanup.
