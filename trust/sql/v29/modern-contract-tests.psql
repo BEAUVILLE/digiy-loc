@@ -1,0 +1,125 @@
+\set ON_ERROR_STOP on
+-- Replays the REAL live (2026-10-08) public room + owner master SQL
+-- definitions on SYNTHETIC DATA ONLY, before and after old PULSE/NDIMBAL
+-- reservation trigger isolation. No external network, WhatsApp, payment,
+-- real customer data or Supabase production side effects.
+BEGIN;
+CREATE FUNCTION public.v29_expect_error(p_statement text,p_expected text)
+RETURNS void LANGUAGE plpgsql SECURITY INVOKER AS $test$
+BEGIN
+  BEGIN
+    EXECUTE p_statement;
+  EXCEPTION WHEN OTHERS THEN
+    IF position(p_expected in SQLERRM) > 0 THEN
+      RETURN;
+    END IF;
+    RAISE;
+  END;
+  RAISE EXCEPTION 'Expected error % but query succeeded',p_expected;
+END
+$test$;
+GRANT EXECUTE ON FUNCTION public.v29_expect_error(text,text)
+  TO anon,authenticated;
+
+-- PUBLIC listing/contact: direct WhatsApp info remains visible only for
+-- eligible published rooms, regardless of legacy PULSE/NDIMBAL state.
+SET LOCAL ROLE anon;
+DO $test$
+DECLARE available jsonb; hidden jsonb; missing jsonb;
+BEGIN
+  available := public.digiy_loc_public_room_by_slug('public-synthetic');
+  hidden := public.digiy_loc_public_room_by_slug('hidden-synthetic');
+  missing := public.digiy_loc_public_room_by_slug('missing-synthetic');
+  IF coalesce(available->>'ok','') <> 'true'
+     OR available->'room'->>'slug' <> 'public-synthetic'
+     OR available->'room'->>'whatsapp_phone' <> '+221000000000'
+     OR coalesce(hidden->>'ok','') <> 'false'
+     OR coalesce(missing->>'ok','') <> 'false' THEN
+    RAISE EXCEPTION 'Public room publication/contact contract regressed';
+  END IF;
+END $test$;
+SELECT public.v29_expect_error(
+ 'SELECT * FROM public.digiy_loc_master_list_reservations_v1(''00000000-0000-4000-8000-000000000a02''::uuid)',
+ 'permission denied'
+);
+SELECT public.v29_expect_error(
+ 'SELECT * FROM public.digiy_loc_master_save_reservation_v1(''00000000-0000-4000-8000-000000000a02''::uuid,DATE ''2026-12-01'',DATE ''2026-12-03'',''Anonymous'', ''000'',NULL,NULL)',
+ 'permission denied'
+);
+RESET ROLE;
+
+-- AUTHENTICATED without a JWT identity is not authorized.
+SET LOCAL ROLE authenticated;
+SELECT public.v29_expect_error(
+ 'SELECT * FROM public.digiy_loc_master_save_reservation_v1(''00000000-0000-4000-8000-000000000a02''::uuid,DATE ''2026-12-01'',DATE ''2026-12-03'',''Synthetic'', ''000'',NULL,NULL)',
+ 'AUTH_REQUIRED'
+);
+-- Owner B must not read or write Owner A's reservation/unit.
+SET LOCAL request.jwt.claim.sub = '00000000-0000-4000-8000-000000000b11';
+SELECT public.v29_expect_error(
+ 'SELECT * FROM public.digiy_loc_master_save_reservation_v1(''00000000-0000-4000-8000-000000000a02''::uuid,DATE ''2026-12-01'',DATE ''2026-12-03'',''Other'', ''000'',NULL,NULL)',
+ 'OWNER_FORBIDDEN'
+);
+SELECT public.v29_expect_error(
+ 'SELECT * FROM public.digiy_loc_master_list_reservations_v1(''00000000-0000-4000-8000-000000000a02''::uuid)',
+ 'Forbidden'
+);
+-- Owner A can book via the actual master V1 procedure.
+SET LOCAL request.jwt.claim.sub = '00000000-0000-4000-8000-000000000a11';
+SELECT public.v29_expect_error(
+ 'SELECT * FROM public.digiy_loc_master_save_reservation_v1(''00000000-0000-4000-8000-000000000a02''::uuid,DATE ''2026-12-04'',DATE ''2026-12-03'',''Invalid'', ''000'',NULL,NULL)',
+ 'INVALID_DATES'
+);
+SELECT public.v29_expect_error(
+ 'SELECT * FROM public.digiy_loc_master_save_reservation_v1(''00000000-0000-4000-8000-000000000a02''::uuid,DATE ''2026-12-01'',DATE ''2026-12-03'','' '', ''000'',NULL,NULL)',
+ 'GUEST_NAME_REQUIRED'
+);
+DO $test$
+DECLARE inserted_count integer; list_count integer;
+BEGIN
+  SELECT count(*) INTO inserted_count
+  FROM public.digiy_loc_master_save_reservation_v1(
+    '00000000-0000-4000-8000-000000000a02'::uuid,
+    DATE '2026-12-01', DATE '2026-12-03',
+    'Synthetic Guest','000-TEST','direct',NULL);
+  SELECT count(*) INTO list_count
+  FROM public.digiy_loc_master_list_reservations_v1(
+    '00000000-0000-4000-8000-000000000a02'::uuid);
+  IF inserted_count <> 1 OR list_count <> 1 THEN
+    RAISE EXCEPTION 'Owner reservation save/list contract broken, %, %',
+      inserted_count,list_count;
+  END IF;
+END $test$;
+RESET ROLE;
+
+DO $test$
+DECLARE record_count integer; occupied_count integer; legacy_calls integer;
+BEGIN
+  SELECT count(*) INTO record_count
+  FROM public.digiy_loc_master_reservations
+  WHERE unit_id='00000000-0000-4000-8000-000000000a02'::uuid
+    AND created_by='00000000-0000-4000-8000-000000000a11'::uuid
+    AND guest_name='Synthetic Guest';
+  SELECT count(*) INTO occupied_count
+  FROM public.digiy_loc_master_unit_calendar
+  WHERE unit_id='00000000-0000-4000-8000-000000000a02'::uuid
+    AND status='occupied'
+    AND day BETWEEN DATE '2026-12-01' AND DATE '2026-12-03';
+  SELECT count(*) INTO legacy_calls FROM public.v29_trigger_trace;
+  IF record_count <> 1 OR occupied_count <> 3 OR legacy_calls <> 0 THEN
+    RAISE EXCEPTION 'Modern master flow touched legacy triggers or lost booking: row %, calendar %, legacy %',
+       record_count,occupied_count,legacy_calls;
+  END IF;
+END $test$;
+ROLLBACK;
+
+-- No permanent synthetic booking, calendar, or trace rows remain.
+DO $test$
+BEGIN
+  IF EXISTS(SELECT 1 FROM public.digiy_loc_master_reservations)
+    OR EXISTS(SELECT 1 FROM public.digiy_loc_master_unit_calendar)
+    OR EXISTS(SELECT 1 FROM public.v29_trigger_trace) THEN
+    RAISE EXCEPTION 'V29 modern contract transaction rollback failed';
+  END IF;
+END $test$;
+SELECT 'V29 MODERN LOC PUBLIC + OWNER CONTRACTS PASSED' AS result;
