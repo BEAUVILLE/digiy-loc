@@ -1,0 +1,22 @@
+name: DIGIY TRUST V12 feedback contract tests
+on:
+  push:
+    paths:
+      - "trust/**"
+      - ".github/workflows/trust-feedback-tests.yml"
+  pull_request:
+    paths:
+      - "trust/**"
+      - ".github/workflows/trust-feedback-tests.yml"
+jobs:
+  feedback-tests:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Validate private feedback contract
+        run: node --test trust/feedback-contract.test.mjs
