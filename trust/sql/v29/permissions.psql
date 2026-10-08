@@ -1,0 +1,92 @@
+\set ON_ERROR_STOP on
+-- V29 tests run only in disposable PostgreSQL after fixture and candidate.
+BEGIN;
+
+CREATE FUNCTION pg_temp.expect_denied(q text) RETURNS void
+LANGUAGE plpgsql SECURITY INVOKER AS $fn$
+BEGIN
+  BEGIN
+    EXECUTE q;
+  EXCEPTION WHEN insufficient_privilege THEN
+    RETURN;
+  END;
+  RAISE EXCEPTION 'Expected insufficient_privilege (42501), but allowed: %',q;
+END
+$fn$;
+
+DO $check$
+DECLARE signature text;
+BEGIN
+  FOREACH signature IN ARRAY ARRAY[
+    'public.digiy_loc_outbox_claim_due(integer,text)',
+    'public.digiy_loc_outbox_mark_sent(uuid)',
+    'public.digiy_loc_outbox_mark_failed(uuid,text)'
+  ] LOOP
+    IF has_function_privilege('anon',signature,'EXECUTE')
+       OR has_function_privilege('authenticated',signature,'EXECUTE')
+       OR NOT has_function_privilege('service_role',signature,'EXECUTE')
+       OR NOT has_function_privilege('postgres',signature,'EXECUTE') THEN
+      RAISE EXCEPTION 'V29 unexpected EXECUTE privileges after candidate: %',signature;
+    END IF;
+  END LOOP;
+  IF has_function_privilege('anon','public.digiy_loc_outbox_claim(text,integer)','EXECUTE')
+     OR NOT has_function_privilege('service_role','public.digiy_loc_outbox_claim(text,integer)','EXECUTE') THEN
+    RAISE EXCEPTION 'V29 changed protected outbox sibling';
+  END IF;
+  IF NOT has_function_privilege('anon','public.v29_unrelated_public_rpc()','EXECUTE') THEN
+    RAISE EXCEPTION 'V29 changed an unrelated public RPC';
+  END IF;
+END
+$check$;
+
+SET LOCAL ROLE anon;
+SELECT pg_temp.expect_denied($q$select * from public.digiy_loc_outbox_claim_due(1,'forged-worker')$q$);
+SELECT pg_temp.expect_denied($q$select public.digiy_loc_outbox_mark_sent('00000000-0000-4000-8000-000000000001')$q$);
+SELECT pg_temp.expect_denied($q$select public.digiy_loc_outbox_mark_failed('00000000-0000-4000-8000-000000000001','forged')$q$);
+RESET ROLE;
+
+SET LOCAL ROLE authenticated;
+SELECT pg_temp.expect_denied($q$select * from public.digiy_loc_outbox_claim_due(1,'forged-worker')$q$);
+SELECT pg_temp.expect_denied($q$select public.digiy_loc_outbox_mark_sent('00000000-0000-4000-8000-000000000001')$q$);
+SELECT pg_temp.expect_denied($q$select public.digiy_loc_outbox_mark_failed('00000000-0000-4000-8000-000000000001','forged')$q$);
+RESET ROLE;
+
+-- Server-only worker still receives synthetic messages.
+SET LOCAL ROLE service_role;
+DO $check$
+DECLARE n integer;
+BEGIN
+  SELECT count(*) INTO n FROM public.digiy_loc_outbox_claim_due(2,'server-worker');
+  IF n <> 1 THEN
+    RAISE EXCEPTION 'V29 server role could not claim expected message: got %',n;
+  END IF;
+END
+$check$;
+SELECT public.digiy_loc_outbox_mark_sent('00000000-0000-4000-8000-000000000001');
+SELECT public.digiy_loc_outbox_mark_failed('00000000-0000-4000-8000-000000000001','fixture error');
+RESET ROLE;
+
+DO $check$
+BEGIN
+  IF NOT EXISTS(
+    SELECT 1 FROM public.v29_outbox_fixture
+    WHERE id='00000000-0000-4000-8000-000000000001'
+      AND state='failed' AND last_error='fixture error'
+  ) THEN
+    RAISE EXCEPTION 'V29 server-only mark functions did not update synthetic row';
+  END IF;
+END
+$check$;
+ROLLBACK;
+
+-- The fixture survives, but all permission-test row mutations roll back.
+DO $check$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM public.v29_outbox_fixture
+    WHERE id='00000000-0000-4000-8000-000000000001'
+      AND state='due' AND last_error IS NULL
+  ) THEN RAISE EXCEPTION 'V29 SQL tests left row mutations'; END IF;
+END
+$check$;
+SELECT 'V29 OUTBOX ACL FIXTURE TESTS PASSED' AS result;
