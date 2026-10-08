@@ -28,6 +28,10 @@ Matches were determined by source references to exact MASTER table/function name
 - All are `SECURITY DEFINER` and owner RPCs are currently granted to `authenticated`; **legacy calendar v1 has `anon EXECUTE=true` at SQL grants level**, though its function body performs `auth.uid()` checks. Candidate V30 rewrites it to call the protected v2 implementation and revokes `anon` execution.
 - Production tables have RLS enabled but authenticated currently has direct `INSERT/UPDATE/DELETE` privileges. Candidate V30 revokes those to prevent bypass.
 
+## V30 MAÎTRE factory update (draft PR #10)
+
+The MAÎTRE branch was extended beyond the calendar direct-write fix: a generic private reservation form and carnet, V30 owner cancellation and legacy v1 safe read fallback now belong to the repeatable template. The [14/14 passing tests](https://github.com/BEAUVILLE/digiy-master-modeles/actions/runs/37857312861) cover this factory feature set. The new template is still only on a draft branch, **not** the `main` version described in the original 99-file scan. Real owner-session acceptance and a restored backup remain mandatory.
+
 ## Remaining release-only verification
 
 1. Confirm deployed GitHub Pages and any alternate owner URLs actually serve only tracked template/client versions; inspect unknown archived repositories or copies separately.
