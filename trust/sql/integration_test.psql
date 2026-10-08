@@ -1,0 +1,50 @@
+\set ON_ERROR_STOP on
+create role service_role nologin;
+create role authenticated nologin;
+create role anon nologin;
+create schema if not exists public;
+\i trust/sql/001_trust_schema.sql
+\i trust/sql/002_trust_atomic_submit.sql
+grant usage on schema public to service_role, authenticated, anon;
+grant select,insert,update on public.digiy_trust_invitations to service_role;
+grant select,insert,update on public.digiy_trust_reviews to service_role;
+-- No direct grants for anon/authenticated.
+do $$
+begin
+ if has_table_privilege('anon','public.digiy_trust_invitations','SELECT') then raise exception 'anon leaked'; end if;
+ if has_table_privilege('authenticated','public.digiy_trust_reviews','INSERT') then raise exception 'authenticated leaked'; end if;
+ if has_function_privilege('anon','public.digiy_trust_submit_review_v1(text,text,jsonb)','EXECUTE') then raise exception 'anon RPC leaked'; end if;
+end $$;
+insert into public.digiy_trust_invitations(source_module,source_reservation_id,professional_id,client_subject_hash,token_hash,expires_at)
+values ('loc','reservation-1','pro-1',repeat('a',64),repeat('b',64),now()+interval '1 day');
+set role service_role;
+select public.digiy_trust_submit_review_v1(repeat('b',64),repeat('a',64),'{"quality":5,"value_for_money":3}'::jsonb);
+reset role;
+do $$
+begin
+ if (select count(*) from public.digiy_trust_reviews)<>1 then raise exception 'review missing'; end if;
+ if (select count(*) from public.digiy_trust_invitations where consumed_at is not null)<>1 then raise exception 'not consumed'; end if;
+end $$;
+-- Errors must not persist a second review.
+do $$
+begin
+ begin
+ perform public.digiy_trust_submit_review_v1(repeat('b',64),repeat('a',64),'{"quality":5}'::jsonb);
+ raise exception 'duplicate was accepted';
+ exception when others then
+   if sqlerrm='duplicate was accepted' then raise; end if;
+ end;
+end $$;
+insert into public.digiy_trust_invitations(source_module,source_reservation_id,professional_id,client_subject_hash,token_hash,expires_at)
+values ('loc','reservation-2','pro-1',repeat('a',64),repeat('c',64),now()+interval '1 day');
+do $$
+begin
+ begin
+ perform public.digiy_trust_submit_review_v1(repeat('c',64),repeat('a',64),'{"quality":0}'::jsonb);
+ raise exception 'bad rating accepted';
+ exception when others then
+   if sqlerrm='bad rating accepted' then raise; end if;
+ end;
+ if exists(select 1 from public.digiy_trust_invitations where token_hash=repeat('c',64) and consumed_at is not null) then raise exception 'invalid vote consumed'; end if;
+end $$;
+select 'SQL INTEGRATION CHECKS PASSED' as result;
