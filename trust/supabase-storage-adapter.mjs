@@ -25,7 +25,7 @@ export function makePrivateFeedbackStorage(db){
        `;
      const values=[record.listing_id,record.overall_rating,record.cleanliness,record.comfort,record.welcome,record.comment,record.publication_consent];
      const res=await db.query(sql,values);
-     return res?.rows?.length===1;
+     return res?.rowCount===1;
    }
  });
 }
