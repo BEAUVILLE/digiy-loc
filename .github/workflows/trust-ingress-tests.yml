@@ -1,0 +1,21 @@
+name: DIGIY TRUST V15 ingress tests
+on:
+  pull_request:
+    paths:
+      - "trust/**"
+      - ".github/workflows/trust-ingress-tests.yml"
+  push:
+    paths:
+      - "trust/**"
+      - ".github/workflows/trust-ingress-tests.yml"
+jobs:
+  ingress:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node --test trust/private-ingress-adapter.test.mjs trust/private-intake-boundary.test.mjs trust/feedback-contract.test.mjs
