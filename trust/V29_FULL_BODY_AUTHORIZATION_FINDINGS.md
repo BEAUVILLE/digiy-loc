@@ -46,3 +46,20 @@ A request to read the full `digiy_loc_outbox_mark_failed(uuid,text)` body was bl
 After fixture tests on PostgreSQL 16/17: verify `anon` and `authenticated` denial for both claim overloads and the LOC claim, legitimate service-role read/claim/ACK, concurrency, queue isolation, limited batch sizes, malformed dates, and rollback. Real pipeline integration tests must use staging data only.
 
 Status: **Reviewed SQL definitions; draft candidates ready; isolated DB runtime tests and production deployment NOT completed.**
+
+## Historical execution telemetry discovered after initial consumer searches
+
+Read-only inspection of `extensions.pg_stat_statements` found:
+- `pg_stat_statements_info.stats_reset` = 2025-12-08 07:28:36 UTC. Counts are cumulative, **not live status**.
+- A service_role-owned statement template mentioning `digiy_loc_outbox_claim_due` recorded **764,661 calls**.
+- Several service_role-owned templates mentioning `digiy_loc_pulse_claim_batch` include **3,999,859** calls for the largest template, plus other high-count templates.
+
+These are real historical statement counts and give strong evidence of past server-side use. They cannot establish that the founder-reported stopped VPS is running now, when the calls occurred, whether other workers still call the functions, or that each recorded statement represents a successful message delivery. Prior zero matches in the last 24 hours of REST gateway logs only cover REST traffic in that window, and are **not** contradictory with older or direct SQL traffic.
+
+**Important preservation rule:** the P0 ACL candidates retain `service_role` EXECUTE; an indiscriminate `REVOKE FROM service_role` would endanger the historical worker contract. Verify actual consumers before staging or deployment.
+
+### SQL overload test correction
+
+The 1-arg `digiy_loc_pulse_mark_sent(p_id uuid)` overload coexists with a 4-arg `digiy_loc_pulse_mark_sent(p_pulse_id uuid, p_provider text DEFAULT NULL, p_message_id text DEFAULT NULL, p_worker_id text DEFAULT NULL)`. Test calls to the 1-arg overload were changed to `p_id => ...::uuid` to resolve precisely by named argument and avoid any overload/default-argument ambiguity. This corrects the synthetic test; it does not change production functions.
+
+No V29 runtime PostgreSQL test execution has been completed in this environment.
