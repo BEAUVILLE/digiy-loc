@@ -166,3 +166,38 @@ successful negative tests, not deployment failures.
 
 This does **not** mean PULSE or NDIMBAL should be restarted. They
 remain retired; no production migrations have been performed.
+
+## Modern LOC public + owner compatibility regression (executed)
+
+Added a fifth independent disposable PostgreSQL suite,
+`run-modern-ci.sh`, which creates `trust_v29_modern_ci`. It uses
+`modern-contract-fixture.psql` to replay the **actual 2026-10-08
+function definitions** of `digiy_loc_public_room_by_slug`,
+`digiy_loc_master_save_reservation_v1` and
+`digiy_loc_master_list_reservations_v1`, on synthetic schemas and
+data. The `auth.uid()` implementation is an isolated fixture
+with synthetic JWT claim IDs, not Supabase Auth.
+
+Run with the same guardrails as the other four suites:
+
+```sh
+V29_CI_ONLY=1 PGHOST=127.0.0.1 PGPORT=5432 PGUSER=postgres \
+  bash trust/sql/v29/run-modern-ci.sh
+```
+
+It runs the owner/public contract checks **before** and **after**
+applying both legacy PULSE/NDIMBAL trigger-disable candidates on the
+*disposable* fixture only. It tests public published/hidden rooms and
+direct WhatsApp contact data; anonymous and unauthorized owner denial;
+authorized reservation save/list; date validations; calendar occupied
+days; and zero legacy-trigger execution in the master workflow.
+
+**Results:** [GitHub Actions run 37845239099](https://github.com/BEAUVILLE/digiy-loc/actions/runs/37845239099)
+passed **5/5 suites on PostgreSQL 16 and 5/5 on PostgreSQL 17**
+(**10/10** in total). See `trust/V29_ISOLATED_TEST_GATE.md`.
+
+**Limits:** production SQL implementations were copied as **dated
+source snapshots** only. Test data, keys and IDs are fully synthetic.
+These tests do not execute the complete live booking UI, payment or
+messaging channels and do not authorize DB changes, merge, or restart
+of PULSE/NDIMBAL.
