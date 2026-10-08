@@ -1,0 +1,229 @@
+\set ON_ERROR_STOP on
+-- V30 acceptance tests using real SQL implementation, fake owners and data.
+-- Must run only against a disposable PG instance. All writes here are test
+-- fixtures, and all test data is rolled back on success.
+BEGIN;
+CREATE OR REPLACE FUNCTION public.v30_expect_error(stmt text,expected text)
+RETURNS void LANGUAGE plpgsql SECURITY INVOKER AS $test$
+BEGIN
+  BEGIN EXECUTE stmt;
+  EXCEPTION WHEN OTHERS THEN
+    IF position(expected IN SQLERRM)>0 THEN RETURN; END IF;
+    RAISE EXCEPTION 'Wrong error: expected %, actual %',expected,SQLERRM;
+  END;
+  RAISE EXCEPTION 'Expected rejection % but action succeeded',expected;
+END $test$;
+GRANT EXECUTE ON FUNCTION public.v30_expect_error(text,text) TO anon,authenticated;
+
+-- Enforce data API boundary, not just authorization checks inside functions.
+DO $assert$
+BEGIN
+  IF has_function_privilege('anon','public.digiy_loc_master_cancel_reservation_v1(uuid,text)','EXECUTE')
+    OR has_function_privilege('anon','public.digiy_loc_master_list_reservations_v2(uuid)','EXECUTE')
+    OR has_table_privilege('authenticated','public.digiy_loc_master_reservations','INSERT')
+    OR has_table_privilege('authenticated','public.digiy_loc_master_reservations','UPDATE')
+    OR has_table_privilege('authenticated','public.digiy_loc_master_unit_calendar','UPDATE')
+  THEN RAISE EXCEPTION 'Unsafe grant on owner-side master operations'; END IF;
+END $assert$;
+
+SET LOCAL ROLE anon;
+SELECT public.v30_expect_error(
+ 'SELECT public.digiy_loc_master_cancel_reservation_v1(''00000000-0000-4000-8000-000000000a90''::uuid,NULL)',
+ 'permission denied');
+SELECT public.v30_expect_error(
+ 'SELECT * FROM public.digiy_loc_master_list_reservations_v2(''00000000-0000-4000-8000-000000000a02''::uuid)',
+ 'permission denied');
+SELECT public.v30_expect_error(
+ 'SELECT * FROM public.digiy_loc_set_unit_calendar_state_v2(''00000000-0000-4000-8000-000000000a02''::uuid,ARRAY[DATE ''2026-12-01''],''closed'')',
+ 'permission denied');
+RESET ROLE;
+
+SET LOCAL ROLE authenticated;
+SELECT public.v30_expect_error(
+ 'SELECT public.digiy_loc_master_cancel_reservation_v1(''00000000-0000-4000-8000-000000000a90''::uuid,NULL)',
+ 'AUTH_REQUIRED');
+SELECT public.v30_expect_error(
+ 'SELECT * FROM public.digiy_loc_master_save_reservation_v1(''00000000-0000-4000-8000-000000000a02''::uuid,DATE ''2026-12-01'',DATE ''2026-12-02'',''Test'',''000'',NULL,NULL)',
+ 'AUTH_REQUIRED');
+SET LOCAL request.jwt.claim.sub='00000000-0000-4000-8000-000000000b11';
+SELECT public.v30_expect_error(
+ 'SELECT * FROM public.digiy_loc_master_save_reservation_v1(''00000000-0000-4000-8000-000000000a02''::uuid,DATE ''2026-12-01'',DATE ''2026-12-02'',''Other owner'',''000'',NULL,NULL)',
+ 'OWNER_FORBIDDEN');
+SELECT public.v30_expect_error(
+ 'SELECT * FROM public.digiy_loc_master_list_reservations_v2(''00000000-0000-4000-8000-000000000a02''::uuid)',
+ 'OWNER_FORBIDDEN');
+
+-- The Sarlat synthetic owner independently can use her own unit.
+DO $test$
+DECLARE added integer;
+BEGIN
+  SELECT count(*) INTO added FROM public.digiy_loc_master_save_reservation_v1(
+    '00000000-0000-4000-8000-000000000b02'::uuid,
+    DATE '2026-12-01',DATE '2026-12-02',
+    'Sarlat synthetic','000-SARLAT','direct',NULL);
+  IF added<>1 THEN RAISE EXCEPTION 'Sarlat separate owner booking failed'; END IF;
+END $test$;
+
+-- Owner A: manual closures and occupied dates block new bookings.
+SET LOCAL request.jwt.claim.sub='00000000-0000-4000-8000-000000000a11';
+DO $test$
+DECLARE cnt integer;
+BEGIN
+  SELECT count(*) INTO cnt FROM public.digiy_loc_set_unit_calendar_state_v2(
+    '00000000-0000-4000-8000-000000000a02'::uuid,
+    ARRAY[DATE '2026-12-10'], 'closed');
+  IF cnt<>1 THEN RAISE EXCEPTION 'Owner closure failed'; END IF;
+END $test$;
+SELECT public.v30_expect_error(
+ 'SELECT * FROM public.digiy_loc_master_save_reservation_v1(''00000000-0000-4000-8000-000000000a02''::uuid,DATE ''2026-12-09'',DATE ''2026-12-11'',''Blocked'',''000'',NULL,NULL)',
+ 'BOOKING_DATES_BLOCKED');
+DO $test$
+DECLARE cnt integer;
+BEGIN
+  SELECT count(*) INTO cnt FROM public.digiy_loc_set_unit_calendar_state_v2(
+    '00000000-0000-4000-8000-000000000a02'::uuid,
+    ARRAY[DATE '2026-12-11'], 'occupied');
+  IF cnt<>1 THEN RAISE EXCEPTION 'Manual occupied failed'; END IF;
+END $test$;
+SELECT public.v30_expect_error(
+ 'SELECT * FROM public.digiy_loc_master_save_reservation_v1(''00000000-0000-4000-8000-000000000a02''::uuid,DATE ''2026-12-11'',DATE ''2026-12-11'',''Blocked'',''000'',NULL,NULL)',
+ 'BOOKING_DATES_BLOCKED');
+
+-- Normal save keeps legacy return columns, and reserve slot blocks overlap.
+DO $test$
+DECLARE saved uuid; listed integer; shown integer;
+BEGIN
+  SELECT id INTO saved FROM public.digiy_loc_master_save_reservation_v1(
+    '00000000-0000-4000-8000-000000000a02'::uuid,
+    DATE '2026-12-20',DATE '2026-12-22',
+    'Saly synthetic','000-SALY','WhatsApp','Fake booking');
+  PERFORM set_config('v30.saved_reservation',saved::text,true);
+  SELECT count(*) INTO listed FROM public.digiy_loc_master_list_reservations_v1(
+    '00000000-0000-4000-8000-000000000a02'::uuid);
+  SELECT count(*) INTO shown FROM public.digiy_loc_master_list_reservations_v2(
+    '00000000-0000-4000-8000-000000000a02'::uuid);
+  IF saved IS NULL OR listed<>1 OR shown<>1 THEN
+    RAISE EXCEPTION 'Current Saly save/list contract regressed';
+  END IF;
+END $test$;
+SELECT public.v30_expect_error(
+ 'SELECT * FROM public.digiy_loc_master_save_reservation_v1(''00000000-0000-4000-8000-000000000a02''::uuid,DATE ''2026-12-21'',DATE ''2026-12-23'',''Overlapping'',''000'',NULL,NULL)',
+ 'BOOKING_DATES_ALREADY_RESERVED');
+SELECT public.v30_expect_error(
+ 'SELECT * FROM public.digiy_loc_set_unit_calendar_state_v2(''00000000-0000-4000-8000-000000000a02''::uuid,ARRAY[DATE ''2026-12-21''],''available'')',
+ 'BOOKING_DATES_PROTECTED_USE_CANCELLATION');
+SELECT public.v30_expect_error(
+ 'SELECT public.digiy_loc_set_unit_calendar_state(''00000000-0000-4000-8000-000000000a02''::uuid,ARRAY[DATE ''2026-12-21''],''available'')',
+ 'BOOKING_DATES_PROTECTED_USE_CANCELLATION');
+SELECT public.v30_expect_error(
+ 'SELECT * FROM public.digiy_loc_set_unit_calendar_state_v2(''00000000-0000-4000-8000-000000000a02''::uuid,ARRAY[DATE ''2026-12-20''],''closed'')',
+ 'BOOKING_DATES_PROTECTED_USE_CANCELLATION');
+
+-- Cancellation belongs exclusively to the owner of the reservation.
+SET LOCAL request.jwt.claim.sub='00000000-0000-4000-8000-000000000b11';
+SELECT public.v30_expect_error(
+ 'SELECT public.digiy_loc_master_cancel_reservation_v1(current_setting(''v30.saved_reservation'')::uuid,''wrong owner'')',
+ 'OWNER_FORBIDDEN');
+SET LOCAL request.jwt.claim.sub='00000000-0000-4000-8000-000000000a11';
+
+DO $test$
+DECLARE result jsonb; again jsonb; cnt integer; active_rows integer;
+BEGIN
+  result:=public.digiy_loc_master_cancel_reservation_v1(
+    current_setting('v30.saved_reservation')::uuid,'Owner approved cancellation');
+  IF result->>'status'<>'cancelled'
+     OR result->>'already_cancelled'<>'false'
+     OR (result->>'released_days')::integer<>3
+     OR (result->>'retained_blocked_days')::integer<>0 THEN
+    RAISE EXCEPTION 'Cancel failed or did not free exactly 3 dates: %',result;
+  END IF;
+  again:=public.digiy_loc_master_cancel_reservation_v1(
+    current_setting('v30.saved_reservation')::uuid,'Retry');
+  IF again->>'already_cancelled'<>'true'
+     OR (again->>'released_days')::integer<>0 THEN
+    RAISE EXCEPTION 'Idempotent cancellation failed: %',again;
+  END IF;
+  SELECT count(*) INTO cnt FROM public.digiy_loc_master_list_reservations_v2(
+    '00000000-0000-4000-8000-000000000a02'::uuid) AS r
+    WHERE r.status='cancelled' AND r.cancelled_at IS NOT NULL;
+  SELECT count(*) INTO active_rows FROM public.digiy_loc_master_list_reservations_v2(
+    '00000000-0000-4000-8000-000000000a02'::uuid) AS r
+    WHERE r.status='active';
+  IF cnt<>1 OR active_rows<>0 THEN
+    RAISE EXCEPTION 'Cancelled history not retained correctly: %, %',cnt,active_rows;
+  END IF;
+END $test$;
+
+-- Once officially cancelled, reservation dates can be reused.
+DO $test$
+DECLARE cnt integer;
+BEGIN
+  SELECT count(*) INTO cnt FROM public.digiy_loc_master_save_reservation_v1(
+    '00000000-0000-4000-8000-000000000a02'::uuid,
+    DATE '2026-12-20',DATE '2026-12-22',
+    'New Saly guest','000-NEW','direct',NULL);
+  IF cnt<>1 THEN RAISE EXCEPTION 'Dates not reusable after verified cancel'; END IF;
+END $test$;
+
+-- Admin fixture checks raw provenance/history (no production RLS emulated).
+RESET ROLE;
+DO $assert$
+DECLARE history_cnt integer; occupied_cnt integer; manual_cnt integer;
+BEGIN
+  SELECT count(*) INTO history_cnt FROM public.digiy_loc_master_reservations
+    WHERE unit_id='00000000-0000-4000-8000-000000000a02'::uuid AND status='cancelled';
+  SELECT count(*) INTO occupied_cnt FROM public.digiy_loc_master_unit_calendar
+    WHERE unit_id='00000000-0000-4000-8000-000000000a02'::uuid
+      AND day BETWEEN DATE '2026-12-20' AND DATE '2026-12-22'
+      AND occupancy_origin='reservation';
+  SELECT count(*) INTO manual_cnt FROM public.digiy_loc_master_unit_calendar
+    WHERE unit_id='00000000-0000-4000-8000-000000000a02'::uuid
+      AND day IN(DATE '2026-12-10',DATE '2026-12-11')
+      AND occupancy_origin='manual';
+  IF history_cnt<>1 OR occupied_cnt<>3 OR manual_cnt<>2 THEN
+    RAISE EXCEPTION 'MASTER cancel history, live block or owner manual provenance regression: %, %, %',
+      history_cnt,occupied_cnt,manual_cnt;
+  END IF;
+END $assert$;
+
+-- A pre-existing booked day with UNKNOWN origin MUST NOT auto-open,
+-- even when its booking is cancelled. Explicit manual review required.
+INSERT INTO public.digiy_loc_master_reservations(
+  id,unit_id,guest_name,guest_phone,start_day,end_day,created_by,status)
+VALUES (
+ '00000000-0000-4000-8000-000000000a90',
+ '00000000-0000-4000-8000-000000000a02',
+ 'Old history synthetic','000-OLD',
+ DATE '2026-12-29',DATE '2026-12-29',
+ '00000000-0000-4000-8000-000000000a11','active');
+INSERT INTO public.digiy_loc_master_unit_calendar(unit_id,day,status,occupancy_origin)
+VALUES (
+ '00000000-0000-4000-8000-000000000a02',
+ DATE '2026-12-29','occupied',NULL);
+SET LOCAL ROLE authenticated;
+SET LOCAL request.jwt.claim.sub='00000000-0000-4000-8000-000000000a11';
+DO $test$
+DECLARE result jsonb;
+BEGIN
+  result:=public.digiy_loc_master_cancel_reservation_v1(
+    '00000000-0000-4000-8000-000000000a90'::uuid,'History review');
+  IF result->>'status'<>'cancelled'
+     OR (result->>'released_days')::integer<>0
+     OR (result->>'retained_blocked_days')::integer<>1 THEN
+    RAISE EXCEPTION 'Unknown legacy origin was silently released: %',result;
+  END IF;
+END $test$;
+RESET ROLE;
+DO $assert$
+BEGIN
+  IF NOT EXISTS(
+    SELECT 1 FROM public.digiy_loc_master_unit_calendar
+    WHERE unit_id='00000000-0000-4000-8000-000000000a02'::uuid
+      AND day=DATE '2026-12-29'
+      AND status='occupied' AND occupancy_origin IS NULL) THEN
+    RAISE EXCEPTION 'Old legacy occupied date must remain blocked';
+  END IF;
+END $assert$;
+
+SELECT 'V30 LOC MASTER SAFE CANCEL, OWNER BOUNDARIES, NO DOUBLE BOOKING & LEGACY BLOCKS PASSED' AS evidence;
+ROLLBACK;
