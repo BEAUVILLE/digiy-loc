@@ -2,6 +2,48 @@
 
 Status: **DRAFT / NO PRODUCTION DEPLOYMENT**. Prepared October 8, 2026. The following is a release procedure, **not proof of a backup or a completed deployment**.
 
+## Verified checkpoint — 2026-10-09 02:00 UTC (read-only / no release)
+
+**Backup connectivity and archive: PASS.** Existing daily DIGIY CORE backup workflow
+[run #73, attempt 2](https://github.com/BEAUVILLE/admin-digiy/actions/runs/37870420013)
+completed successfully. A **nonempty 1,390,605-byte encrypted GitHub Actions artifact**
+[digiy-supabase-2026-10-09T01-46-26Z](https://github.com/BEAUVILLE/admin-digiy/actions/runs/37870420013/artifacts/11590062979)
+was uploaded, artifact ID `11590062979`, expiring 2026-11-08 (30-day retention).
+Pre-archive script completed SHA-256 manifest/checksum generation, AES-256-CBC/PBKDF2
+encryption and a decrypt + gzip integrity check. GitHub upload and job concluded `success`.
+The backup contains database roles, schema, data, and saved migration history.
+
+**Critical scope exclusions:** The archived Storage coverage is **metadata_only**:
+the actual bytes of Supabase Storage objects were **not** backed up (optional service
+secrets absent). No independent offsite copy exists (S3 is not configured).
+An intact compressed archive and checksum do **not** establish that a real restore works.
+A private **isolated restoration is NOT YET TESTED**; V30 production migration remains **NO-GO**.
+
+**Live V30 preflight repeated on 2026-10-09 02:00:43 UTC**, using the committed
+`LOC_MASTER_V30_PREFLIGHT_READONLY.sql` on DIGIY CORE project
+`wesqmwjjtsefyjnluosj`: eight/eight catalog boolean checks `true`,
+MASTER reservations **0**, calendar rows **81**, occupied or closed **81**,
+unexpected statuses **0**. Both tables have RLS enabled. No V30 schema columns
+were present. Historic 81 blocks remain untouched and must default to blocked.
+Authenticated role still has direct write grants on both tables, and `anon` SQL
+EXECUTE remains on the legacy v1 calendar function; this is the pre-migration
+baseline, **not** an authorization fix.
+
+**Independent draft PR checks at current heads, all successful**:
+[server SQL isolation](https://github.com/BEAUVILLE/digiy-loc/actions/runs/37861453541),
+[owner browser isolation](https://github.com/BEAUVILLE/digiy-loc/actions/runs/37861453555),
+[MAÎTRE contract](https://github.com/BEAUVILLE/digiy-master-modeles/actions/runs/37857692004),
+[MAÎTRE mobile browser](https://github.com/BEAUVILLE/digiy-master-modeles/actions/runs/37857692007),
+[Saly owner UI](https://github.com/BEAUVILLE/part-chez-baptiste/actions/runs/37855318212),
+[Sarlat owner UI](https://github.com/BEAUVILLE/pro-espace/actions/runs/37854179764).
+
+**Next controlled actions, not yet completed:** prove a real restore to an authorized
+*separate* environment with secrets handled privately; verify live deployed caller
+compatibility before table grants are revoked; obtain Saly and Sarlat real-owner
+acceptance without touching real guest bookings; and seek separate express approval
+for any production V30 SQL release. Do not create a billable Supabase project or
+branch without an informed cost agreement, and never restore into DIGIY CORE.
+
 ## Founder handoff — engineer-managed release only
 
 **Decision on 2026-10-08:** the founder closed the Mac terminal and is not expected to run shell commands, locate database passwords, or copy connection strings. **Do not request any further technical action from the founder** as a condition of calling the software work done. Installation and tested recovery must be organized by an authorized technical operator with private access, without sharing credentials in GitHub or chat.
@@ -47,7 +89,7 @@ Re-run preflight immediately before any planned release. If counts/signatures/co
 
 **Updated factory parity (draft):** [MAÎTRE LOC PR #10](https://github.com/BEAUVILLE/digiy-master-modeles/pull/10) now includes a generic private reservation form, V30 cancellation with legacy-safe fallback, and the protected calendar RPC. [15 isolated Node tests passed](https://github.com/BEAUVILLE/digiy-master-modeles/actions/runs/37857692004) and [4/4 isolated mobile-browser tests passed](https://github.com/BEAUVILLE/digiy-master-modeles/actions/runs/37857692007). This remains a draft. Test with real owner sessions before any release.
 
-## Mandatory pre-release backup / restoration proof — NOT YET SATISFIED
+## Mandatory pre-release backup / restoration proof — PARTIALLY SATISFIED (archive yes; isolated restore no)
 
 1. **Verified:** Supabase organization `DIGIY AFRICA` is on the `free` tier (read-only organization lookup 2026-10-08). **Do not assume automatic daily backups.** Check actual project backup/PITR availability in Supabase Dashboard > Database > Backups, but plan a private logical export regardless. Free-tier logical export is recommended in the official reference: https://supabase.com/docs/guides/platform/backups
 2. Export an encrypted, access-controlled logical backup of the relevant database and schema using officially documented Supabase CLI or `pg_dump`, with exact command syntax verified by the CLI `--help`. Include table data, function definitions, constraints, indexes, grants, RLS policies and owner information. A full-project backup is preferable; keep credentials and dumps **outside public GitHub, CI logs and the user-facing chat**.
@@ -75,4 +117,4 @@ Re-run preflight immediately before any planned release. If counts/signatures/co
 
 ## Current release decision
 
-**NO-GO for production today until:** complete deployed caller inventory, evidence of secure **restored** backup, real-user staging acceptance (both sites), and separate explicit sign-off on SQL production mutation. All four PRs stay **DRAFT**. Pure synthetic tests and a read-only catalog preflight **do not substitute** for these controls.
+**NO-GO for production today (archive exists, isolated restore not proven) until:** complete deployed caller inventory, evidence of secure **restored** backup, real-user staging acceptance (both sites), and separate explicit sign-off on SQL production mutation. All four PRs stay **DRAFT**. Pure synthetic tests and a read-only catalog preflight **do not substitute** for these controls.
