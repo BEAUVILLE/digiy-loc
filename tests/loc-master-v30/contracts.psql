@@ -64,8 +64,17 @@ BEGIN
   IF added<>1 THEN RAISE EXCEPTION 'Sarlat separate owner booking failed'; END IF;
 END $test$;
 
+-- Historical calendar days must reject new reservations even though their
+-- origin was NULL before the migration. Test both synthetic territories.
+SELECT public.v30_expect_error(
+ 'SELECT * FROM public.digiy_loc_master_save_reservation_v1(''00000000-0000-4000-8000-000000000b02''::uuid,DATE ''2025-01-15'',DATE ''2025-01-15'',''Legacy Sarlat attempt'',''000'',NULL,NULL)',
+ 'BOOKING_DATES_BLOCKED');
+
 -- Owner A: manual closures and occupied dates block new bookings.
 SET LOCAL request.jwt.claim.sub='00000000-0000-4000-8000-000000000a11';
+SELECT public.v30_expect_error(
+ 'SELECT * FROM public.digiy_loc_master_save_reservation_v1(''00000000-0000-4000-8000-000000000a02''::uuid,DATE ''2025-01-15'',DATE ''2025-01-15'',''Legacy Saly attempt'',''000'',NULL,NULL)',
+ 'BOOKING_DATES_BLOCKED');
 DO $test$
 DECLARE cnt integer;
 BEGIN
