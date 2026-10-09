@@ -64,6 +64,10 @@ existing_roles="$(docker exec "$container" psql -X -w -Atq -v ON_ERROR_STOP=1 -U
   -c "SELECT count(*) FROM pg_roles WHERE rolname IN ('anon','authenticated','authenticator','pgbouncer','service_role','supabase_admin','supabase_auth_admin','supabase_realtime_admin','supabase_storage_admin')" \
   2>"$workspace/sql-private.log")" || { echo 'V30_RECOVERY_ROLE_CATALOG_FAILED';exit 1; }
 echo "V30_RECOVERY_PLATFORM_ROLES_PREEXISTING=$existing_roles/9"
+missing_roles="$(docker exec "$container" psql -X -w -Atq -v ON_ERROR_STOP=1 -U postgres -d postgres \
+ -c "SELECT coalesce(string_agg(e.name,',' ORDER BY e.name),'none') FROM (VALUES ('anon'),('authenticated'),('authenticator'),('pgbouncer'),('service_role'),('supabase_admin'),('supabase_auth_admin'),('supabase_realtime_admin'),('supabase_storage_admin')) e(name) WHERE NOT EXISTS (SELECT 1 FROM pg_roles p WHERE p.rolname=e.name)" \
+ 2>"$workspace/sql-private.log")" || { echo 'V30_RECOVERY_MISSING_ROLE_CHECK_FAILED';exit 1; }
+echo "V30_RECOVERY_MISSING_PLATFORM_ROLES=$missing_roles"
 echo 'V30_RECOVERY_ROLE_RECONCILIATION_REQUIRED: genuine roles.sql may create or alter roles; must test actual dump before release.'
 echo 'V30_RECOVERY_EXTENSION_PREREQS_PASS: nine required extensions installable in disposable PG17 without network.'
 echo 'V30_RECOVERY_REAL_BACKUP_NOT_RESTORED: no encrypted artifact or secret used.'
