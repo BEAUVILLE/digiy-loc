@@ -76,6 +76,22 @@ A source-level guard verifies required v1/v2/cancellation RPCs and rejects direc
 
 **UNCHANGED STOP GATES:** genuine encrypted backup artifact 11590062979 must be restored on a separate authorized target (never happened); legacy/deployed clients outside tracked branches remain to be confirmed; then authorized Saly/Sarlat owner-session acceptance, separate sign-off before mutating any production SQL. All four PRs remain DRAFT; no guest, calendar or permission rows were changed by these tests.
 
+## 2026-10-09 02:43 UTC — Independent genuine encrypted-artifact retrieval + live HTML HTTP attestation
+
+**Actual GitHub encrypted artifact retrievability and ciphertext integrity: PASS.** The GitHub connector independently downloaded [artifact 11590062979](https://github.com/BEAUVILLE/admin-digiy/actions/runs/37870420013/artifacts/11590062979) from the successful [backup #73](https://github.com/BEAUVILLE/admin-digiy/actions/runs/37870420013). Read-only ZIP verification confirmed:
+- ZIP length **1,390,605 bytes** and SHA-256 `4cdf28d4b1fe16b273e17a7b670b742ff0ac52ca22c53c455b9f1697e0125318`, matching the original GitHub upload log;
+- ZIP CRC/integrity check succeeded; precisely **two members**, one encrypted `.tar.gz.enc` (**1,390,032 bytes**) and one `.sha256` manifest;
+- encrypted member SHA-256 **matches** the sidecar manifest; OpenSSL salted-format header is present;
+- **No decryption and no access to client plaintext was attempted or claimed.** Local materialized ZIP is temporary inspection material and is not published to the repository.
+
+**Live deployed source parity: PASS.** The new strictly read-only [published owner HTML CI run 37875920843](https://github.com/BEAUVILLE/digiy-loc/actions/runs/37875920843) executed exactly two bounded anonymous HTTPS GETs, with no JavaScript execution, no credentials, and no Supabase API / owner actions:
+- **Saly** `https://part-chez-baptiste.digiylyfe.com/gestion.html` exactly matched GitHub `main` commit `ca17270e2daf8a0b27aafebd795fd20878458d30` bytes using SHA-256 comparison.
+- **Sarlat** `https://pro-espace.digiylyfe.com/loc.html` exactly matched GitHub `main` commit `3395749759e49fac3e0aaa085713b62e794f59fe` bytes using SHA-256 comparison.
+
+This verifies that the currently published owner HTML is the tracked legacy version, **not** the V30 draft. It does **not** verify live authenticated sessions, hidden deployed clients, server-side booking behavior, or a full recovery. The public read-only check must be revised to compare against new authorized commits during the future release. **All four V30 PRs remain DRAFT / NO PRODUCTION DDL/DML.**
+
+**Release STOP gate unchanged:** genuine encrypted archive has never been *decrypted and restored* into an isolated database with the true schemas/data; that still needs a separately authorized secure operator path before a V30 production migration. Storage object bytes and independent offsite copies are not present in the current backup configuration.
+
 ## Founder handoff — engineer-managed release only
 
 **Decision on 2026-10-08:** the founder closed the Mac terminal and is not expected to run shell commands, locate database passwords, or copy connection strings. **Do not request any further technical action from the founder** as a condition of calling the software work done. Installation and tested recovery must be organized by an authorized technical operator with private access, without sharing credentials in GitHub or chat.
