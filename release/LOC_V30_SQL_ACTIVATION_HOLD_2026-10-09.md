@@ -2,6 +2,10 @@
 
 **9 octobre 2026, contrôle de production à 08:20:38 UTC.** Le fondateur a dit « C'EST OK FRÉROT » après demande de test des accès propriétaires : son retour est reçu comme confirmation fonctionnelle opérateur, **pas** comme une preuve machine d'identité/autorisation interpropriétaires ni comme une autorisation d'effacer les données.
 
+> **Précision de l'opérateur, le 9 octobre :** la variation de 81 à 82 jours est expliquée par une **modification volontaire du calendrier propriétaire**, effectuée pour tester si le changement était répercuté sur la **fiche publique**. Ce n'est pas un incident de calendrier inexpliqué. La réaction de la fiche publique n'a **pas encore été établie par une preuve indépendante**, et le jour exact n'a pas été consigné. L'assistant reconnaît ne pas avoir prévenu à temps l'opérateur d'éviter les mutations pendant la fenêtre pré-release. **Ne supprimer ni annuler cette journée de test sans vérification opérateur ; arrêter temporairement les modifications calendrier pendant le snapshot final.**
+
+> La sauvegarde chiffrée **#75** [run 37905010977](https://github.com/BEAUVILLE/admin-digiy/actions/runs/37905010977) a été créée après le test (workflow SUCCESS, artefact privé #11604211913). Elle reste à **restaurer et prouver** en local ; le restaurateur historique attend 81, la PR [admin-digiy #25](https://github.com/BEAUVILLE/admin-digiy/pull/25) prépare le contrôle strict 82. Aucun SQL V30 n'est déployé.
+
 ## Preuve exacte de la dérive
 
 Réexécution en SELECT pur de `supabase/candidates/LOC_MASTER_V30_PREFLIGHT_READONLY.sql` sur `digiy-core`, projet `wesqmwjjtsefyjnluosj` :
