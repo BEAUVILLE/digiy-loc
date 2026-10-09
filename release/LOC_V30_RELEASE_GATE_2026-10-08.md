@@ -5,6 +5,8 @@ Status: **DRAFT / NO PRODUCTION DEPLOYMENT**. Prepared October 8, 2026. The foll
 > **LATEST CHECKPOINT — 2026-10-09 07:24 UTC:** The founder has now completed a **REAL encrypted DIGIY CORE SQL restore** to an isolated no-network Docker PostgreSQL database on the private Mac. The operator's sanitized terminal output includes `ISOLATED_RESTORE_SQL_OK`, `ISOLATED_RESTORE_PROOF_OK` (81/81, 0 MASTER bookings) and `ISOLATED_RESTORE_PRODUCTION_UNTOUCHED`. A new live production **read-only 8/8 preflight** confirms 61 Saly + 20 Sarlat legacy blocked dates untouched, 0 reservations, V30 schema NOT deployed. **The old 02:00–03:29 statements below saying the genuine restore has never happened are HISTORICAL and SUPERSEDED.** [Complete dated evidence, exclusions, current PR heads and STOP gates](LOC_V30_REAL_RESTORE_CHECKPOINT_2026-10-09.md). **Real owner acceptance, deployed direct-write caller inventory and separate express SQL release approval are STILL PENDING; V30 stays NO-GO.**
 
 
+> **07:45 UTC — DÉPENDANCES MAÎTRE ACTUALISÉES :** le correctif direct-write [PR #11](https://github.com/BEAUVILLE/digiy-master-modeles/pull/11) est fusionné ; les [15 tests Node, 4 navigateurs et 10 tests de sécurité du template V30](https://github.com/BEAUVILLE/digiy-master-modeles/pull/12) sont verts sur la nouvelle PR #12, qui reste DRAFT. Le garde trois-clients de [LOC PR #38](https://github.com/BEAUVILLE/digiy-loc/pull/38) pointe sur cette PR #12. Les copies existantes et les sessions propriétaires réelles demeurent non prouvées. **La production V30 reste NO-GO.**
+
 ## Verified checkpoint — 2026-10-09 02:00 UTC (read-only / no release)
 
 **Backup connectivity and archive: PASS.** Existing daily DIGIY CORE backup workflow
@@ -161,7 +163,7 @@ A transient earlier **test-runner script corruption** caused [failure 3787735966
 1. **Database** [BEAUVILLE/digiy-loc #38](https://github.com/BEAUVILLE/digiy-loc/pull/38) — SQL candidate and isolated PostgreSQL 16+17, browser staging tests. *Merge does not execute production SQL.*
 2. **Saly owner** [BEAUVILLE/part-chez-baptiste #12](https://github.com/BEAUVILLE/part-chez-baptiste/pull/12) — draft V30 UI, including local date parser fix.
 3. **Sarlat owner** [BEAUVILLE/pro-espace #7](https://github.com/BEAUVILLE/pro-espace/pull/7) — draft V30 UI.
-4. **MASTER future-owner template** [BEAUVILLE/digiy-master-modeles #10](https://github.com/BEAUVILLE/digiy-master-modeles/pull/10) — draft fix replacing legacy direct calendar upsert/delete with `digiy_loc_set_unit_calendar_state_v2`. Its previous form would break on revoked table grants.
+4. **MAÎTRE template** [hotfix #11 déjà fusionné](https://github.com/BEAUVILLE/digiy-master-modeles/pull/11) — legacy direct calendar `upsert/delete` remplacé sur `main` par la RPC propriétaire v2. **Interface V30 complète** (carnet privé / annulation) : [PR #12 DRAFT](https://github.com/BEAUVILLE/digiy-master-modeles/pull/12), rebasée sur ce hotfix et testée ; ancienne PR #10 fermée sans fusion. Des copies déjà diffusées peuvent contenir l'ancien code et doivent être identifiées avant révocation des droits SQL.
 
 **Known inspected clients**: Saly `gestion.html`, Sarlat `loc.html`, master `LOC/MASTER-MAITRE-LOC/gestion.html`, public DIGIY LOC filtering JS, main website `gestion.html`. **This is not a proof that no other deployed copy or integration writes the tables.** Finish deployed caller inventory (other repositories, GitHub Pages versions, Edge Functions, backend jobs, previous owners' copied pages) before revoking grants.
 
