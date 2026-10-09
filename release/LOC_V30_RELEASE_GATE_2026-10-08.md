@@ -92,6 +92,18 @@ This verifies that the currently published owner HTML is the tracked legacy vers
 
 **Release STOP gate unchanged:** genuine encrypted archive has never been *decrypted and restored* into an isolated database with the true schemas/data; that still needs a separately authorized secure operator path before a V30 production migration. Storage object bytes and independent offsite copies are not present in the current backup configuration.
 
+## 2026-10-09 02:47 UTC — exact site-level production baseline and safer source guard
+
+**Read-only live preflight repeated** on `digiy-core` at `2026-10-09 02:47:41 UTC`: all **8/8** catalog checks TRUE, **0** current MASTER reservation rows, **81** calendar blocked rows, **0** unexpected statuses, V30 columns not present. No SQL mutation.
+
+**Confirmed territory split**, verified by the committed [`LOC_MASTER_V30_TERRITORY_BASELINE_READONLY.sql`](../supabase/candidates/LOC_MASTER_V30_TERRITORY_BASELINE_READONLY.sql) using read-only Supabase SQL: `saly-chez-baptiste` **61** occupied/0 closed, `sarlat-chez-baptiste` **20** occupied/0 closed, total **81**. All are currently legacy/unknown origin since provenance column has not yet been installed. Avoid asserting that a particular row corresponds to an active reservation; this table is only an occupancy snapshot. **Keep all 61+20 blocked.**
+
+**Regression-detection strengthened:** owner candidates source guard now fails closed on direct INSERT/UPDATE/DELETE/UPSERT, assignment/alias of a calendar table query, dynamically selected table aliases not provably read-only, drift in table callsite count and missing reservation/cancellation RPC contracts. [GitHub browser run 37876351626](https://github.com/BEAUVILLE/digiy-loc/actions/runs/37876351626) completed **14/14 source guard regression tests**, verified exact permitted Saly/Sarlat/MAÎTRE candidate sources, and completed **12/12 browser tests** for the two owner pages. This guard is intentionally conservative and covers **pinned checked-out sources only**, not uninspected deployed scripts.
+
+**Synthetic SQL workflow** [run 37876351667](https://github.com/BEAUVILLE/digiy-loc/actions/runs/37876351667) succeeded on PG16 + PG17. A subsequent CI enhancement exercises the new territory baseline query **both before and after** the synthetic V30 migration, ensuring it survives the addition of the provenance column. This does not change the genuine database.
+
+**Remaining STOP / NO-GO:** still no authorized recovery proof on the genuine encrypted backup artifact, no verified authenticated real-owner rollout, and no separate production SQL sign-off. Production sites keep their existing published versions. Four V30 PRs remain DRAFT, with no production DDL/DML.
+
 ## Founder handoff — engineer-managed release only
 
 **Decision on 2026-10-08:** the founder closed the Mac terminal and is not expected to run shell commands, locate database passwords, or copy connection strings. **Do not request any further technical action from the founder** as a condition of calling the software work done. Installation and tested recovery must be organized by an authorized technical operator with private access, without sharing credentials in GitHub or chat.
