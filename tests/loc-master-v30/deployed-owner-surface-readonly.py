@@ -67,7 +67,8 @@ def check_site(label: str, url: str, expected_path: Path) -> bool:
 
 
 if __name__ == "__main__":
-    good = all(check_site(*site) for site in SITES)
+    results = [check_site(*site) for site in SITES]
+    good = all(results)
     if good:
         print("LIVE_TWO_OWNER_PUBLIC_HTML_PARITY_OK: no login or owner API calls made")
     else:
