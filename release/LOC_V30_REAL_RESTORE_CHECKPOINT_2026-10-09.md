@@ -50,6 +50,19 @@ Les trois autres PR du lot sont toujours **DRAFT**, non fusionnées :
 
 Les tests navigateur ont des API simulées ; ils ne prouvent **aucune session propriétaire réelle**, ni la compatibilité de toutes les copies déployées.
 
+## 3 bis. Autorisation de GO et déploiement progressif des interfaces — 07:54–07:58 UTC
+
+Le fondateur a donné le **GO PRODUCTION** dans la conversation le 9 octobre 2026. Il est interprété comme autorisation d'exécuter la procédure **progressive**, pas comme preuve que des essais propriétaires non effectués ont réussi.
+
+- ✅ [Saly / BEAUVILLE/part-chez-baptiste PR #12](https://github.com/BEAUVILLE/part-chez-baptiste/pull/12) fusionnée sur main `7da11499eda10edb08bef7ac508b817bcbe5c60d`, GitHub Pages [run #37901804696](https://github.com/BEAUVILLE/part-chez-baptiste/actions/runs/37901804696) **SUCCESS**.
+- ✅ [Sarlat / BEAUVILLE/pro-espace PR #7](https://github.com/BEAUVILLE/pro-espace/pull/7) fusionnée sur main `e2d171e9a48e7e1bb6da723c5e9667fff4a273b2`, GitHub Pages [run #37901961964](https://github.com/BEAUVILLE/pro-espace/actions/runs/37901961964) **SUCCESS**.
+- ✅ [MAÎTRE V30 PR #12](https://github.com/BEAUVILLE/digiy-master-modeles/pull/12) fusionnée dans le template `main` à `698fad1daae50b5b85683a6b3f1c949448582c0d`, basée sur la hotfix #11 ; trois tests CI V30 verts avant fusion.
+- ✅ [Published owner HTML parity CI #37902011826](https://github.com/BEAUVILLE/digiy-loc/actions/runs/37902011826) : **Saly et Sarlat HTTP exactement identiques** aux nouveaux `main` attendus, contrôlés par SHA256 sans authentification ni appel Supabase. Cela vérifie les fichiers publiés, **PAS les parcours authentifiés**.
+- ✅ Le schéma V30 **n'est pas déployé** à ce checkpoint ; la fonction de carnet v2 manquante est gérée par repli v1 sans bouton d'annulation.
+- 🛡️ [CI centrale](https://github.com/BEAUVILLE/digiy-loc/pull/38) épinglée désormais sur les **trois SHAs des nouveaux `main`** ; les tests de contrat des appels ne doivent pas autoriser des écritures directes du calendrier.
+
+**NE PAS DÉCLARER GO SQL FINAL** avant l'acceptation réelle propriétaire Saly et Sarlat et la clôture de l'inventaire des anciens clients directs : aucune connexion réelle ni saisie OTP n'a été exécutée par l'agent, aucun propriétaire n'a confirmé le nouveau carnet en production. Les contrôles 8/8 à 07:54:50 UTC retrouvent 0 réservations, 81 jours tous bloqués, V30 absent (SELECT uniquement). La fusion des pages n'est **pas** une autorisation de toucher des données de clients.
+
 ## 4. Les trois derniers verrous AVANT tout GO
 
 1. **Compatibilité réelle des appelants** : inventorier les pages effectivement servies (Saly, Sarlat, MAÎTRE et copies éventuelles), leurs chemins RPC et les jobs/Edge Functions concernés. Éliminer les écritures directes du calendrier avant toute révocation SQL ; réexécuter les vérifications de parité Pages. Les intégrations obsolètes PULSE et NDIMBAL restent éteintes, jamais reconnectées.
