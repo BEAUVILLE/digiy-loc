@@ -1,3 +1,5 @@
+> **MISE À JOUR — 2026-10-09 08:53 UTC :** Ce document est un **point de contrôle historique antérieur à la migration**, et non l'état actuel. **DIGIY LOC V30 a été activé en production SQL** par migration version `20261009085250`, avec `success=true` et **postcheck `ok=true`** : 82/82 journées historiques bloquées et 0 réservation. Lire l'[attestation de production et les contrôles restant à faire](LOC_V30_SQL_GO_LIVE_2026-10-09.md). Les mentions « SQL non activé » et « NO-GO » ci-dessous sont conservées uniquement comme **historique des décisions avant 08:53 UTC**.
+
 # DIGIY LOC V30 — livraison du code / activation SQL non faite
 
 **État contrôlé le 2026-10-09 (UTC).** Le fondateur a donné « GO PRODUCTION » puis confirmé « GO GO GO » après avoir retiré une fausse alerte de navigation publique. Ces validations autorisent la livraison progressive des artefacts et interfaces. **La base Supabase de production reste en V1. Le V30 SQL n'a PAS été exécuté.**
