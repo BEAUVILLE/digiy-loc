@@ -57,5 +57,13 @@ unaccent|public
 uuid-ossp|extensions
 vector|public
 EXTENSIONS
+# Supabase's production platform roles are known by NAME (never inspect
+# passwords or secrets). Presence/absence determines what a genuine roles.sql
+# restore must reconcile. This probe does not restore that roles.sql file.
+existing_roles="$(docker exec "$container" psql -X -w -Atq -v ON_ERROR_STOP=1 -U postgres -d postgres \
+  -c "SELECT count(*) FROM pg_roles WHERE rolname IN ('anon','authenticated','authenticator','pgbouncer','service_role','supabase_admin','supabase_auth_admin','supabase_realtime_admin','supabase_storage_admin')" \
+  2>"$workspace/sql-private.log")" || { echo 'V30_RECOVERY_ROLE_CATALOG_FAILED';exit 1; }
+echo "V30_RECOVERY_PLATFORM_ROLES_PREEXISTING=$existing_roles/9"
+echo 'V30_RECOVERY_ROLE_RECONCILIATION_REQUIRED: genuine roles.sql may create or alter roles; must test actual dump before release.'
 echo 'V30_RECOVERY_EXTENSION_PREREQS_PASS: nine required extensions installable in disposable PG17 without network.'
 echo 'V30_RECOVERY_REAL_BACKUP_NOT_RESTORED: no encrypted artifact or secret used.'
