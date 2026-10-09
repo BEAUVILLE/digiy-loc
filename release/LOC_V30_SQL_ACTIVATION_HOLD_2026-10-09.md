@@ -1,3 +1,5 @@
+> **MISE À JOUR — 2026-10-09 08:53 UTC :** Ce document est un **point de contrôle historique antérieur à la migration**, et non l'état actuel. **DIGIY LOC V30 a été activé en production SQL** par migration version `20261009085250`, avec `success=true` et **postcheck `ok=true`** : 82/82 journées historiques bloquées et 0 réservation. Lire l'[attestation de production et les contrôles restant à faire](LOC_V30_SQL_GO_LIVE_2026-10-09.md). Les mentions « SQL non activé » et « NO-GO » ci-dessous sont conservées uniquement comme **historique des décisions avant 08:53 UTC**.
+
 # DIGIY LOC V30 — activation SQL suspendue, nouvelle journée occupée détectée
 
 **9 octobre 2026, contrôle de production à 08:20:38 UTC.** Le fondateur a dit « C'EST OK FRÉROT » après demande de test des accès propriétaires : son retour est reçu comme confirmation fonctionnelle opérateur, **pas** comme une preuve machine d'identité/autorisation interpropriétaires ni comme une autorisation d'effacer les données.
