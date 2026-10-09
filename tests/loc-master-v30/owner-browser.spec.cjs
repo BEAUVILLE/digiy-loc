@@ -61,9 +61,11 @@ test.beforeEach(async({page})=>{
         }
         if(name==='digiy_loc_master_cancel_reservation_v1'){
           if(mode==='cancelerror')return {data:null,error:{code:'P0001',message:'OWNER_FORBIDDEN'}};
+          if(mode==='cancelunknown')return {data:{ok:false,status:'active'},error:null};
           booking.status='cancelled';booking.cancelled_at='2026-10-08T00:00:00Z';
-          calendar=[];
-          return {data:{ok:true,status:'cancelled',released_days:3,retained_blocked_days:0,already_cancelled:false},error:null};
+          if(mode!=='legacyblocked')calendar=[];
+          const kept=mode==='legacyblocked'?3:0;
+          return {data:{ok:true,status:'cancelled',released_days:3-kept,retained_blocked_days:kept,already_cancelled:false},error:null};
         }
         throw Error('Unexpected live RPC forbidden: '+name);
       }
@@ -105,6 +107,45 @@ for(const item of cases){
     const calls=await page.evaluate(()=>window.__calls.map(x=>x.name));
     expect(calls).toContain('digiy_loc_master_list_reservations_v1');
     expect(calls).not.toContain('digiy_loc_master_cancel_reservation_v1');
+  });
+  test(item.name+' — server refuses cancellation: active booking remains untouched',async({page})=>{
+    await page.goto(file(item.html,item.params+'cancelerror'),{waitUntil:'domcontentloaded'});
+    await expect(page.locator('#managerPanel')).toBeVisible();
+    const button=page.getByRole('button',{name:/Annuler la réservation de Client fictif/});
+    await expect(button).toBeVisible();
+    await button.click();
+    await expect(button).toBeEnabled();
+    await expect(page.getByText(/Annulation refusée.*OWNER_FORBIDDEN/)).toBeVisible();
+    await expect(page.getByText('Annulée',{exact:true})).toHaveCount(0);
+    const evidence=await page.evaluate(()=>({
+      status:window.__booking.status,
+      calls:window.__calls.map(x=>x.name),
+      outbound:window.__outbound
+    }));
+    expect(evidence.status).toBe('active');
+    expect(evidence.calls).toContain('digiy_loc_master_cancel_reservation_v1');
+    expect(evidence.outbound).toEqual([]);
+  });
+  test(item.name+' — ambiguous server reply cannot mark reservation cancelled',async({page})=>{
+    await page.goto(file(item.html,item.params+'cancelunknown'),{waitUntil:'domcontentloaded'});
+    await expect(page.locator('#managerPanel')).toBeVisible();
+    const button=page.getByRole('button',{name:/Annuler la réservation de Client fictif/});
+    await button.click();
+    await expect(button).toBeEnabled();
+    await expect(page.getByText(/Annulation non confirmée par le serveur/)).toBeVisible();
+    await expect(page.getByText('Annulée',{exact:true})).toHaveCount(0);
+    const status=await page.evaluate(()=>window.__booking.status);
+    expect(status).toBe('active');
+  });
+  test(item.name+' — legacy blocked days stay blocked after authorized cancellation',async({page})=>{
+    await page.goto(file(item.html,item.params+'legacyblocked'),{waitUntil:'domcontentloaded'});
+    await expect(page.locator('#managerPanel')).toBeVisible();
+    await page.getByRole('button',{name:/Annuler la réservation de Client fictif/}).click();
+    await expect(page.getByText('Annulée',{exact:true})).toBeVisible();
+    await expect(page.getByText(/3 date\(s\) restent bloquées.*vérification manuelle/)).toBeVisible();
+    const evidence=await page.evaluate(()=>({status:window.__booking.status,outbound:window.__outbound}));
+    expect(evidence.status).toBe('cancelled');
+    expect(evidence.outbound).toEqual([]);
   });
   test(item.name+' — permission error does not silently fallback or offer cancel',async({page})=>{
     await page.goto(file(item.html,item.params+'denied'),{waitUntil:'domcontentloaded'});
