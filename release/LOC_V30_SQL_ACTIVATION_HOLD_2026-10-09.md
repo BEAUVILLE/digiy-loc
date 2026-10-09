@@ -23,6 +23,13 @@ La dernière sauvegarde chiffrée **vérifiée** disponible est [DIGIY backup ru
 
 Le workflow existant `BEAUVILLE/admin-digiy/.github/workflows/supabase-backup.yml` accepte `workflow_dispatch` et applique chiffrement, signatures et artefact privé (30 jours). Aucune nouvelle exécution réussie n'a été observée lors du contrôle. Ne créer aucun projet Supabase supplémentaire.
 
+## Mise à jour vérifiée : sauvegarde #75 SUCCESS et restaurateur 82 prêt
+
+- [Sauvegarde chiffrée réelle #75, run 37905010977](https://github.com/BEAUVILLE/admin-digiy/actions/runs/37905010977) : **SUCCESS** (GitHub Actions, 2026-10-09 08:33 UTC). [Artefact chiffré privé #11604211913](https://github.com/BEAUVILLE/admin-digiy/actions/runs/37905010977/artifacts/11604211913), 1 391 117 octets, 2 membres chiffrés/empreintes, nom `digiy-supabase-2026-10-09T08-27-18Z.zip` ; conservation jusqu'au 2026-11-08. Auth/Storage couverts dans le backup SQL, **octets Storage non sauvegardés**, copie hors site S3 ignorée (non configurée).
+- [admin-digiy PR #25](https://github.com/BEAUVILLE/admin-digiy/pull/25) **fusionnée dans main** à `392b89d3a0e2ee89732114c3dd444ac1f8aacd55` : compteur historique paramétré par `DIGIY_EXPECTED_MASTER_BLOCKED_DAYS=82` ; comparaison exacte `82|82|0|1` et refus si déviation. L'archive synthétique 82 a été testée avec échec attendu sous baseline 81 puis succès sous baseline 82 ; [CI définitive #37906283188](https://github.com/BEAUVILLE/admin-digiy/actions/runs/37906283188) **SUCCESS**, 73 tests unitaires et restauration Docker fictive.
+- **La vraie archive #75 n'a PAS encore été restaurée/déchiffrée en local** ; la réussite du workflow de chiffrement ne constitue pas une preuve de récupération.
+- Instructions Mac privées, sans secret dans GitHub : [guide restaurateur actualisé](https://github.com/BEAUVILLE/admin-digiy/blob/main/docs/RESTORE_DIGIY_CORE_LOCAL_MAC.md). Après ce contrôle, réconcilier le snapshot à 82 et les anciennes dates avant tout SQL production.
+
 ## Procédure de déblocage
 
 1. **Opérateur propriétaire** : ouvrir [Actions — admin-digiy](https://github.com/BEAUVILLE/admin-digiy/actions), sélectionner **DIGIY — Sauvegarde Supabase chiffrée**, puis **Run workflow** sur `main`; attendre SUCCESS et vérifier qu'un nouvel artefact chiffré a été créé. Ne partager ni clé ni ZIP public.
