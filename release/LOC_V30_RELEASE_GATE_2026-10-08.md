@@ -114,6 +114,16 @@ A transient earlier **test-runner script corruption** caused [failure 3787735966
 
 **This proves a controlled SQL migration on synthetic historical rows, NOT restoration of the real encrypted DIGIY CORE backup.** Genuine backup restore in a separate authorized environment and true owner-session acceptance remain **NO-GO release gates**. No real calendar dates, bookings, guest information, permissions or production schemas were changed.
 
+## 2026-10-09 03:15 UTC — Genuine CORE restore environment compatibility probe
+
+**New verified live production environment (READ ONLY):** DIGIY CORE PostgreSQL **17.6** has **nine required database extensions**: `pg_cron` (`pg_catalog`), `pg_net` (`extensions`), `pg_stat_statements` (`extensions`), `pg_trgm` (`public`), `pgcrypto` (`extensions`), `supabase_vault` (`vault`), `unaccent` (`public`), `uuid-ossp` (`extensions`) and `vector` (`public`). These are catalog facts, not customer or authentication secrets.
+
+**[GitHub Actions offline PG17 recovery prerequisite probe 37878364856](https://github.com/BEAUVILLE/digiy-loc/actions/runs/37878364856) PASS:** `supabase/postgres:17.6.1.173`, `docker --network none`, no production database URLs, no real backup, no decryption key. All **9/9 extensions were discoverable and individually installed** with their intended schema names. Source [`pg17-recovery-prereqs.sh`](../tests/loc-master-v30/pg17-recovery-prereqs.sh) and [workflow](../.github/workflows/loc-v30-recovery-prereqs.yml) now automate this compatibility check.
+
+**Role bootstrap mismatch discovered before restoration:** Production includes nine platform roles `anon`, `authenticated`, `authenticator`, `pgbouncer`, `service_role`, `supabase_admin`, `supabase_auth_admin`, `supabase_realtime_admin`, `supabase_storage_admin`. On the isolated test image, **8/9 are already present**; **`supabase_realtime_admin` is absent**. During authorized true restore, test the **unaltered actual roles.sql** for both duplicate role declarations (8 pre-existing) and missing role initialization (1 absent) before claiming a successful schema/data recovery. Do not grant broad privileges or rewrite production to work around an untested restore.
+
+**Stop condition unchanged:** This is only a *prerequisite package / role inventory*. No real encrypted `digiy-core` archive was decrypted or restored; no genuine Auth, Storage, Edge Function or migration history was replayed. Supabase Storage **file bytes** are not in current backup. A separately authorized real restore and actual owner-session tests are mandatory before any V30 migration. All V30 PRs remain DRAFT.
+
 ## Founder handoff — engineer-managed release only
 
 **Decision on 2026-10-08:** the founder closed the Mac terminal and is not expected to run shell commands, locate database passwords, or copy connection strings. **Do not request any further technical action from the founder** as a condition of calling the software work done. Installation and tested recovery must be organized by an authorized technical operator with private access, without sharing credentials in GitHub or chat.
