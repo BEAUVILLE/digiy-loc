@@ -1,0 +1,297 @@
+\set ON_ERROR_STOP on
+-- DISPOSABLE postgres fixture. Real function definitions snapshot, all data FAKE.
+CREATE ROLE anon;
+CREATE ROLE authenticated;
+CREATE ROLE service_role;
+CREATE SCHEMA auth;
+CREATE OR REPLACE FUNCTION auth.uid() RETURNS uuid
+LANGUAGE sql STABLE AS $uid$
+ SELECT nullif(current_setting('request.jwt.claim.sub',true),'')::uuid
+$uid$;
+GRANT USAGE ON SCHEMA auth, public TO anon,authenticated,service_role;
+GRANT EXECUTE ON FUNCTION auth.uid() TO anon,authenticated,service_role;
+
+CREATE TABLE public.digiy_loc_master_sites(
+ id uuid PRIMARY KEY, owner_id uuid NOT NULL, slug text UNIQUE NOT NULL,
+ display_name text NOT NULL
+);
+CREATE TABLE public.digiy_loc_master_units(
+ id uuid PRIMARY KEY, site_id uuid NOT NULL REFERENCES public.digiy_loc_master_sites(id),
+ slug text NOT NULL, display_name text NOT NULL
+);
+CREATE TABLE public.digiy_loc_master_reservations(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ unit_id uuid NOT NULL REFERENCES public.digiy_loc_master_units(id),
+ guest_name text NOT NULL, guest_phone text NOT NULL,
+ source text, start_day date NOT NULL, end_day date NOT NULL,
+ note text, created_by uuid NOT NULL DEFAULT auth.uid(),
+ created_at timestamptz NOT NULL DEFAULT now(),
+ updated_at timestamptz NOT NULL DEFAULT now(),
+ CONSTRAINT digiy_loc_master_reservations_valid_range CHECK(end_day>=start_day)
+);
+CREATE TABLE public.digiy_loc_master_unit_calendar(
+ unit_id uuid NOT NULL REFERENCES public.digiy_loc_master_units(id),
+ day date NOT NULL,status text NOT NULL, updated_at timestamptz NOT NULL DEFAULT now(),
+ price_override numeric,
+ CONSTRAINT digiy_loc_master_unit_calendar_pkey PRIMARY KEY(unit_id,day),
+ CONSTRAINT digiy_loc_master_unit_calendar_status_check CHECK(status IN('occupied','closed'))
+);
+INSERT INTO public.digiy_loc_master_sites(id,owner_id,slug,display_name)
+VALUES
+ ('00000000-0000-4000-8000-000000000a01','00000000-0000-4000-8000-000000000a11','saly-test','Saly synthetic'),
+ ('00000000-0000-4000-8000-000000000b01','00000000-0000-4000-8000-000000000b11','sarlat-test','Sarlat synthetic');
+INSERT INTO public.digiy_loc_master_units(id,site_id,slug,display_name)
+VALUES
+ ('00000000-0000-4000-8000-000000000a02','00000000-0000-4000-8000-000000000a01','unit-a','Saly unit'),
+ ('00000000-0000-4000-8000-000000000b02','00000000-0000-4000-8000-000000000b01','unit-b','Sarlat unit');
+
+-- Synthetic historic legacy blocks mirror ONLY live aggregate counts, never
+-- actual owners, guest information, lodging dates, or private identifiers.
+-- 61 occupied dates for Saly, 20 for Sarlat; all provenance UNKNOWN.
+-- Deliberately outside the future synthetic booking test dates.
+INSERT INTO public.digiy_loc_master_unit_calendar(unit_id,day,status,updated_at)
+SELECT '00000000-0000-4000-8000-000000000a02'::uuid,
+       days.d::date,'occupied',now()
+FROM generate_series(DATE '2025-01-01',DATE '2025-03-02',INTERVAL '1 day') AS days(d);
+INSERT INTO public.digiy_loc_master_unit_calendar(unit_id,day,status,updated_at)
+SELECT '00000000-0000-4000-8000-000000000b02'::uuid,
+       days.d::date,'occupied',now()
+FROM generate_series(DATE '2025-01-01',DATE '2025-01-20',INTERVAL '1 day') AS days(d);
+
+-- Exact live source snapshot: digiy_loc_master_list_reservations_v1 (2026-10-08)
+CREATE OR REPLACE FUNCTION public.digiy_loc_master_list_reservations_v1(p_unit_id uuid)
+ RETURNS TABLE(id uuid, unit_id uuid, guest_name text, guest_phone text, source text, start_day date, end_day date, note text, created_at timestamp with time zone, updated_at timestamp with time zone)
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'pg_catalog', 'public', 'auth'
+AS $function$
+begin
+  if auth.uid() is null then
+    raise exception 'Authentication required';
+  end if;
+
+  if not exists (
+    select 1
+    from public.digiy_loc_master_units u
+    join public.digiy_loc_master_sites s on s.id = u.site_id
+    where u.id = p_unit_id
+      and s.owner_id = auth.uid()
+  ) then
+    raise exception 'Forbidden';
+  end if;
+
+  return query
+  select
+    r.id,
+    r.unit_id,
+    r.guest_name,
+    r.guest_phone,
+    r.source,
+    r.start_day,
+    r.end_day,
+    r.note,
+    r.created_at,
+    r.updated_at
+  from public.digiy_loc_master_reservations r
+  where r.unit_id = p_unit_id
+  order by r.start_day desc, r.created_at desc;
+end;
+$function$;
+
+
+-- Exact live source snapshot: digiy_loc_master_save_reservation_v1 (2026-10-08)
+CREATE OR REPLACE FUNCTION public.digiy_loc_master_save_reservation_v1(p_unit_id uuid, p_start_day date, p_end_day date, p_guest_name text, p_guest_phone text, p_source text DEFAULT NULL::text, p_note text DEFAULT NULL::text)
+ RETURNS TABLE(id uuid, start_day date, end_day date, guest_name text, guest_phone text, source text, note text)
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'pg_catalog', 'public', 'auth'
+AS $function$
+declare
+  v_owner uuid;
+  v_id uuid;
+begin
+  if auth.uid() is null then
+    raise exception 'AUTH_REQUIRED';
+  end if;
+
+  select s.owner_id into v_owner
+  from public.digiy_loc_master_units u
+  join public.digiy_loc_master_sites s on s.id=u.site_id
+  where u.id=p_unit_id;
+
+  if v_owner is null or v_owner <> auth.uid() then
+    raise exception 'OWNER_FORBIDDEN';
+  end if;
+
+  if p_start_day is null or p_end_day is null or p_end_day < p_start_day then
+    raise exception 'INVALID_DATES';
+  end if;
+  if nullif(btrim(p_guest_name),'') is null then
+    raise exception 'GUEST_NAME_REQUIRED';
+  end if;
+  if nullif(btrim(p_guest_phone),'') is null then
+    raise exception 'GUEST_PHONE_REQUIRED';
+  end if;
+
+  insert into public.digiy_loc_master_reservations(
+    unit_id,guest_name,guest_phone,source,start_day,end_day,note,created_by,updated_at
+  ) values (
+    p_unit_id,btrim(p_guest_name),btrim(p_guest_phone),nullif(btrim(p_source),''),p_start_day,p_end_day,nullif(btrim(p_note),''),auth.uid(),now()
+  ) returning digiy_loc_master_reservations.id into v_id;
+
+  insert into public.digiy_loc_master_unit_calendar(unit_id,day,status,updated_at)
+  select p_unit_id,gs::date,'occupied',now()
+  from generate_series(p_start_day,p_end_day,interval '1 day') gs
+  on conflict on constraint digiy_loc_master_unit_calendar_pkey do update
+    set status='occupied',updated_at=excluded.updated_at;
+
+  return query
+  select r.id,r.start_day,r.end_day,r.guest_name,r.guest_phone,r.source,r.note
+  from public.digiy_loc_master_reservations r
+  where r.id=v_id;
+end;
+$function$;
+
+
+-- Exact live source snapshot: digiy_loc_set_unit_calendar_state (2026-10-08)
+CREATE OR REPLACE FUNCTION public.digiy_loc_set_unit_calendar_state(p_unit_id uuid, p_days date[], p_status text)
+ RETURNS integer
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+declare
+  v_owner uuid;
+  v_count integer := 0;
+begin
+  if auth.uid() is null then
+    raise exception 'AUTH_REQUIRED';
+  end if;
+
+  if p_status not in ('available','occupied','closed') then
+    raise exception 'INVALID_STATUS';
+  end if;
+
+  if p_days is null or coalesce(array_length(p_days,1),0)=0 then
+    raise exception 'NO_DATES';
+  end if;
+
+  select s.owner_id
+    into v_owner
+  from public.digiy_loc_master_units u
+  join public.digiy_loc_master_sites s on s.id=u.site_id
+  where u.id=p_unit_id;
+
+  if v_owner is null or v_owner <> auth.uid() then
+    raise exception 'OWNER_FORBIDDEN';
+  end if;
+
+  if p_status='available' then
+    delete from public.digiy_loc_master_unit_calendar
+    where unit_id=p_unit_id
+      and day = any(p_days);
+    get diagnostics v_count = row_count;
+    return v_count;
+  end if;
+
+  insert into public.digiy_loc_master_unit_calendar(unit_id,day,status,updated_at)
+  select p_unit_id, d, p_status, now()
+  from unnest(p_days) as d
+  on conflict (unit_id,day) do update
+    set status=excluded.status,
+        updated_at=excluded.updated_at;
+
+  get diagnostics v_count = row_count;
+  return v_count;
+end;
+$function$;
+
+
+-- Exact live source snapshot: digiy_loc_set_unit_calendar_state_v2 (2026-10-08)
+CREATE OR REPLACE FUNCTION public.digiy_loc_set_unit_calendar_state_v2(p_unit_id uuid, p_days date[], p_status text)
+ RETURNS TABLE(day date, status text)
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'pg_catalog', 'public', 'auth'
+AS $function$
+declare
+  v_owner uuid;
+begin
+  if p_status not in ('available','occupied','closed') then
+    raise exception 'invalid_status';
+  end if;
+
+  select s.owner_id
+    into v_owner
+  from public.digiy_loc_master_units as u
+  join public.digiy_loc_master_sites as s on s.id = u.site_id
+  where u.id = p_unit_id;
+
+  if v_owner is null or v_owner <> auth.uid() then
+    raise exception 'not_authorized';
+  end if;
+
+  if p_status = 'available' then
+    delete from public.digiy_loc_master_unit_calendar as c
+    where c.unit_id = p_unit_id
+      and c.day = any(p_days);
+
+    return query
+    select x.day_value, 'available'::text
+    from unnest(p_days) as x(day_value)
+    order by x.day_value;
+  else
+    insert into public.digiy_loc_master_unit_calendar(unit_id, day, status, updated_at)
+    select p_unit_id, x.day_value, p_status, now()
+    from unnest(p_days) as x(day_value)
+    on conflict on constraint digiy_loc_master_unit_calendar_pkey do update
+      set status = excluded.status,
+          updated_at = excluded.updated_at;
+
+    return query
+    select c.day, c.status
+    from public.digiy_loc_master_unit_calendar as c
+    where c.unit_id = p_unit_id
+      and c.day = any(p_days)
+    order by c.day;
+  end if;
+end;
+$function$;
+
+GRANT EXECUTE ON FUNCTION
+ public.digiy_loc_master_save_reservation_v1(uuid,date,date,text,text,text,text),
+ public.digiy_loc_master_list_reservations_v1(uuid),
+ public.digiy_loc_set_unit_calendar_state_v2(uuid,date[],text),
+ public.digiy_loc_set_unit_calendar_state(uuid,date[],text)
+ TO authenticated,service_role;
+REVOKE EXECUTE ON FUNCTION
+ public.digiy_loc_master_save_reservation_v1(uuid,date,date,text,text,text,text),
+ public.digiy_loc_master_list_reservations_v1(uuid),
+ public.digiy_loc_set_unit_calendar_state_v2(uuid,date[],text),
+ public.digiy_loc_set_unit_calendar_state(uuid,date[],text)
+ FROM PUBLIC,anon;
+GRANT SELECT,INSERT,UPDATE,DELETE ON
+ public.digiy_loc_master_reservations,
+ public.digiy_loc_master_unit_calendar,
+ public.digiy_loc_master_sites,
+ public.digiy_loc_master_units
+ TO authenticated;
+-- Mirror real digiy-core: both exposed MASTER tables have RLS enabled.
+-- Synthetic policies approximate the existing owner-visible SELECT boundary.
+ALTER TABLE public.digiy_loc_master_reservations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.digiy_loc_master_unit_calendar ENABLE ROW LEVEL SECURITY;
+CREATE POLICY v30_fixture_owner_reservations_read
+ ON public.digiy_loc_master_reservations FOR SELECT TO authenticated
+ USING(EXISTS(
+   SELECT 1 FROM public.digiy_loc_master_units u
+   JOIN public.digiy_loc_master_sites s ON s.id=u.site_id
+   WHERE u.id=unit_id AND s.owner_id=auth.uid()));
+CREATE POLICY v30_fixture_owner_calendar_read
+ ON public.digiy_loc_master_unit_calendar FOR SELECT TO authenticated
+ USING(EXISTS(
+   SELECT 1 FROM public.digiy_loc_master_units u
+   JOIN public.digiy_loc_master_sites s ON s.id=u.site_id
+   WHERE u.id=unit_id AND s.owner_id=auth.uid()));
+GRANT SELECT ON public.digiy_loc_master_unit_calendar TO anon;
+CREATE POLICY v30_fixture_calendar_public_read
+ ON public.digiy_loc_master_unit_calendar FOR SELECT TO anon USING(true);

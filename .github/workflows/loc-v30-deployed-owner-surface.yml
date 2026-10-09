@@ -1,0 +1,40 @@
+name: DIGIY LOC V30 published-owner HTML read-only check
+on:
+  pull_request:
+    paths:
+      - "tests/loc-master-v30/deployed-owner-surface-readonly.py"
+      - ".github/workflows/loc-v30-deployed-owner-surface.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  published-owners:
+    name: Compare published Saly and Sarlat HTML with pinned main SHAs
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Inspect V30 diagnostic script
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Pin release-approved Saly V30 owner main source
+        uses: actions/checkout@v4
+        with:
+          repository: BEAUVILLE/part-chez-baptiste
+          ref: 7da11499eda10edb08bef7ac508b817bcbe5c60d
+          path: staging/deployed-saly
+          persist-credentials: false
+      - name: Pin release-approved Sarlat V30 owner main source
+        uses: actions/checkout@v4
+        with:
+          repository: BEAUVILLE/pro-espace
+          ref: e2d171e9a48e7e1bb6da723c5e9667fff4a273b2
+          path: staging/deployed-sarlat
+          persist-credentials: false
+      - name: Read public owner HTML only and compare cryptographic digests
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          python3 tests/loc-master-v30/deployed-owner-surface-readonly.py
