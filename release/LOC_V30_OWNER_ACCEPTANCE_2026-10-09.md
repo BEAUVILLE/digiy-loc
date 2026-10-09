@@ -41,7 +41,7 @@
 
 ## Phase C — approbation et observation production
 
-- [ ] Tous les appelants **effectivement déployés** vérifiés ; plus aucun client direct-write calendar/reservations qui serait cassé par les révocations SQL. Le MAÎTRE `main` doit être corrigé ou explicitement déclaré non déployé/non actif.
+- [ ] Tous les appelants **effectivement déployés** vérifiés ; plus aucun client direct-write calendar/reservations qui serait cassé par les révocations SQL. Le MAÎTRE `main` a été corrigé via PR #11 (RPC v2) ; vérifier néanmoins toutes les copies déjà publiées de l'ancien code direct-write. La nouvelle PR MAÎTRE V30 #12 reste DRAFT.
 - [ ] Les quatre PR du lot (serveur #38, Saly #12, Sarlat #7, MAÎTRE #10) ont un plan d'ordre de déploiement et de retour arrière approuvé.
 - [ ] Nouvelle sauvegarde logique privée, préflight **8/8**, et snapshot 61+20 avant la migration.
 - [ ] Autorisation **distincte et explicite** pour fusionner les interfaces, puis pour appliquer une migration SQL en production, avec opérateur présent et fenêtre de maintenance.
