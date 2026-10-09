@@ -18,25 +18,25 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - name: Checkout Saly owner PR head (not deployed)
+      - name: Checkout deployed Saly owner main SHA
         uses: actions/checkout@v4
         with:
           repository: BEAUVILLE/part-chez-baptiste
-          ref: d347e34e982be162315e872eb60d05be8e97c56a
+          ref: 7da11499eda10edb08bef7ac508b817bcbe5c60d
           path: staging/saly
           persist-credentials: false
-      - name: Checkout Sarlat owner PR head (not deployed)
+      - name: Checkout deployed Sarlat owner main SHA
         uses: actions/checkout@v4
         with:
           repository: BEAUVILLE/pro-espace
-          ref: d3c3475e07db9e919e1413190582a00fdc9bcf83
+          ref: e2d171e9a48e7e1bb6da723c5e9667fff4a273b2
           path: staging/sarlat
           persist-credentials: false
-      - name: Checkout MAITRE owner template V30 PR head (not deployed)
+      - name: Checkout MAITRE V30 merged main SHA
         uses: actions/checkout@v4
         with:
           repository: BEAUVILLE/digiy-master-modeles
-          ref: 7a8189896427be9cf8b0be48b7c47e9f591f623f
+          ref: 698fad1daae50b5b85683a6b3f1c949448582c0d
           path: staging/maitre
           persist-credentials: false
       - uses: actions/setup-node@v4
