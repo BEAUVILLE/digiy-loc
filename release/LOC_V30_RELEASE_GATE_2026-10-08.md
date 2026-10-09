@@ -44,6 +44,12 @@ acceptance without touching real guest bookings; and seek separate express appro
 for any production V30 SQL release. Do not create a billable Supabase project or
 branch without an informed cost agreement, and never restore into DIGIY CORE.
 
+## 2026-10-09 02:20 UTC — Verified synthetic encrypted restore in GitHub
+
+**PASS, but synthetic only:** [GitHub Actions run 37874031403](https://github.com/BEAUVILLE/admin-digiy/actions/runs/37874031403) on [admin-digiy draft PR #13](https://github.com/BEAUVILLE/admin-digiy/pull/13) passed **37/37** isolated tests and executed a full SQL restore using an artificially encrypted archive inside the temporary `supabase/postgres:17.6.1.173` container with Docker `--network none`. SHA-256 encrypted and internal manifests, decryption, roles/schema/COPY, and read-only aggregate proof **81/81 fictional blocked calendar days**, 0 MASTER reservation rows and one synthetic RPC all passed. No real owner, guest, password or production database was accessed.
+
+**Do not conflate this with real backup recovery:** The genuine 2026-10-09 archive [artifact 11590062979](https://github.com/BEAUVILLE/admin-digiy/actions/runs/37870420013/artifacts/11590062979) **has never been restored**. A GitHub connector security restriction prevented creation of a workflow using the real archive and private encryption passphrase; this was respected, not circumvented. The official test remains **NO-GO for V30** until an authorized secure operator proves restoration of the real dump on a different database, confirms full extension/roles/schema/data compatibility, and signs off. Storage objects are still metadata-only and no offsite copy exists. This CI fixture is proof that the *isolated test harness* works, not proof that *DIGIY CORE data* is recoverable.
+
 ## Founder handoff — engineer-managed release only
 
 **Decision on 2026-10-08:** the founder closed the Mac terminal and is not expected to run shell commands, locate database passwords, or copy connection strings. **Do not request any further technical action from the founder** as a condition of calling the software work done. Installation and tested recovery must be organized by an authorized technical operator with private access, without sharing credentials in GitHub or chat.
