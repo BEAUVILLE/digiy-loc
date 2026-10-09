@@ -2,6 +2,8 @@
 
 **Date : 2026-10-09 (UTC). Statut : sauvegarde SQL / restauration réelle = PASS ; autorisation de déploiement V30 = NO-GO.**
 
+> **Complément sécurité 07:45 UTC :** [MAÎTRE hotfix #11 fusionné](https://github.com/BEAUVILLE/digiy-master-modeles/pull/11) (écritures calendrier directes retirées dans `main`) ; [MAÎTRE V30 PR #12](https://github.com/BEAUVILLE/digiy-master-modeles/pull/12) reconstruite à partir de ce `main` et validée par trois suites CI. La [PR centrale LOC #38](https://github.com/BEAUVILLE/digiy-loc/pull/38) teste désormais le SHA exact du nouveau candidat. Ne pas assimiler « modèle corrigé » à « copies anciennes corrigées » : l'inventaire réel des installations et les sessions propriétaires Saly/Sarlat restent requis.
+
 ## 1. Preuve de récupération réelle : VERROU LEVÉ
 
 Le fondateur a **exécuté personnellement sur son Mac** `scripts/restore-from-downloaded-artifact-local.sh` du dépôt `BEAUVILLE/admin-digiy`, sur le ZIP privé `digiy-supabase-2026-10-09T05-12-58Z-NEUF.zip`. Le journal non sensible transmis au suivi indique :
@@ -44,7 +46,7 @@ Le candidat [V30 serveur PR #38](https://github.com/BEAUVILLE/digiy-loc/pull/38)
 Les trois autres PR du lot sont toujours **DRAFT**, non fusionnées :
 - [Saly #12](https://github.com/BEAUVILLE/part-chez-baptiste/pull/12) : `d347e34e982be162315e872eb60d05be8e97c56a` ; `main` déployable encore `ca17270e2daf8a0b27aafebd795fd20878458d30`.
 - [Sarlat / pro-espace #7](https://github.com/BEAUVILLE/pro-espace/pull/7) : `d3c3475e07db9e919e1413190582a00fdc9bcf83` ; `main` encore `3395749759e49fac3e0aaa085713b62e794f59fe`.
-- [MAÎTRE #10](https://github.com/BEAUVILLE/digiy-master-modeles/pull/10) : `e2d54d1546af4b5432f7a71b92bd5dc96fbd8676` ; `main` encore `08196f890674502ddfb3af28ed92846eeb4e5174`. **Le template MAÎTRE main contient encore une écriture calendrier directe**, corrigée uniquement dans la PR brouillon. Révoquer les droits en production avant fermeture de ce risque serait dangereux.
+- **MAÎTRE hotfix #11 : fusionné** sur `main` au commit `4039b8a67d1361efb26dfda01441d7c574dc20ee` — le modèle n'utilise plus `delete/upsert` direct calendrier, seulement la RPC v2 propriétaire ([PR #11](https://github.com/BEAUVILLE/digiy-master-modeles/pull/11), 10/10 tests). L'ancien candidat V30 #10 a été fermé sans fusion (conflit, obsolète). **Nouveau candidat V30 #12 DRAFT** au HEAD `7a8189896427be9cf8b0be48b7c47e9f591f623f` ([PR #12](https://github.com/BEAUVILLE/digiy-master-modeles/pull/12)) : tests calendrier, contrôles propriétaires et navigateur tous verts. Les **copies déjà déployées du vieux modèle** restent à inventorier : fusionner le modèle ne les modifie pas rétroactivement.
 
 Les tests navigateur ont des API simulées ; ils ne prouvent **aucune session propriétaire réelle**, ni la compatibilité de toutes les copies déployées.
 
