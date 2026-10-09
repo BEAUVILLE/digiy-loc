@@ -26,11 +26,11 @@ jobs:
           ref: 7da11499eda10edb08bef7ac508b817bcbe5c60d
           path: staging/deployed-saly
           persist-credentials: false
-      - name: Pin previously published Sarlat main source
+      - name: Pin release-approved Sarlat V30 owner main source
         uses: actions/checkout@v4
         with:
           repository: BEAUVILLE/pro-espace
-          ref: 3395749759e49fac3e0aaa085713b62e794f59fe
+          ref: e2d171e9a48e7e1bb6da723c5e9667fff4a273b2
           path: staging/deployed-sarlat
           persist-credentials: false
       - name: Read public owner HTML only and compare cryptographic digests
