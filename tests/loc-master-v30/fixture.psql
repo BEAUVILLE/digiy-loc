@@ -45,6 +45,19 @@ VALUES
  ('00000000-0000-4000-8000-000000000a02','00000000-0000-4000-8000-000000000a01','unit-a','Saly unit'),
  ('00000000-0000-4000-8000-000000000b02','00000000-0000-4000-8000-000000000b01','unit-b','Sarlat unit');
 
+-- Synthetic historic legacy blocks mirror ONLY live aggregate counts, never
+-- actual owners, guest information, lodging dates, or private identifiers.
+-- 61 occupied dates for Saly, 20 for Sarlat; all provenance UNKNOWN.
+-- Deliberately outside the future synthetic booking test dates.
+INSERT INTO public.digiy_loc_master_unit_calendar(unit_id,day,status,updated_at)
+SELECT '00000000-0000-4000-8000-000000000a02'::uuid,
+       days.d::date,'occupied',now()
+FROM generate_series(DATE '2025-01-01',DATE '2025-03-02',INTERVAL '1 day') AS days(d);
+INSERT INTO public.digiy_loc_master_unit_calendar(unit_id,day,status,updated_at)
+SELECT '00000000-0000-4000-8000-000000000b02'::uuid,
+       days.d::date,'occupied',now()
+FROM generate_series(DATE '2025-01-01',DATE '2025-01-20',INTERVAL '1 day') AS days(d);
+
 -- Exact live source snapshot: digiy_loc_master_list_reservations_v1 (2026-10-08)
 CREATE OR REPLACE FUNCTION public.digiy_loc_master_list_reservations_v1(p_unit_id uuid)
  RETURNS TABLE(id uuid, unit_id uuid, guest_name text, guest_phone text, source text, start_day date, end_day date, note text, created_at timestamp with time zone, updated_at timestamp with time zone)
