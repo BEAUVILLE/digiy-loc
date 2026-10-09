@@ -10,7 +10,12 @@ fi
 export PGDATABASE=digiy_loc_v30_disposable
 createdb "$PGDATABASE"
 psql -X -v ON_ERROR_STOP=1 -f tests/loc-master-v30/fixture.psql
+# Territory aggregation must function BOTH before and after the schema migration.
+psql -X -v ON_ERROR_STOP=1 -f supabase/candidates/LOC_MASTER_V30_TERRITORY_BASELINE_READONLY.sql >/dev/null
+echo 'V30 territory baseline SELECT works on pre-migration schema'
 psql -X -v ON_ERROR_STOP=1 -f supabase/candidates/LOC_MASTER_V30_CANDIDATE.sql
+psql -X -v ON_ERROR_STOP=1 -f supabase/candidates/LOC_MASTER_V30_TERRITORY_BASELINE_READONLY.sql >/dev/null
+echo 'V30 territory baseline SELECT works on post-migration schema'
 # Independently check the live-like migrated schema and effective privileges.
 postcheck="$(psql -X -At -F '|' -v ON_ERROR_STOP=1 -f supabase/candidates/LOC_MASTER_V30_POSTCHECK_READONLY.sql)"
 if [[ "${postcheck%%|*}" != 't' ]]; then
