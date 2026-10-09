@@ -1,0 +1,27 @@
+name: DIGIY LOC V30 recovery extension prerequisites
+
+on:
+  pull_request:
+    paths:
+      - "tests/loc-master-v30/pg17-recovery-prereqs.sh"
+      - ".github/workflows/loc-v30-recovery-prereqs.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  recovery-prerequisites:
+    name: Supabase PG17 matching extensions, networkless and synthetic
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout V30 source only
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify production-required extensions in offline Supabase PG17
+        shell: bash
+        env:
+          V30_CI_ONLY: "1"
+        run: bash tests/loc-master-v30/pg17-recovery-prereqs.sh
