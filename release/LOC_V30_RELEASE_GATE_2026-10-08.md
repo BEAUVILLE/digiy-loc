@@ -50,6 +50,32 @@ branch without an informed cost agreement, and never restore into DIGIY CORE.
 
 **Do not conflate this with real backup recovery:** The genuine 2026-10-09 archive [artifact 11590062979](https://github.com/BEAUVILLE/admin-digiy/actions/runs/37870420013/artifacts/11590062979) **has never been restored**. A GitHub connector security restriction prevented creation of a workflow using the real archive and private encryption passphrase; this was respected, not circumvented. The official test remains **NO-GO for V30** until an authorized secure operator proves restoration of the real dump on a different database, confirms full extension/roles/schema/data compatibility, and signs off. Storage objects are still metadata-only and no offsite copy exists. This CI fixture is proof that the *isolated test harness* works, not proof that *DIGIY CORE data* is recoverable.
 
+## 2026-10-09 02:36 UTC — Three-client contract guard and expanded owner-browser tests
+
+**PASS, fully isolated.** [Owner browser + three-client source check](https://github.com/BEAUVILLE/digiy-loc/actions/runs/37875321844) passed all **12/12 Playwright tests** across owner screens Saly and Sarlat (6 each), including:
+- real V30-candidate HTML with mocked API: explicit per-booking cancellation, retained history and zero outbound customer/payment events;
+- safe v1 history fallback, without ever offering cancellation when V30 is unavailable;
+- no fallback on permission errors;
+- fail-closed if cancellation RPC refuses with OWNER_FORBIDDEN or returns an unconfirmed result;
+- legacy/unknown-provenance dates remain blocked and an owner review warning is shown.
+
+The same CI checks **three pinned candidate heads**, not deployed HTML:
+- Saly [owner PR #12](https://github.com/BEAUVILLE/part-chez-baptiste/pull/12), head `d347e34e982be162315e872eb60d05be8e97c56a`;
+- Sarlat [owner PR #7](https://github.com/BEAUVILLE/pro-espace/pull/7), head `d3c3475e07db9e919e1413190582a00fdc9bcf83`;
+- MAÎTRE [factory PR #10](https://github.com/BEAUVILLE/digiy-master-modeles/pull/10), head `e2d54d1546af4b5432f7a71b92bd5dc96fbd8676`.
+
+A source-level guard verifies required v1/v2/cancellation RPCs and rejects direct `insert/upsert/update/delete` chaining from the MASTER calendar table in these three snapshots. It observed read-only calendar call sites: **Saly 2, Sarlat 3, MAÎTRE 2**. It cannot prove there are no alternate or generated writers in deployed copies.
+
+**[PostgreSQL 16+17 SQL isolation](https://github.com/BEAUVILLE/digiy-loc/actions/runs/37875321879) also PASS on both versions:** migrated schema and RLS/grants postcheck, owner boundaries, safe cancellation, provenance preservation, and serialized concurrent-write rejection (exactly one booking survives; the racing overlapping writer fails as intended).
+
+**GitHub Pages deployment comparison, read-only GitHub evidence:**
+- Saly `main` at `ca17270e2daf8a0b27aafebd795fd20878458d30`, [latest successful Pages build](https://github.com/BEAUVILLE/part-chez-baptiste/actions/runs/36714065404) from the same SHA; V30 PR #12 **not deployed**.
+- Sarlat `main` at `3395749759e49fac3e0aaa085713b62e794f59fe`, [latest successful Pages build](https://github.com/BEAUVILLE/pro-espace/actions/runs/37018334605) from the same SHA; V30 PR #7 **not deployed**.
+- MAÎTRE `main` at `08196f890674502ddfb3af28ed92846eeb4e5174` still contains legacy direct calendar mutation; the candidate PR #10 removes it. Repository has no GitHub Pages build in checked runs. **Do not revoke direct table grants while known deployed/legacy copies may still write directly.**
+- The live HTML endpoints could **not be inspected externally** in this check, so deployment SHA evidence must not be mistaken for live HTTP parity.
+
+**UNCHANGED STOP GATES:** genuine encrypted backup artifact 11590062979 must be restored on a separate authorized target (never happened); legacy/deployed clients outside tracked branches remain to be confirmed; then authorized Saly/Sarlat owner-session acceptance, separate sign-off before mutating any production SQL. All four PRs remain DRAFT; no guest, calendar or permission rows were changed by these tests.
+
 ## Founder handoff — engineer-managed release only
 
 **Decision on 2026-10-08:** the founder closed the Mac terminal and is not expected to run shell commands, locate database passwords, or copy connection strings. **Do not request any further technical action from the founder** as a condition of calling the software work done. Installation and tested recovery must be organized by an authorized technical operator with private access, without sharing credentials in GitHub or chat.
