@@ -4,6 +4,7 @@ on:
     paths:
       - "tests/loc-master-v30/owner-browser.spec.cjs"
       - "tests/loc-master-v30/three-client-source-guard.cjs"
+      - "tests/loc-master-v30/three-client-source-guard.test.cjs"
       - "tests/loc-master-v30/playwright.config.cjs"
       - ".github/workflows/loc-v30-owner-browser.yml"
   workflow_dispatch:
@@ -41,6 +42,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - name: Regression-check direct and aliased calendar write detection
+        run: node --test tests/loc-master-v30/three-client-source-guard.test.cjs
       - name: Guard all three V30 owner HTML candidates against direct calendar writes
         run: node tests/loc-master-v30/three-client-source-guard.cjs
       - name: Install isolated Chromium test tooling
