@@ -36,7 +36,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: BEAUVILLE/digiy-master-modeles
-          ref: e2d54d1546af4b5432f7a71b92bd5dc96fbd8676
+          ref: 7a8189896427be9cf8b0be48b7c47e9f591f623f
           path: staging/maitre
           persist-credentials: false
       - uses: actions/setup-node@v4
