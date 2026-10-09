@@ -124,6 +124,14 @@ A transient earlier **test-runner script corruption** caused [failure 3787735966
 
 **Stop condition unchanged:** This is only a *prerequisite package / role inventory*. No real encrypted `digiy-core` archive was decrypted or restored; no genuine Auth, Storage, Edge Function or migration history was replayed. Supabase Storage **file bytes** are not in current backup. A separately authorized real restore and actual owner-session tests are mandatory before any V30 migration. All V30 PRs remain DRAFT.
 
+## 2026-10-09 03:29 UTC — Real encrypted backup SHA256 portability fix merged (operator path ready)
+
+**Proven defect fixed, not genuine restoration:** Independent read-only examination of [actual encrypted artifact #11590062979](https://github.com/BEAUVILLE/admin-digiy/actions/runs/37870420013/artifacts/11590062979) showed that its external SHA256 manifest contains the ORIGINAL GitHub runner's absolute filesystem path. The digest itself is correct and the basename matches the encrypted archive. The older restore shell's `sha256sum -c` against that absolute path would fail after download onto another computer. **[admin-digiy PR #14](https://github.com/BEAUVILLE/admin-digiy/pull/14) was squash-merged on `main`** at `48dacf6778156f04e0a3a65886719265744ff0ed`. It now verifies locally downloaded ciphertext bytes, checks file basename, never opens the original GitHub path, accepts macOS `shasum`, rejects unsafe ZIP contents, and offers a private interactive operator path.
+
+**[Final CI #37879464012](https://github.com/BEAUVILLE/admin-digiy/actions/runs/37879464012) PASS:** 53/53 tests; full **synthetic** encrypted restoration in networkless PostgreSQL 17 with an ABSOLUTE GitHub-style manifest; wrong passphrase and corrupted ciphertext rejected. [Secured Mac operator instructions](https://github.com/BEAUVILLE/admin-digiy/blob/main/docs/RESTORE_DIGIY_CORE_LOCAL_MAC.md). No password was shared, no real archive was decrypted, and the integration restriction on creating a GitHub secret-bearing workflow remains respected.
+
+**Release status is still NO-GO:** An authorized operator must run a true restoration of the unchanged 9 October encrypted archive on their private encrypted Mac in the isolated Docker container, verify counts/extensions/roles and a sanitized PASS log; actual sessions at Saly/Sarlat and separate production migration authorization still needed. Production remains unchanged and all four V30 PRs DRAFT.
+
 ## Founder handoff — engineer-managed release only
 
 **Decision on 2026-10-08:** the founder closed the Mac terminal and is not expected to run shell commands, locate database passwords, or copy connection strings. **Do not request any further technical action from the founder** as a condition of calling the software work done. Installation and tested recovery must be organized by an authorized technical operator with private access, without sharing credentials in GitHub or chat.
