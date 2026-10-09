@@ -180,7 +180,7 @@ Re-run preflight immediately before any planned release. If counts/signatures/co
 
 **Updated factory parity (draft):** [MAÎTRE LOC PR #10](https://github.com/BEAUVILLE/digiy-master-modeles/pull/10) now includes a generic private reservation form, V30 cancellation with legacy-safe fallback, and the protected calendar RPC. [15 isolated Node tests passed](https://github.com/BEAUVILLE/digiy-master-modeles/actions/runs/37857692004) and [4/4 isolated mobile-browser tests passed](https://github.com/BEAUVILLE/digiy-master-modeles/actions/runs/37857692007). This remains a draft. Test with real owner sessions before any release.
 
-## Mandatory pre-release backup / restoration proof — PARTIALLY SATISFIED (archive yes; isolated restore no)
+## Mandatory pre-release backup / restoration proof — SQL RESTORE PASS (2026-10-09); full-platform DR excluded
 
 1. **Verified:** Supabase organization `DIGIY AFRICA` is on the `free` tier (read-only organization lookup 2026-10-08). **Do not assume automatic daily backups.** Check actual project backup/PITR availability in Supabase Dashboard > Database > Backups, but plan a private logical export regardless. Free-tier logical export is recommended in the official reference: https://supabase.com/docs/guides/platform/backups
 2. Export an encrypted, access-controlled logical backup of the relevant database and schema using officially documented Supabase CLI or `pg_dump`, with exact command syntax verified by the CLI `--help`. Include table data, function definitions, constraints, indexes, grants, RLS policies and owner information. A full-project backup is preferable; keep credentials and dumps **outside public GitHub, CI logs and the user-facing chat**.
@@ -208,4 +208,4 @@ Re-run preflight immediately before any planned release. If counts/signatures/co
 
 ## Current release decision
 
-**NO-GO for production today (archive exists, isolated restore not proven) until:** complete deployed caller inventory, evidence of secure **restored** backup, real-user staging acceptance (both sites), and separate explicit sign-off on SQL production mutation. All four PRs stay **DRAFT**. Pure synthetic tests and a read-only catalog preflight **do not substitute** for these controls.
+**NO-GO for production today (real encrypted SQL restore now proven on the owner's isolated Mac)** until: complete inventory of deployed direct-write callers (especially the old MAÎTRE template and any copies), authentic Saly/Sarlat owner-session acceptance without touching live guests, and a **separate express approval** for each client rollout and any Supabase production SQL migration. All four V30 PRs stay **DRAFT**. The completed restore is a SQL recovery proof, not full Storage-object/Edge/SMTP disaster recovery. See the [2026-10-09 real-restore checkpoint](LOC_V30_REAL_RESTORE_CHECKPOINT_2026-10-09.md).
