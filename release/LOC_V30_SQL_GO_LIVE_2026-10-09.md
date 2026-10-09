@@ -32,6 +32,12 @@ Exécution SELECT `supabase/candidates/LOC_MASTER_V30_POSTCHECK_READONLY.sql` :
 - Authentifiés : RPC réservation / annulation / calendrier / historique v2 autorisées ; anonymes : ces RPC refusées, y compris RPC calendrier legacy ; table MASTER : insert/update/delete directs `authenticated` révoqués.
 - L'avis de sécurité Supabase contient des avertissements génériques pour les RPC `SECURITY DEFINER` exposées à `authenticated`. Ce sont des RPC propriétaires intentionnelles comportant vérifications `auth.uid()`/propriété selon le code revu et les tests synthétiques ; l'avis seul **ne prouve ni absence ni présence** de vulnérabilité. [Guide Supabase](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable).
 
+## Publication des nouvelles RPC côté API
+
+Après le postcheck, commande officielle de rafraîchissement du catalogue PostgREST exécutée dans DIGIY CORE : `NOTIFY pgrst, 'reload schema';` (exécution sans erreur, résultat `[]`, aucune ligne métier modifiée). [Procédure officielle Supabase](https://supabase.com/docs/guides/troubleshooting/refresh-postgrest-schema). Cela **demande** le rafraîchissement du catalogue API ; cela ne constitue pas à lui seul une preuve de requête HTTP authentifiée réussie, qui doit être validée par le propriétaire.
+
+La vérification HTTP publique en lecture seule du 9 octobre montre la vitrine [Saly](https://part-chez-baptiste.digiylyfe.com/) et la vitrine [Sarlat](https://sarlat-chez-baptiste.digiylyfe.com/) accessibles, avec leurs boutons de demande directe, contact et paiement directs. La consultation HTML n'exécute pas le JavaScript du calendrier et **ne prouve pas** que les nouvelles RPC ont été sollicitées par le navigateur.
+
 ## Portée et derniers contrôles d'usage
 
 **GO SQL confirmé.** **Il reste à réaliser une vérification opérationnelle propriétaire POST-migration**, car aucun agent n'a ouvert une session magic-link authentifiée avec les secrets privés Saly/Sarlat. À vérifier sans modifier de dates existantes : chargement du carnet v2, visibilité du bouton d'annulation uniquement sur réservation active réelle, calendrier Saly/Sarlat, et aucune donnée étrangère visible. Pas de création de test client sur les vraies données ; les tests de réservation, annulation, concurrence et frontières propriétaires ont été effectués en PostgreSQL isolé et navigateurs mockés. Lorsqu'un vrai propriétaire utilise la gestion, les traitements sont désormais protégés par le serveur V30.
