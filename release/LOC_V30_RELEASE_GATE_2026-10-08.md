@@ -104,6 +104,16 @@ This verifies that the currently published owner HTML is the tracked legacy vers
 
 **Remaining STOP / NO-GO:** still no authorized recovery proof on the genuine encrypted backup artifact, no verified authenticated real-owner rollout, and no separate production SQL sign-off. Production sites keep their existing published versions. Four V30 PRs remain DRAFT, with no production DDL/DML.
 
+## 2026-10-09 03:06 UTC — Historic 61+20 calendar migration rehearsal PASSED
+
+**Real test execution (synthetic data):** [GitHub Actions SQL PG16+PG17 run 37877652934](https://github.com/BEAUVILLE/digiy-loc/actions/runs/37877652934) completed successfully on both PostgreSQL versions. Before the V30 migration, the disposable test databases were seeded with **61 fake occupied days for Saly** and **20 fake occupied days for Sarlat**, deliberately using synthetic 2025 dates that do not reproduce any real customer's itinerary.
+
+The newly isolated `tests/loc-master-v30/historic-calendar-ci.sh` guard checked that ALL **81** days were still occupied with legacy unknown provenance **before AND after** the V30 candidate migration. The check fails on missing blocks, status drift, changed provenance, unexpected third sites, and an incorrect Saly/Sarlat count. Added contract assertions also explicitly attempt to book an already occupied historical day in **each** territory, requiring the `BOOKING_DATES_BLOCKED` refusal from the real candidate RPC. Both PostgreSQL test matrices remained green, including cancellation/owner permissions, post-migration grants/RLS and simultaneous overlapping-booking rejection.
+
+A transient earlier **test-runner script corruption** caused [failure 37877359662](https://github.com/BEAUVILLE/digiy-loc/actions/runs/37877359662) in the **synthetic** pipeline, not on production. The CI runner was repaired from its last good revision, restored source verified byte-for-byte, and successful reruns are [37877555587](https://github.com/BEAUVILLE/digiy-loc/actions/runs/37877555587) and **37877652934**, the latter including BOTH historic-day booking-denial assertions.
+
+**This proves a controlled SQL migration on synthetic historical rows, NOT restoration of the real encrypted DIGIY CORE backup.** Genuine backup restore in a separate authorized environment and true owner-session acceptance remain **NO-GO release gates**. No real calendar dates, bookings, guest information, permissions or production schemas were changed.
+
 ## Founder handoff — engineer-managed release only
 
 **Decision on 2026-10-08:** the founder closed the Mac terminal and is not expected to run shell commands, locate database passwords, or copy connection strings. **Do not request any further technical action from the founder** as a condition of calling the software work done. Installation and tested recovery must be organized by an authorized technical operator with private access, without sharing credentials in GitHub or chat.
