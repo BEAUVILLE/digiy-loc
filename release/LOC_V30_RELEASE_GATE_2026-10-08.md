@@ -1,6 +1,9 @@
 # DIGIY LOC V30 — controlled release / GO–NO-GO gate
 
-Status: **DRAFT / NO PRODUCTION DEPLOYMENT**. Prepared October 8, 2026. The following is a release procedure, **not proof of a backup or a completed deployment**.
+Status: **DRAFT / NO PRODUCTION DEPLOYMENT**. Prepared October 8, 2026. The following is a release procedure, **not proof of a completed V30 deployment**.
+
+> **LATEST CHECKPOINT — 2026-10-09 07:24 UTC:** The founder has now completed a **REAL encrypted DIGIY CORE SQL restore** to an isolated no-network Docker PostgreSQL database on the private Mac. The operator's sanitized terminal output includes `ISOLATED_RESTORE_SQL_OK`, `ISOLATED_RESTORE_PROOF_OK` (81/81, 0 MASTER bookings) and `ISOLATED_RESTORE_PRODUCTION_UNTOUCHED`. A new live production **read-only 8/8 preflight** confirms 61 Saly + 20 Sarlat legacy blocked dates untouched, 0 reservations, V30 schema NOT deployed. **The old 02:00–03:29 statements below saying the genuine restore has never happened are HISTORICAL and SUPERSEDED.** [Complete dated evidence, exclusions, current PR heads and STOP gates](LOC_V30_REAL_RESTORE_CHECKPOINT_2026-10-09.md). **Real owner acceptance, deployed direct-write caller inventory and separate express SQL release approval are STILL PENDING; V30 stays NO-GO.**
+
 
 ## Verified checkpoint — 2026-10-09 02:00 UTC (read-only / no release)
 
