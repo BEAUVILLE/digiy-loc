@@ -1,52 +1,80 @@
 #!/usr/bin/env node
 'use strict';
 
-// CI-only code guard for three pinned V30 candidate HTML sources.
-// This is NOT a substitute for inspecting independently deployed copies.
+// Fail-closed source-contract guard for three PINNED V30 owner candidates.
+// This static check complements isolated SQL/browser tests, but cannot prove
+// the absence of unknown deployed aliases, generated JS or external writers.
 const fs=require('node:fs');
-const paths=[
-  ['Saly','staging/saly/gestion.html'],
-  ['Sarlat','staging/sarlat/loc.html'],
-  ['MAITRE','staging/maitre/LOC/MASTER-MAITRE-LOC/gestion.html'],
-];
+
 const calendar='digiy_loc_master_unit_calendar';
+const sites=[
+  ['Saly','staging/saly/gestion.html',2],
+  ['Sarlat','staging/sarlat/loc.html',3],
+  ['MAITRE','staging/maitre/LOC/MASTER-MAITRE-LOC/gestion.html',2],
+];
+const requiredRpc=[
+  'digiy_loc_set_unit_calendar_state_v2',
+  'digiy_loc_master_save_reservation_v1',
+  'digiy_loc_master_list_reservations_v2',
+  'digiy_loc_master_cancel_reservation_v1',
+];
 const writeOps=/\.\s*(?:insert|upsert|update|delete)\s*\(/i;
-let pass=true;
-for(const [site,file] of paths){
-  if(!fs.existsSync(file)){
-    console.error('V30_SOURCE_MISSING: '+site+' (pinned candidate not checked out)');
-    pass=false;continue;
+const fromRe=/\.from\s*\(\s*(['"])digiy_loc_master_unit_calendar\1\s*\)/g;
+const firstReadMethod=/^\s*(?:\/\*[\s\S]*?\*\/\s*)*\.select\s*\(/;
+
+function validateSource(label,html,expectedHits){
+  const errors=[];
+  const instances=[...html.matchAll(fromRe)];
+  const occurrences=html.split(calendar).length-1;
+  if(instances.length!==expectedHits || occurrences!==expectedHits){
+    errors.push('V30_CALENDAR_CALLSITE_COUNT_DRIFT: '+label);
   }
-  const html=fs.readFileSync(file,'utf8');
-  const fromRe=/\.from\s*\(\s*["']digiy_loc_master_unit_calendar["']\s*\)/g;
-  let hits=0, match;
-  while((match=fromRe.exec(html))!==null){
-    hits++;
-    // Inspect the full query statement; stop at the first JS semicolon.
-    // Fail closed for unusually long/complex statement paths.
-    const after=html.slice(fromRe.lastIndex);
-    const stop=after.indexOf(';');
-    if(stop<0 || stop>10000){
-      console.error('V30_CALENDAR_QUERY_UNPARSABLE: '+site);
-      pass=false;continue;
+  for(const hit of instances){
+    const after=html.slice(hit.index+hit[0].length);
+    // A query is accepted only if it starts by SELECT without assignment,
+    // alias or a mutation first. Never treat an alias as proof of read-only.
+    if(!firstReadMethod.test(after)){
+      errors.push('V30_UNVERIFIED_CALENDAR_TABLE_USAGE: '+label);
     }
-    const chain=after.slice(0,stop);
-    if(writeOps.test(chain)){
-      console.error('V30_UNGUARDED_DIRECT_CALENDAR_WRITE: '+site);
-      pass=false;
+    // A writable operation chained on the same JS statement is forbidden.
+    // Conservatively bound the scan, failing closed if statement is complex.
+    const end=after.indexOf(';');
+    if(end<0 || end>10000){
+      errors.push('V30_CALENDAR_QUERY_UNPARSABLE: '+label);
+      continue;
+    }
+    const statement=after.slice(0,end);
+    if(writeOps.test(statement)){
+      errors.push('V30_UNGUARDED_DIRECT_CALENDAR_WRITE: '+label);
     }
   }
-  if(!hits){console.error('V30_CALENDAR_READ_EXPECTED: '+site);pass=false;}
-  for(const rpc of ['digiy_loc_set_unit_calendar_state_v2','digiy_loc_master_save_reservation_v1',
-                    'digiy_loc_master_list_reservations_v2','digiy_loc_master_cancel_reservation_v1']){
+  for(const rpc of requiredRpc){
     if(!html.includes(rpc)){
-      console.error('V30_REQUIRED_RPC_MISSING: '+site+' '+rpc);
-      pass=false;
+      errors.push('V30_REQUIRED_RPC_MISSING: '+label+' '+rpc);
     }
   }
-  if(hits && !writeOps.test('') && html.includes('digiy_loc_master_cancel_reservation_v1')){
-    console.log('V30_PINNED_CANDIDATE_CONTRACT_OK: '+site+' ('+hits+' calendar SELECT call sites)');
-  }
+  return {ok:errors.length===0,errors,hits:instances.length};
 }
-if(!pass)process.exit(1);
-console.log('V30_THREE_CLIENT_GUARD_OK: Saly + Sarlat + MAITRE, source snapshots only; production untouched.');
+
+function main(){
+  let pass=true;
+  for(const [label,file,expectedHits] of sites){
+    if(!fs.existsSync(file)){
+      console.error('V30_SOURCE_MISSING: '+label+' (pinned candidate unavailable)');
+      pass=false;
+      continue;
+    }
+    const result=validateSource(label,fs.readFileSync(file,'utf8'),expectedHits);
+    if(!result.ok){
+      result.errors.forEach(error=>console.error(error));
+      pass=false;
+    }else{
+      console.log('V30_PINNED_CANDIDATE_CONTRACT_OK: '+label+' ('+result.hits+' verified SELECT sites)');
+    }
+  }
+  if(!pass) process.exitCode=1;
+  else console.log('V30_THREE_CLIENT_GUARD_OK: Saly + Sarlat + MAITRE, pinned source only; production untouched.');
+}
+
+if(require.main===module) main();
+module.exports={validateSource};
