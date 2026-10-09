@@ -19,11 +19,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - name: Pin previously published Saly main source
+      - name: Pin release-approved Saly V30 owner main source
         uses: actions/checkout@v4
         with:
           repository: BEAUVILLE/part-chez-baptiste
-          ref: ca17270e2daf8a0b27aafebd795fd20878458d30
+          ref: 7da11499eda10edb08bef7ac508b817bcbe5c60d
           path: staging/deployed-saly
           persist-credentials: false
       - name: Pin previously published Sarlat main source
