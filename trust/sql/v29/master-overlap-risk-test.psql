@@ -1,0 +1,97 @@
+\set ON_ERROR_STOP on
+-- V29 MASTER OVERLAP/REROPEN RISK REPRODUCTION — DISPOSABLE SQL ONLY.
+-- Expected-current-behavior negative probe, NOT a mitigation or release pass.
+-- Current reservation save upserts occupied calendar days WITHOUT
+-- checking for an overlapping MASTER reservation.
+-- Current state->available deletes calendar rows WITHOUT checking
+-- for still-active reservation rows. No real booking records ever touched.
+BEGIN;
+
+SET LOCAL ROLE authenticated;
+SET LOCAL request.jwt.claim.sub = '00000000-0000-4000-8000-000000000a11';
+DO $risk$
+DECLARE first_saved integer; second_saved integer; visible_rows integer;
+BEGIN
+  SELECT count(*) INTO first_saved
+  FROM public.digiy_loc_master_save_reservation_v1(
+    '00000000-0000-4000-8000-000000000a02'::uuid,
+    DATE '2026-12-25', DATE '2026-12-27',
+    'First synthetic reservation','000-FIRST','direct',NULL);
+  SELECT count(*) INTO second_saved
+  FROM public.digiy_loc_master_save_reservation_v1(
+    '00000000-0000-4000-8000-000000000a02'::uuid,
+    DATE '2026-12-26', DATE '2026-12-28',
+    'Overlapping synthetic reservation','000-SECOND','direct',NULL);
+  SELECT count(*) INTO visible_rows
+  FROM public.digiy_loc_master_list_reservations_v1(
+    '00000000-0000-4000-8000-000000000a02'::uuid);
+  IF first_saved <> 1 OR second_saved <> 1 OR visible_rows <> 2 THEN
+    RAISE EXCEPTION 'Expected-current-behavior overlap probe drift: %, %, %',
+      first_saved,second_saved,visible_rows;
+  END IF;
+END $risk$;
+RESET ROLE;
+
+DO $risk$
+DECLARE overlap_rows integer; occupied_days integer;
+BEGIN
+  SELECT count(*) INTO overlap_rows FROM public.digiy_loc_master_reservations
+  WHERE unit_id='00000000-0000-4000-8000-000000000a02'::uuid
+    AND start_day<=DATE '2026-12-27' AND end_day>=DATE '2026-12-26';
+  SELECT count(*) INTO occupied_days FROM public.digiy_loc_master_unit_calendar
+  WHERE unit_id='00000000-0000-4000-8000-000000000a02'::uuid
+    AND status='occupied' AND day BETWEEN DATE '2026-12-25' AND DATE '2026-12-28';
+  IF overlap_rows <> 2 OR occupied_days <> 4 THEN
+    RAISE EXCEPTION 'Overlap precondition mismatch: %, %',overlap_rows,occupied_days;
+  END IF;
+END $risk$;
+
+SET LOCAL ROLE authenticated;
+SET LOCAL request.jwt.claim.sub = '00000000-0000-4000-8000-000000000a11';
+-- This models a manual release of dates from the first reservation
+-- while the other reservation still covers December 26-28.
+DO $risk$
+DECLARE released integer;
+BEGIN
+  SELECT count(*) INTO released
+  FROM public.digiy_loc_set_unit_calendar_state_v2(
+    '00000000-0000-4000-8000-000000000a02'::uuid,
+    ARRAY[DATE '2026-12-25',DATE '2026-12-26',DATE '2026-12-27'],
+    'available');
+  IF released <> 3 THEN
+    RAISE EXCEPTION 'Owner date release mismatch: %',released;
+  END IF;
+END $risk$;
+RESET ROLE;
+
+DO $risk$
+DECLARE rows_exist integer; false_free_days integer; final_occupied integer;
+BEGIN
+  SELECT count(*) INTO rows_exist FROM public.digiy_loc_master_reservations
+  WHERE unit_id='00000000-0000-4000-8000-000000000a02'::uuid;
+  SELECT count(*) INTO false_free_days
+  FROM generate_series(DATE '2026-12-26',DATE '2026-12-27',INTERVAL '1 day') AS day_series(d)
+  WHERE NOT EXISTS(
+    SELECT 1 FROM public.digiy_loc_master_unit_calendar c
+    WHERE c.unit_id='00000000-0000-4000-8000-000000000a02'::uuid
+      AND c.day=day_series.d::date
+  );
+  SELECT count(*) INTO final_occupied
+  FROM public.digiy_loc_master_unit_calendar
+  WHERE unit_id='00000000-0000-4000-8000-000000000a02'::uuid
+    AND day=DATE '2026-12-28' AND status='occupied';
+  IF rows_exist <> 2 OR false_free_days <> 2 OR final_occupied <> 1 THEN
+    RAISE EXCEPTION 'Current overlap/reopen risk changed unexpectedly: rows %, free overlap %, other occupied %',
+      rows_exist,false_free_days,final_occupied;
+  END IF;
+END $risk$;
+
+SELECT 'V29 OVERLAPPING MASTER RESERVATIONS + UNSAFE DATE RELEASE REPRODUCED (KNOWN RISK, NOT FIXED)' AS evidence;
+ROLLBACK;
+DO $risk$
+BEGIN
+  IF EXISTS(SELECT 1 FROM public.digiy_loc_master_reservations)
+    OR EXISTS(SELECT 1 FROM public.digiy_loc_master_unit_calendar) THEN
+    RAISE EXCEPTION 'Synthetic overlap-risk probe not rolled back';
+  END IF;
+END $risk$;
