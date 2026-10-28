@@ -1,0 +1,111 @@
+\set ON_ERROR_STOP on
+-- Must run only on fresh disposable V29 PostgreSQL fixture.
+BEGIN;
+
+-- This helper lives only inside this transaction and is rolled back.
+-- Grant EXECUTE explicitly so role-switch tests validate the TARGET RPC,
+-- not temporary-schema permissions of a session-owned pg_temp function.
+CREATE FUNCTION public.v29_expect_denied(q text) RETURNS void
+LANGUAGE plpgsql SECURITY INVOKER AS $fn$
+BEGIN
+  BEGIN
+    EXECUTE q;
+  EXCEPTION WHEN insufficient_privilege THEN RETURN;
+  END;
+  RAISE EXCEPTION 'V29 expected 42501, but call succeeded: %',q;
+END
+$fn$;
+GRANT EXECUTE ON FUNCTION public.v29_expect_denied(text)
+  TO anon, authenticated;
+
+
+DO $assert$
+DECLARE signature text;
+BEGIN
+  FOREACH signature IN ARRAY ARRAY[
+    'public.digiy_loc_pulse_mark_sent(uuid)',
+    'public.digiy_loc_pulse_mark_sent(uuid,text,text,text)',
+    'public.digiy_loc_pulse_fail_backoff(uuid,text,text,text)'
+  ] LOOP
+    IF has_function_privilege('anon',signature,'EXECUTE')
+      OR has_function_privilege('authenticated',signature,'EXECUTE')
+      OR NOT has_function_privilege('service_role',signature,'EXECUTE')
+      OR NOT has_function_privilege('postgres',signature,'EXECUTE') THEN
+      RAISE EXCEPTION 'V29 PULSE status ACL mismatch: %', signature;
+    END IF;
+  END LOOP;
+  IF NOT has_function_privilege(
+    'anon','public.v29_status_unrelated_public_rpc()','EXECUTE'
+  ) THEN RAISE EXCEPTION 'Unrelated public RPC changed'; END IF;
+END $assert$;
+
+SET LOCAL ROLE anon;
+SELECT public.v29_expect_denied($q$
+  SELECT public.digiy_loc_pulse_mark_sent(
+    p_id => '00000000-0000-4000-8000-000000000021'::uuid)
+$q$);
+SELECT public.v29_expect_denied($q$
+  SELECT public.digiy_loc_pulse_mark_sent(
+    '00000000-0000-4000-8000-000000000021','x','msg','forged')
+$q$);
+SELECT public.v29_expect_denied($q$
+  SELECT public.digiy_loc_pulse_mark_sent(
+    p_pulse_id => '00000000-0000-4000-8000-000000000021'::uuid)
+$q$);
+SELECT public.v29_expect_denied($q$
+  SELECT public.digiy_loc_pulse_fail_backoff(
+    '00000000-0000-4000-8000-000000000021','ERR','forged','fake')
+$q$);
+RESET ROLE;
+
+SET LOCAL ROLE authenticated;
+SELECT public.v29_expect_denied($q$
+  SELECT public.digiy_loc_pulse_mark_sent(
+    p_id => '00000000-0000-4000-8000-000000000021'::uuid)
+$q$);
+SELECT public.v29_expect_denied($q$
+  SELECT public.digiy_loc_pulse_mark_sent(
+    '00000000-0000-4000-8000-000000000021','x','msg','forged')
+$q$);
+SELECT public.v29_expect_denied($q$
+  SELECT public.digiy_loc_pulse_mark_sent(
+    p_pulse_id => '00000000-0000-4000-8000-000000000021'::uuid)
+$q$);
+SELECT public.v29_expect_denied($q$
+  SELECT public.digiy_loc_pulse_fail_backoff(
+    '00000000-0000-4000-8000-000000000021','ERR','forged','fake')
+$q$);
+RESET ROLE;
+
+SET LOCAL ROLE service_role;
+SELECT public.digiy_loc_pulse_mark_sent(
+  p_id => '00000000-0000-4000-8000-000000000021'::uuid);
+SELECT public.digiy_loc_pulse_mark_sent(
+  '00000000-0000-4000-8000-000000000021','fixture-provider','fixture-msg','worker');
+SELECT public.digiy_loc_pulse_fail_backoff(
+  '00000000-0000-4000-8000-000000000021','TEST','synthetic','worker');
+RESET ROLE;
+
+DO $assert$
+BEGIN
+  IF NOT EXISTS(
+    SELECT 1 FROM public.v29_pulse_status_fixture
+    WHERE id='00000000-0000-4000-8000-000000000021'
+      AND attempts=1
+      AND sent_at IS NOT NULL
+      AND provider='fixture-provider'
+      AND status='new'
+  ) THEN RAISE EXCEPTION 'Expected service-role fixture mutation missing'; END IF;
+END $assert$;
+
+ROLLBACK;
+DO $assert$
+BEGIN
+  IF NOT EXISTS(
+    SELECT 1 FROM public.v29_pulse_status_fixture
+    WHERE id='00000000-0000-4000-8000-000000000021'
+      AND attempts=0 AND status='new' AND sent_at IS NULL
+      AND provider IS NULL AND last_error IS NULL
+  ) THEN RAISE EXCEPTION 'V29 status test did not rollback data'; END IF;
+END $assert$;
+SELECT 'V29 PULSE STATUS ACL SYNTHETIC TESTS PASSED' AS result;

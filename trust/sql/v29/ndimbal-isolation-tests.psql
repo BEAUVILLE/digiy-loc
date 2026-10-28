@@ -1,0 +1,79 @@
+\set ON_ERROR_STOP on
+-- Synthetic test ONLY, after PULSE and NDIMBAL trigger candidates in
+-- the disposable V29 trigger fixture; not representative of live bookings.
+DO $v29_state$
+DECLARE pulse_disabled integer; ndimbal_disabled integer; other_enabled integer;
+BEGIN
+  SELECT count(*) INTO pulse_disabled
+  FROM pg_trigger t
+  JOIN pg_class c ON c.oid=t.tgrelid
+  JOIN pg_namespace n ON n.oid=c.relnamespace
+  WHERE n.nspname='public' AND t.tgenabled='D'
+    AND (
+      (c.relname='digiy_loc_reservations' AND
+        t.tgname IN ('trg_digiy_loc_reservations_pulse_enqueue',
+        'trg_loc_pulse_j1_16h','trg_loc_pulse_j_15h',
+        'trg_loc_pulses_ins','trg_loc_pulses_upd',
+        'trg_res_enqueue_pulse_j1'))
+      OR
+      (c.relname='reservations_loc' AND
+        t.tgname IN ('trg_digiy_loc_pulse_enqueue',
+                     'trg_digiy_loc_cancel_pulses'))
+    );
+  SELECT count(*) INTO ndimbal_disabled
+  FROM pg_trigger t JOIN pg_class c ON c.oid=t.tgrelid
+  JOIN pg_namespace n ON n.oid=c.relnamespace
+  WHERE n.nspname='public' AND c.relname='digiy_loc_reservations'
+    AND t.tgname='trg_ndimbal_after_paid' AND t.tgenabled='D';
+  SELECT count(*) INTO other_enabled
+  FROM pg_trigger t JOIN pg_class c ON c.oid=t.tgrelid
+  JOIN pg_namespace n ON n.oid=c.relnamespace
+  WHERE n.nspname='public' AND c.relname='digiy_loc_reservations'
+    AND t.tgname IN ('trg_digiy_loc_reservation_to_pay',
+                     'trg_res_set_owner','trg_res_updated_at')
+    AND t.tgenabled='O';
+  IF pulse_disabled<>8 OR ndimbal_disabled<>1 OR other_enabled<>3 THEN
+    RAISE EXCEPTION 'V29 unexpected PULSE/NDIMBAL/non-target states %,%,%',
+      pulse_disabled,ndimbal_disabled,other_enabled;
+  END IF;
+END
+$v29_state$;
+
+BEGIN;
+INSERT INTO public.digiy_loc_reservations
+  VALUES ('00000000-0000-4000-8000-000000000201',
+          '00000000-0000-4000-8000-000000000202',
+          'pending','pending','2026-12-01',now());
+UPDATE public.digiy_loc_reservations
+SET status='paid',payment_status='paid',checkin='2026-12-02',
+    room_id='00000000-0000-4000-8000-000000000203'
+WHERE id='00000000-0000-4000-8000-000000000201';
+
+DO $v29_events$
+DECLARE other_count integer; legacy_count integer;
+BEGIN
+  SELECT count(DISTINCT trigger_name) INTO other_count
+  FROM public.v29_trigger_trace
+  WHERE trigger_name IN ('trg_digiy_loc_reservation_to_pay',
+    'trg_res_set_owner','trg_res_updated_at');
+  SELECT count(*) INTO legacy_count
+  FROM public.v29_trigger_trace
+  WHERE trigger_name NOT IN ('trg_digiy_loc_reservation_to_pay',
+    'trg_res_set_owner','trg_res_updated_at');
+  IF other_count<>3 OR legacy_count<>0 THEN
+    RAISE EXCEPTION 'V29 retired trigger fired; non-target %, legacy %',
+      other_count,legacy_count;
+  END IF;
+END
+$v29_events$;
+ROLLBACK;
+
+DO $v29_cleanup$
+BEGIN
+  IF EXISTS(SELECT 1 FROM public.digiy_loc_reservations)
+     OR EXISTS(SELECT 1 FROM public.reservations_loc)
+     OR EXISTS(SELECT 1 FROM public.v29_trigger_trace) THEN
+    RAISE EXCEPTION 'V29 synthetic NDIMBAL test left rows after rollback';
+  END IF;
+END $v29_cleanup$;
+SELECT 'V29 NDIMBAL TRIGGER ISOLATION SYNTHETIC TESTS PASSED' AS result;

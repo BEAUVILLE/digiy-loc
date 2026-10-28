@@ -1,0 +1,92 @@
+\set ON_ERROR_STOP on
+-- Run only after trigger-fixture.psql and PULSE_TRIGGER_DISABLE_CANDIDATE.sql
+-- on a disposable local PostgreSQL database. No real reservations.
+DO $v29_state$
+DECLARE stopped int; retained int; obsolete_ndimbal int;
+BEGIN
+  SELECT count(*) INTO stopped FROM pg_trigger t
+  JOIN pg_class c ON c.oid=t.tgrelid
+  JOIN pg_namespace n ON n.oid=c.relnamespace
+  WHERE n.nspname='public' AND
+    ((c.relname='digiy_loc_reservations' AND
+      t.tgname IN (
+        'trg_digiy_loc_reservations_pulse_enqueue',
+        'trg_loc_pulse_j1_16h','trg_loc_pulse_j_15h',
+        'trg_loc_pulses_ins','trg_loc_pulses_upd',
+        'trg_res_enqueue_pulse_j1'))
+      OR (c.relname='reservations_loc' AND
+      t.tgname IN ('trg_digiy_loc_pulse_enqueue','trg_digiy_loc_cancel_pulses')))
+    AND t.tgenabled='D';
+  SELECT count(*) INTO retained FROM pg_trigger t
+  JOIN pg_class c ON c.oid=t.tgrelid
+  JOIN pg_namespace n ON n.oid=c.relnamespace
+  WHERE n.nspname='public' AND c.relname='digiy_loc_reservations'
+    AND t.tgname IN (
+       'trg_digiy_loc_reservation_to_pay',
+       'trg_res_set_owner','trg_res_updated_at')
+    AND t.tgenabled='O';
+  SELECT count(*) INTO obsolete_ndimbal FROM pg_trigger t
+  JOIN pg_class c ON c.oid=t.tgrelid
+  JOIN pg_namespace n ON n.oid=c.relnamespace
+  WHERE n.nspname='public' AND c.relname='digiy_loc_reservations'
+    AND t.tgname='trg_ndimbal_after_paid' AND t.tgenabled='O';
+  -- PULSE-only isolation deliberately does not change the independent,
+  -- founder-confirmed obsolete NDIMBAL trigger; it has its own candidate.
+  IF stopped<>8 OR retained<>3 OR obsolete_ndimbal<>1 THEN
+    RAISE EXCEPTION 'V29 unexpected trigger states; pulse %, non-target %, NDIMBAL %',
+      stopped,retained,obsolete_ndimbal;
+  END IF;
+END
+$v29_state$;
+
+-- Run the same reservation changes again, with the PULSE triggers disabled.
+BEGIN;
+INSERT INTO public.digiy_loc_reservations
+  VALUES ('00000000-0000-4000-8000-000000000101',
+          '00000000-0000-4000-8000-000000000102',
+          'pending','pending','2026-12-01',now());
+UPDATE public.digiy_loc_reservations
+SET status='paid',payment_status='paid',checkin='2026-12-02',
+    room_id='00000000-0000-4000-8000-000000000103'
+WHERE id='00000000-0000-4000-8000-000000000101';
+INSERT INTO public.reservations_loc VALUES
+  ('00000000-0000-4000-8000-000000000104',NULL,'confirmed',
+   '2026-12-01','2026-12-02','synthetic');
+UPDATE public.reservations_loc SET status='cancelled'
+WHERE id='00000000-0000-4000-8000-000000000104';
+
+DO $v29_behavior$
+DECLARE observed int; unwanted int; ndimbal_old int;
+BEGIN
+  SELECT count(DISTINCT trigger_name) INTO observed
+  FROM public.v29_trigger_trace
+  WHERE trigger_name IN
+  ('trg_digiy_loc_reservation_to_pay',
+   'trg_res_set_owner','trg_res_updated_at');
+  SELECT count(*) INTO unwanted
+  FROM public.v29_trigger_trace
+  WHERE trigger_name IN
+  ('trg_digiy_loc_reservations_pulse_enqueue','trg_loc_pulse_j1_16h',
+   'trg_loc_pulse_j_15h','trg_loc_pulses_ins','trg_loc_pulses_upd',
+   'trg_res_enqueue_pulse_j1','trg_digiy_loc_pulse_enqueue',
+   'trg_digiy_loc_cancel_pulses');
+  SELECT count(*) INTO ndimbal_old FROM public.v29_trigger_trace
+  WHERE trigger_name='trg_ndimbal_after_paid';
+  IF observed<>3 OR unwanted<>0 OR ndimbal_old<1 THEN
+    RAISE EXCEPTION 'V29 unexpected trigger behavior: independent %, PULSE %, obsolete NDIMBAL %',
+      observed,unwanted,ndimbal_old;
+  END IF;
+END $v29_behavior$;
+
+ROLLBACK;
+
+DO $v29_rollback$
+BEGIN
+  IF EXISTS(SELECT 1 FROM public.digiy_loc_reservations)
+    OR EXISTS(SELECT 1 FROM public.reservations_loc)
+    OR EXISTS(SELECT 1 FROM public.v29_trigger_trace) THEN
+    RAISE EXCEPTION 'V29 synthetic reservations/events left after rollback';
+  END IF;
+END
+$v29_rollback$;
+SELECT 'V29 PULSE TRIGGER ISOLATION SYNTHETIC TESTS PASSED' AS result;

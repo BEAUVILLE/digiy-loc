@@ -1,0 +1,28 @@
+\set ON_ERROR_STOP on
+-- Shared cluster roles across three separate V29 fixture databases.
+-- PostgreSQL roles are cluster-wide, not database-local. Never create
+-- a new role name on every fixture run in the same disposable server.
+-- Local ephemeral superuser only; NEVER run on production.
+DO $v29_roles$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'anon') THEN
+    CREATE ROLE anon NOLOGIN;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'authenticated') THEN
+    CREATE ROLE authenticated NOLOGIN;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'service_role') THEN
+    CREATE ROLE service_role NOLOGIN BYPASSRLS;
+  END IF;
+
+  IF EXISTS (
+    SELECT 1 FROM pg_roles
+    WHERE (rolname IN ('anon','authenticated') AND
+            (rolcanlogin OR rolsuper OR rolbypassrls OR rolcreaterole OR rolcreatedb))
+       OR (rolname = 'service_role' AND
+            (rolcanlogin OR rolsuper OR NOT rolbypassrls OR rolcreaterole OR rolcreatedb))
+  ) THEN
+    RAISE EXCEPTION 'V29 fixture uses unexpected cluster role attributes';
+  END IF;
+END
+$v29_roles$;

@@ -1,0 +1,186 @@
+\set ON_ERROR_STOP on
+-- Synthetic PostgreSQL database only. All application function bodies
+-- are replaced by one harmless trace function; no real LOC data/keys.
+CREATE TABLE public.digiy_loc_reservations (
+  id uuid PRIMARY KEY,
+  room_id uuid,
+  status text,
+  payment_status text,
+  checkin date,
+  updated_at timestamptz
+);
+CREATE TABLE public.reservations_loc (
+  id uuid PRIMARY KEY,
+  room_id uuid,
+  status text,
+  check_in date,
+  check_out date,
+  phone text
+);
+CREATE TABLE public.v29_trigger_trace (
+  trigger_name text NOT NULL,
+  table_name text NOT NULL,
+  operation text NOT NULL
+);
+CREATE FUNCTION public.v29_trace_trigger()
+RETURNS trigger LANGUAGE plpgsql SECURITY INVOKER AS $fn$
+BEGIN
+  INSERT INTO public.v29_trigger_trace(trigger_name,table_name,operation)
+  VALUES (TG_NAME,TG_TABLE_NAME,TG_OP);
+  RETURN NEW;
+END
+$fn$;
+
+-- Each retired trigger has its actual production function identity,
+-- with a harmless synthetic trace-only body. No live queue operations.
+CREATE FUNCTION public.trg_digiy_loc_reservations_enqueue_pulse()
+RETURNS trigger LANGUAGE plpgsql SECURITY INVOKER AS $fn$
+BEGIN
+  INSERT INTO public.v29_trigger_trace(trigger_name,table_name,operation)
+  VALUES (TG_NAME,TG_TABLE_NAME,TG_OP);
+  RETURN NEW;
+END
+$fn$;
+
+CREATE FUNCTION public.digiy_loc_pulse_enqueue_j1_16h()
+RETURNS trigger LANGUAGE plpgsql SECURITY INVOKER AS $fn$
+BEGIN
+  INSERT INTO public.v29_trigger_trace(trigger_name,table_name,operation)
+  VALUES (TG_NAME,TG_TABLE_NAME,TG_OP);
+  RETURN NEW;
+END
+$fn$;
+
+CREATE FUNCTION public.digiy_loc_pulse_j_15h()
+RETURNS trigger LANGUAGE plpgsql SECURITY INVOKER AS $fn$
+BEGIN
+  INSERT INTO public.v29_trigger_trace(trigger_name,table_name,operation)
+  VALUES (TG_NAME,TG_TABLE_NAME,TG_OP);
+  RETURN NEW;
+END
+$fn$;
+
+CREATE FUNCTION public.digiy_loc_enqueue_standard_pulses()
+RETURNS trigger LANGUAGE plpgsql SECURITY INVOKER AS $fn$
+BEGIN
+  INSERT INTO public.v29_trigger_trace(trigger_name,table_name,operation)
+  VALUES (TG_NAME,TG_TABLE_NAME,TG_OP);
+  RETURN NEW;
+END
+$fn$;
+
+CREATE FUNCTION public.digiy_loc_enqueue_pulse_j1()
+RETURNS trigger LANGUAGE plpgsql SECURITY INVOKER AS $fn$
+BEGIN
+  INSERT INTO public.v29_trigger_trace(trigger_name,table_name,operation)
+  VALUES (TG_NAME,TG_TABLE_NAME,TG_OP);
+  RETURN NEW;
+END
+$fn$;
+
+CREATE FUNCTION public.trg_digiy_loc_pulse_enqueue_fn()
+RETURNS trigger LANGUAGE plpgsql SECURITY INVOKER AS $fn$
+BEGIN
+  INSERT INTO public.v29_trigger_trace(trigger_name,table_name,operation)
+  VALUES (TG_NAME,TG_TABLE_NAME,TG_OP);
+  RETURN NEW;
+END
+$fn$;
+
+CREATE FUNCTION public.trg_digiy_loc_cancel_pulses_fn()
+RETURNS trigger LANGUAGE plpgsql SECURITY INVOKER AS $fn$
+BEGIN
+  INSERT INTO public.v29_trigger_trace(trigger_name,table_name,operation)
+  VALUES (TG_NAME,TG_TABLE_NAME,TG_OP);
+  RETURN NEW;
+END
+$fn$;
+
+-- Exact trigger names, tables and relevant timing/events from production.
+CREATE TRIGGER trg_digiy_loc_reservations_pulse_enqueue
+  AFTER INSERT OR UPDATE OF status,payment_status
+  ON public.digiy_loc_reservations FOR EACH ROW
+  EXECUTE FUNCTION public.trg_digiy_loc_reservations_enqueue_pulse();
+CREATE TRIGGER trg_loc_pulse_j1_16h
+  AFTER INSERT OR UPDATE OF checkin
+  ON public.digiy_loc_reservations FOR EACH ROW
+  EXECUTE FUNCTION public.digiy_loc_pulse_enqueue_j1_16h();
+CREATE TRIGGER trg_loc_pulse_j_15h
+  AFTER INSERT OR UPDATE OF checkin,room_id
+  ON public.digiy_loc_reservations FOR EACH ROW
+  EXECUTE FUNCTION public.digiy_loc_pulse_j_15h();
+CREATE TRIGGER trg_loc_pulses_ins
+  AFTER INSERT ON public.digiy_loc_reservations FOR EACH ROW
+  EXECUTE FUNCTION public.digiy_loc_enqueue_standard_pulses();
+CREATE TRIGGER trg_loc_pulses_upd
+  AFTER UPDATE OF status ON public.digiy_loc_reservations
+  FOR EACH ROW WHEN (NEW.status IN ('confirmed','paid'))
+  EXECUTE FUNCTION public.digiy_loc_enqueue_standard_pulses();
+CREATE TRIGGER trg_res_enqueue_pulse_j1
+  AFTER INSERT ON public.digiy_loc_reservations FOR EACH ROW
+  EXECUTE FUNCTION public.digiy_loc_enqueue_pulse_j1();
+CREATE TRIGGER trg_digiy_loc_pulse_enqueue
+  AFTER INSERT OR UPDATE ON public.reservations_loc FOR EACH ROW
+  EXECUTE FUNCTION public.trg_digiy_loc_pulse_enqueue_fn();
+CREATE TRIGGER trg_digiy_loc_cancel_pulses
+  AFTER UPDATE ON public.reservations_loc FOR EACH ROW
+  EXECUTE FUNCTION public.trg_digiy_loc_cancel_pulses_fn();
+
+-- Three non-target payment-related/owner/timestamp triggers are preserved;
+-- the NDIMBAL trigger is represented only as an obsolete legacy fixture.
+-- Its independent disable candidate is tested after the PULSE-only step.
+CREATE TRIGGER trg_digiy_loc_reservation_to_pay
+  AFTER UPDATE ON public.digiy_loc_reservations FOR EACH ROW
+  EXECUTE FUNCTION public.v29_trace_trigger();
+-- Real catalog preflight checks the exact NDIMBAL trigger-function
+-- identity. Provide a harmless synthetic stub with that exact name.
+-- The body writes only to our trace table; NEVER real NDIMBAL records.
+CREATE FUNCTION public.digiy_loc_ndimbal_after_paid()
+RETURNS trigger LANGUAGE plpgsql SECURITY INVOKER AS $fn$
+BEGIN
+  INSERT INTO public.v29_trigger_trace(trigger_name,table_name,operation)
+  VALUES (TG_NAME,TG_TABLE_NAME,TG_OP);
+  RETURN NEW;
+END
+$fn$;
+CREATE TRIGGER trg_ndimbal_after_paid
+  AFTER UPDATE OF payment_status ON public.digiy_loc_reservations
+  FOR EACH ROW WHEN (NEW.payment_status='paid')
+  EXECUTE FUNCTION public.digiy_loc_ndimbal_after_paid();
+CREATE TRIGGER trg_res_set_owner
+  BEFORE INSERT OR UPDATE OF room_id ON public.digiy_loc_reservations
+  FOR EACH ROW EXECUTE FUNCTION public.v29_trace_trigger();
+CREATE TRIGGER trg_res_updated_at
+  BEFORE UPDATE ON public.digiy_loc_reservations FOR EACH ROW
+  EXECUTE FUNCTION public.v29_trace_trigger();
+
+-- Confirm all 12 synthetic fixture triggers, including obsolete NDIMBAL,
+-- initially fire BEFORE testing retirement. This does not describe the
+-- current live booking application.
+-- No synthetic reservation or audit record survives this baseline transaction.
+BEGIN;
+INSERT INTO public.digiy_loc_reservations
+  VALUES ('00000000-0000-4000-8000-000000000101',
+          '00000000-0000-4000-8000-000000000102',
+          'pending','pending','2026-12-01',now());
+UPDATE public.digiy_loc_reservations
+SET status='paid',payment_status='paid',checkin='2026-12-02',
+    room_id='00000000-0000-4000-8000-000000000103'
+WHERE id='00000000-0000-4000-8000-000000000101';
+INSERT INTO public.reservations_loc VALUES
+  ('00000000-0000-4000-8000-000000000104',NULL,'confirmed',
+   '2026-12-01','2026-12-02','synthetic');
+UPDATE public.reservations_loc SET status='cancelled'
+WHERE id='00000000-0000-4000-8000-000000000104';
+
+DO $v29_baseline$
+DECLARE observed integer;
+BEGIN
+  SELECT count(DISTINCT trigger_name) INTO observed
+  FROM public.v29_trigger_trace;
+  IF observed <> 12 THEN
+    RAISE EXCEPTION 'V29 trigger fixture expected 12 functioning triggers, got %',observed;
+  END IF;
+END
+$v29_baseline$;
+ROLLBACK;

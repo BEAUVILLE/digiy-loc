@@ -1,0 +1,94 @@
+\set ON_ERROR_STOP on
+-- V29 MASTER CANCELLATION GAP REPRODUCTION — NOT AN IMPLEMENTATION.
+-- Replays real current save/list/calendar RPC definitions on SYNTHETIC DATA.
+-- The "available" calendar transition does not cancel the separate
+-- reservation row. This script ASSERTS the known mismatch, not success
+-- of a cancellation workflow. No production data is read or written.
+BEGIN;
+
+-- Create a valid synthetic booking with owner A's actual SQL contract.
+SET LOCAL ROLE authenticated;
+SET LOCAL request.jwt.claim.sub = '00000000-0000-4000-8000-000000000a11';
+DO $probe$
+DECLARE inserted integer; seen integer;
+BEGIN
+  SELECT count(*) INTO inserted
+  FROM public.digiy_loc_master_save_reservation_v1(
+    '00000000-0000-4000-8000-000000000a02'::uuid,
+    DATE '2026-12-20', DATE '2026-12-22',
+    'Synthetic cancellation probe','000-TEST-CANCEL','direct',
+    'Fixture only - never a real guest');
+
+  SELECT count(*) INTO seen
+  FROM public.digiy_loc_master_list_reservations_v1(
+    '00000000-0000-4000-8000-000000000a02'::uuid);
+  IF inserted <> 1 OR seen <> 1 THEN
+    RAISE EXCEPTION 'Cancellation probe booking creation failed: %, %',
+      inserted,seen;
+  END IF;
+END $probe$;
+RESET ROLE;
+
+-- Verify the three days were blocked before the owner's date release.
+DO $probe$
+DECLARE blocked integer;
+BEGIN
+  SELECT count(*) INTO blocked
+  FROM public.digiy_loc_master_unit_calendar
+  WHERE unit_id='00000000-0000-4000-8000-000000000a02'::uuid
+    AND status='occupied'
+    AND day BETWEEN DATE '2026-12-20' AND DATE '2026-12-22';
+  IF blocked <> 3 THEN
+    RAISE EXCEPTION 'Expected 3 occupied days before release, got %',blocked;
+  END IF;
+END $probe$;
+
+-- Owner A deliberately releases all 3 dates using the CURRENT RPC.
+SET LOCAL ROLE authenticated;
+SET LOCAL request.jwt.claim.sub = '00000000-0000-4000-8000-000000000a11';
+DO $probe$
+DECLARE freed integer; shown integer;
+BEGIN
+  SELECT count(*) INTO freed
+  FROM public.digiy_loc_set_unit_calendar_state_v2(
+    '00000000-0000-4000-8000-000000000a02'::uuid,
+    ARRAY[DATE '2026-12-20',DATE '2026-12-21',DATE '2026-12-22'],
+    'available');
+  SELECT count(*) INTO shown
+  FROM public.digiy_loc_master_list_reservations_v1(
+    '00000000-0000-4000-8000-000000000a02'::uuid);
+  IF freed <> 3 OR shown <> 1 THEN
+    RAISE EXCEPTION 'Expected release while stale carnet row persists, got %, %',
+      freed,shown;
+  END IF;
+END $probe$;
+RESET ROLE;
+
+-- Table-level assertion as isolated-fixture admin (table RLS not emulated).
+DO $probe$
+DECLARE row_count integer; remaining_blocks integer; legacy_trace integer;
+BEGIN
+  SELECT count(*) INTO row_count FROM public.digiy_loc_master_reservations
+  WHERE unit_id='00000000-0000-4000-8000-000000000a02'::uuid
+    AND guest_name='Synthetic cancellation probe';
+  SELECT count(*) INTO remaining_blocks FROM public.digiy_loc_master_unit_calendar
+  WHERE unit_id='00000000-0000-4000-8000-000000000a02'::uuid
+    AND day BETWEEN DATE '2026-12-20' AND DATE '2026-12-22';
+  SELECT count(*) INTO legacy_trace FROM public.v29_trigger_trace;
+  IF row_count <> 1 OR remaining_blocks <> 0 OR legacy_trace <> 0 THEN
+    RAISE EXCEPTION 'MASTER cancellation gap fixture drift: carnet %, days %, legacy %',
+      row_count,remaining_blocks,legacy_trace;
+  END IF;
+END $probe$;
+
+SELECT 'V29 MASTER CANCELLATION GAP REPRODUCED: DATES FREE / RESERVATION ROW PERSISTS (NOT A CANCELLATION PASS)' AS evidence;
+ROLLBACK;
+
+-- Never leave a synthetic guest record or calendar entry behind.
+DO $probe$
+BEGIN
+  IF EXISTS(SELECT 1 FROM public.digiy_loc_master_reservations)
+    OR EXISTS(SELECT 1 FROM public.digiy_loc_master_unit_calendar) THEN
+    RAISE EXCEPTION 'Cancellation gap probe did not roll back';
+  END IF;
+END $probe$;
